@@ -6,7 +6,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 export function Header() {
   const { colors } = useTheme();
   const [search, setSearch] = useState("");
-  console.log(search);
+  
   return (
     <VStack w="full" alignItems="center" pt={8}>
       <Image

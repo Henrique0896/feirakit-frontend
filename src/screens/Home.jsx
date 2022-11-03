@@ -54,7 +54,7 @@ export function Home() {
           <Center flex={1} h={400}>
             <MaterialIcons name='storefront' size={80} color={colors.gray[300]} mt/>{'\n'}
             <Text color={colors.gray[300]} fontSize="4xl" textAlign="center">
-              Oops! Não há Produtos para mostrar.
+              Não há Produtos para mostrar.
             </Text>
           </Center>
         )}
