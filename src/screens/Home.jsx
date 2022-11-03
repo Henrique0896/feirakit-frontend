@@ -6,16 +6,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 export function Home() {
   const { colors } = useTheme();
-  let products = [
-    {
-      id: 1,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Tomate",
-      description: "pequena descrição sobre oproduto",
-      price: 4.5,
-      favorite: true,
-    },
-  ];
+  let products = [];
 
   return (
     <VStack
