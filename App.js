@@ -1,12 +1,19 @@
 import { StyleSheet, View } from "react-native";
 import { Home } from "./src/screens/Home";
 import { NativeBaseProvider } from "native-base";
-
+import {useFonts,Montserrat_400Regular,Montserrat_700Bold,}from "@expo-google-fonts/montserrat"
+import {THEME}from './src/styles/theme'
+import { Loading } from "./src/components/Loading";
 export default function App() {
+  
+  const [fontsLoaded] = useFonts({ Montserrat_400Regular,Montserrat_700Bold });
+
   return (
-    <NativeBaseProvider>
+    <NativeBaseProvider theme={THEME}>
       <View style={styles.container}>
-        <Home />
+        {fontsLoaded?
+        <Home />:
+        <Loading/>}
       </View>
     </NativeBaseProvider>
   );
