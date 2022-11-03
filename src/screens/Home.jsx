@@ -4,10 +4,8 @@ import { ProductCard } from "../components/ProductCard";
 
 import { MaterialIcons } from "@expo/vector-icons";
 
-
 export function Home() {
   const { colors } = useTheme();
-
   let products = [
     {
       id: 1,
@@ -45,14 +43,20 @@ export function Home() {
       <FlatList
         data={products}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100}}
+        contentContainerStyle={{ paddingBottom: 100 }}
         numColumns="2"
         w="100%"
         keyExtractor={(product) => product.id}
-        renderItem={({product}) => <ProductCard product={product} />}
+        renderItem={({ product }) => <ProductCard product={product} />}
         ListEmptyComponent={() => (
           <Center flex={1} h={400}>
-            <MaterialIcons name='storefront' size={80} color={colors.gray[300]} mt/>{'\n'}
+            <MaterialIcons
+              name="storefront"
+              size={80}
+              color={colors.gray[300]}
+              mt
+            />
+            {"\n"}
             <Text color={colors.gray[300]} fontSize="4xl" textAlign="center">
               Não há Produtos para mostrar.
             </Text>
