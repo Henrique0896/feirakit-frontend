@@ -1,46 +1,66 @@
-import { Box, VStack } from 'native-base';
-import React from 'react';
+import { Box, useTheme, VStack, HStack } from 'native-base';
+import React, { Component } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import SizeButton from '../components/sizebutton/index';
+import SizeButton from '../sizebutton/index';
+import Button from '../components/Button2';
+import { MaterialIcons } from "@expo/vector-icons";
+import { Back } from '../components/Back';
+
+
+
 
 
 export function Description() {
+    const { colors } = useTheme();
 
 
     return (
-        <VStack style={styles.container}>
-            <View/>
-            <Image
-        source={require('../assets/banana.png')}
-        style={styles.image}
-        resizeMode="cover"
-        />
-            <View style={{flexDirection: 'row', width: '100%'}}>
-                <ScrollView horizontal>
-                    <SizeButton>1</SizeButton>
-                    <SizeButton bgColor= "#4B94F2" >2</SizeButton>
-                    <SizeButton>3</SizeButton>
-                    <SizeButton>4</SizeButton>
-                    <SizeButton>5</SizeButton>
-                </ScrollView>
-            </View>
-        <VStack>
-            <Text style={[styles.banana, {fontSize: 30 }]}>Banana</Text>
-        </VStack>
-                <View>
-                    <Text style={styles.valor}>R$ 8,00</Text>
-                </View>
+            <VStack style={styles.container}>
+                <Back/>
+                        <Box style={styles.imagebox}>
+                            <Image
+                                    source={require('../assets/banana.png')}
+                                    style={styles.image}
+                                    />
+                        </Box>
+                        <ScrollView>
+                            <View style={{flexDirection: 'row', width: '100%', alignContent:'center', marginBottom: 0,}} >
+                                <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+                                    <SizeButton>1</SizeButton>
+                                    <SizeButton bgColor={colors.blue} >2</SizeButton>
+                                    <SizeButton>3</SizeButton>
+                                    <SizeButton>4</SizeButton>
+                                    <SizeButton>5</SizeButton>
+                                    <SizeButton>6</SizeButton>
+                                </ScrollView>
+                            </View>
+                                        <HStack marginTop={-10} justifyContent='space-between' alignSelf='center' px='2%' w='90%'>
+                            <Text style={styles.text}>Banana</Text>
+                            <Text style={styles.text}>R$ 8,00</Text>
+                                        </HStack>
+                                <View style={styles.descriptionBox}>
+                                    <Text style={{fontSize: 16}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint cupiditate quos voluptas, vel autem, numquam illo voluptate, minima atque sunt a qui quasi nisi natus veniam nihil! Numquam, sed corrupti.</Text>
+                                </View>
+                                <Text style={[styles.text, {fontSize: 20, marginLeft: '7%', marginTop: 20}]}>
+                                    Quantidade
+                                </Text>
+                                <HStack marginTop={5} alignSelf='center' h='16' w='1/3' justifyContent='space-between' alignItems='center' borderWidth={1} borderColor={colors.blue[700]} >
+                                    <TouchableOpacity style={styles.qtdButton}>
+                                        <MaterialIcons size={30} name='remove'/>
+                                        </TouchableOpacity>
+                                    <View><Text style={{fontSize: 30}}>5</Text></View>
+                                    <TouchableOpacity style={styles.qtdButton}>
+                                        <MaterialIcons  size={30} name='add'/>
+                                        </TouchableOpacity>
+                                </HStack>
+                                <Button/>
+                        </ScrollView>
+    
 
-
-        
-        
-        
-        
-        
-        
-        
-        
-        </VStack>
+    
+    
+            </VStack>
+            
 
         
 
@@ -53,35 +73,49 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         width: '100%',
-        backgroundColor: '#FFF'
+        backgroundColor: '#FFF',
 
     },
     image:{
-        width: '100%',
-        height: '30%',
         resizeMode: 'center',
-        marginTop: 160
+        height: '100%',
+  
 
 
     },
-    valor:{
-        fontFamily: 'Montserrat_400Regular',
+    imagebox: {
+        height: '40%',
+        width: '80%',
+        display: 'flex',
+        alignSelf: 'center',
+        alignItems: 'center',
+        marginTop: '-5%'
+    },
+    descriptionBox:{
+        height: '20%',
+        width: '90%',
+        alignSelf: 'center',
+        backgroundColor: '#f2f2f2',
+        padding: 12
+
+
+
+    },
+    qtdButton: {
+        height: '100%',
+        width: '30%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#0088a7',
+
+    },
+    text: {
         fontSize: 30,
-        paddingLeft: 450,
-        marginTop: -60
-
-        
-
-
-    },
-    banana:{
         fontFamily: 'Montserrat_400Regular',
-
-        paddingLeft: 20,
-        marginTop: -60
-
-
+        marginVertical: 15
 
     }
+
 
 });
