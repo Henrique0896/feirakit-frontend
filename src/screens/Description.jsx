@@ -39,7 +39,7 @@ export function Description() {
                             <Text style={styles.text}>R$ 8,00</Text>
                                         </HStack>
                                 <View style={styles.descriptionBox}>
-                                    <Text style={{fontSize: 16}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint cupiditate quos voluptas, vel autem, numquam illo voluptate, minima atque sunt a qui quasi nisi natus veniam nihil! Numquam, sed corrupti.</Text>
+                                    <Text style={{fontSize: 16}}>Loooorem ipsum dolor sit amet consectetur adipisicing elit. Sint cupiditate quos voluptas, vel autem, numquam illo voluptate, minima atque sunt a qui quasi nisi natus veniam nihil! Numquam, sed corrupti.</Text>
                                 </View>
                                 <Text style={[styles.text, {fontSize: 20, marginLeft: '7%', marginTop: 20}]}>
                                     Quantidade
