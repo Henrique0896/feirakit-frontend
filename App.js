@@ -1,5 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { Home } from "./src/screens/Home";
+import { Login} from "./src/screens/Login";
 import { NativeBaseProvider } from "native-base";
 import {useFonts,Montserrat_400Regular,Montserrat_700Bold,}from "@expo-google-fonts/montserrat"
 import {THEME}from './src/styles/theme'
@@ -12,7 +13,7 @@ export default function App() {
     <NativeBaseProvider theme={THEME}>
       <View style={styles.container}>
         {fontsLoaded?
-        <Home />:
+        <Login/>:
         <Loading/>}
       </View>
     </NativeBaseProvider>
