@@ -1,5 +1,5 @@
 import { Box, useTheme, VStack, HStack } from 'native-base';
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import SizeButton from '../sizebutton/index';
 import Button from '../components/Button2';
@@ -12,6 +12,9 @@ import { Back } from '../components/Back';
 
 export function Description() {
     const { colors } = useTheme();
+    const [amount, setAmount] = useState (1);
+    let btnDisabled = (amount < 1)? true: false;
+
 
 
     return (
@@ -45,11 +48,11 @@ export function Description() {
                                     Quantidade
                                 </Text>
                                 <HStack marginTop={5} alignSelf='center' h='16' w='1/3' justifyContent='space-between' alignItems='center' borderWidth={1} borderColor={colors.blue[700]} >
-                                    <TouchableOpacity style={styles.qtdButton}>
+                                    <TouchableOpacity disabled={btnDisabled} onPress={()=>setAmount(amount-1)} style={styles.qtdButton}>
                                         <MaterialIcons size={30} name='remove'/>
                                         </TouchableOpacity>
-                                    <View><Text style={{fontSize: 30}}>5</Text></View>
-                                    <TouchableOpacity style={styles.qtdButton}>
+                                    <View><Text style={{fontSize: 30}}>{amount}</Text></View>
+                                    <TouchableOpacity onPress={()=>setAmount(amount+1)} style={styles.qtdButton}>
                                         <MaterialIcons  size={30} name='add'/>
                                         </TouchableOpacity>
                                 </HStack>
