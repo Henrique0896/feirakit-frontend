@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Touchable, TouchableOpacity, Linking } from 'react-native';
 
 export default function Button() {
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.btnContainer}>
+            <TouchableOpacity style={styles.btnContainer} onPress={() => Linking.canOpenURL("whatsapp://send?text=oi?").then(supported => { if (supported) { return Linking.openURL("whatsapp://send?phone=5533998785878&text=Oi");}
+     else return Linking.openURL("https://api.whatsapp.com/send?phone=5533998785878&text=Oi")})} Whatsapp Mensagem>
                 <Text style={styles.title}>COMPRAR</Text>
             </TouchableOpacity>
         </View>
+
     )
 }
 

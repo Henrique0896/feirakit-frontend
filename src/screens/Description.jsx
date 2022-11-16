@@ -1,6 +1,6 @@
 import { Box, useTheme, VStack, HStack } from 'native-base';
 import React, { Component, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import SizeButton from '../sizebutton/index';
 import Button from '../components/Button2';
 import { MaterialIcons } from "@expo/vector-icons";
