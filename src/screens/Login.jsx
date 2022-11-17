@@ -85,7 +85,7 @@ export function Login() {
           <TouchableOpacity onPress={handleVisibilityPassword}>
           <Icon
             color={colors.blue[700]}
-            as={<MaterialIcons name={inputType=='text'?"visibility-off":'visibility '} />}
+            as={<MaterialIcons name={inputType=='text'?"visibility-off":'visibility'} />}
             size={6}
             marginRight={2}
           />
