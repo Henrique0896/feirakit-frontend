@@ -1,12 +1,12 @@
 import React from "react";
-import { Box, Heading, Image, useTheme } from "native-base";
+import { Box, Heading, Image, Pressable, useTheme} from "native-base";
 import { Text } from "react-native";
 
-export function ProductCard({ product }) {
+export function ProductCard({ product,onPress }) {
   const { colors } = useTheme();
 
   return (
-    <Box
+    <Pressable onPress={onPress}
       mr='4%'
       mb={4}
       maxH={300}
@@ -35,6 +35,6 @@ export function ProductCard({ product }) {
       <Heading fontWeight="medium" size="sm" mb={1}>
         R$ {product.price.toFixed(2)}
       </Heading>
-    </Box>
+    </Pressable>
   );
 }
