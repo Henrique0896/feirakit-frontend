@@ -25,6 +25,11 @@ const style = StyleSheet.create({
         marginVertical: 50,
         marginRight: 10,
         marginLeft: 10,
+        Flex: 1,
+        alignItems: 'center',
+        
+
+
  
         
 

@@ -1,6 +1,6 @@
 import { Box, useTheme, VStack, HStack } from 'native-base';
 import React, { Component, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Linking, ImageBackground } from 'react-native';
 import SizeButton from '../sizebutton/index';
 import Button from '../components/Button2';
 import { MaterialIcons } from "@expo/vector-icons";
@@ -29,9 +29,16 @@ export function Description() {
                         <ScrollView>
                             <View style={{flexDirection: 'row', width: '100%', alignContent:'center', marginBottom: 0,}} >
                                 <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-                                    <SizeButton>
-                                        <Image source={require('../assets/banana.png')} style={styles.buttontest} ></Image>
-                                    </SizeButton>
+                                    
+                                    <View style={styles.buttontest}>
+                                        <ImageBackground source={require('../assets/banana.png')} resizeMode="cover">
+                                            <SizeButton>
+                                            {/* <Image source={require('../assets/banana.png')} style={styles.buttontest} ></Image> */}
+                                        
+                                            </SizeButton>
+                                            </ImageBackground>
+                                    </View>
+
                                     <SizeButton>2</SizeButton>
                                     <SizeButton>3</SizeButton>
                                     <SizeButton>4</SizeButton>
@@ -122,14 +129,14 @@ const styles = StyleSheet.create({
 
     },
     buttontest: {
-        padding: 10,
-        marginTop: 5,
-        width: 80,
-        height: 80,
-        alignItems: 'center',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        resizeMode:'center'
+        flex: 1,
+        justifyContent: 'center',
+        
+
+
+
+
+
 
         
 
