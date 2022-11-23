@@ -1,4 +1,6 @@
+import 'react-native-gesture-handler' ;
 import * as React from "react";
+import { store } from "./src/store"
 import { NativeBaseProvider } from "native-base";
 import {
   useFonts,
@@ -12,7 +14,6 @@ import { THEME } from "./src/styles/theme";
 import { Loading } from "./src/components/Loading";
 import { Routes } from "./src/routes";
 import { Provider } from "react-redux";
-import { store } from "./src/store";
 
 export default function App() {
   const [fontsLoaded] = useFonts({

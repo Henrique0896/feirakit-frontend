@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 export const Init = ()=>{
     return async dispatch=>{
     let token =await AsyncStorage.getItem('token');

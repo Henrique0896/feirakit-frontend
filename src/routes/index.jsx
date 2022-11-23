@@ -13,7 +13,7 @@ export function Routes(){
     const dispatch=useDispatch();
 
     const init = async () =>{
-      await dispatch(Init());
+      dispatch(Init());
       setLoading(false)
     }
    useEffect(()=>{

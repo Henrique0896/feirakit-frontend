@@ -4,13 +4,14 @@ import { Image, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { Logout } from "../store/actions";
+import { useNavigation } from "@react-navigation/native";
 
 
 export function Header() {
   const { colors } = useTheme();
   const [search, setSearch] = useState("");
-
   const dispatch=useDispatch();
+  const Navigation=useNavigation()
   const HandleLogOut = () =>{
     dispatch(Logout())
   }
@@ -40,7 +41,9 @@ export function Header() {
           style={{fontFamily:'Montserrat_500Medium',fontWeight:'500'}}
         />
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{
+         Navigation.openDrawer();
+        }}>
           <View>
             <MaterialIcons name="menu" size={40} color={colors.blue[600]} />
           </View>
