@@ -25,6 +25,7 @@ const style = StyleSheet.create({
         marginVertical: 50,
         marginRight: 10,
         marginLeft: 10,
+ 
         
 
     }

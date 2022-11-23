@@ -29,8 +29,10 @@ export function Description() {
                         <ScrollView>
                             <View style={{flexDirection: 'row', width: '100%', alignContent:'center', marginBottom: 0,}} >
                                 <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-                                    <SizeButton>1</SizeButton>
-                                    <SizeButton bgColor={colors.blue} >2</SizeButton>
+                                    <SizeButton>
+                                        <Image source={require('../assets/banana.png')} style={styles.buttontest} ></Image>
+                                    </SizeButton>
+                                    <SizeButton>2</SizeButton>
                                     <SizeButton>3</SizeButton>
                                     <SizeButton>4</SizeButton>
                                     <SizeButton>5</SizeButton>
@@ -117,6 +119,20 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontFamily: 'Montserrat_400Regular',
         marginVertical: 15
+
+    },
+    buttontest: {
+        padding: 10,
+        marginTop: 5,
+        width: 80,
+        height: 80,
+        alignItems: 'center',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        resizeMode:'center'
+
+        
+
 
     }
 

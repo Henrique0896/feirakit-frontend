@@ -7,8 +7,8 @@ export function Button() {
   const { colors } = useTheme();
   const showConfirm = () => {
     Alert.alert(
-      "Recuperar senha",
-      "Entre em contato via Whatsapp.",
+      "Voltar",
+      "Impossível voltar no momento.",
       
       [
         {
