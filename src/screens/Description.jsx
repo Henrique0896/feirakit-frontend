@@ -4,7 +4,7 @@ import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Linking } 
 import SizeButton from '../sizebutton/index';
 import Button from '../components/Button2';
 import { MaterialIcons } from "@expo/vector-icons";
-import { Back } from '../components/Back';
+import { Button as Back } from '../components/Back';
 
 
 

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import { Home } from "./src/screens/Home";
 import { Description } from "./src/screens/Description";
 import { NativeBaseProvider } from "native-base";
