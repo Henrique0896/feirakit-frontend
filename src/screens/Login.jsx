@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Text, VStack, Icon, Input, useTheme } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Image,Alert, Touchable, TouchableOpacity } from "react-native";
+import { Image,Alert, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 import { Login as loginAction} from "../store/actions";
 
@@ -16,7 +16,6 @@ export function Login() {
     if(username ==='' || password===''){
       return Alert.alert('Erro', 'Usuário ou senha inválidos');
     }
-    
     dispatch(loginAction(username,password))
   }
   

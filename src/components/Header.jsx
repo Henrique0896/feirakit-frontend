@@ -11,7 +11,6 @@ export function Header() {
   const [search, setSearch] = useState("");
 
   const dispatch=useDispatch();
-  //precisa criar a validação para os dados
   const HandleLogOut = () =>{
     dispatch(Logout())
   }

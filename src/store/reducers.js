@@ -12,7 +12,7 @@ export default (state=initialState,action)=>{
                 ...state,
                 authToken:action.payload,
             }
-        case 'LOGIN':
+        case 'LOGOUT':
              return{
                 authToken:null,
             }
