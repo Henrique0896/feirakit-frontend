@@ -1,14 +1,28 @@
 import React from 'react';
-import {View, StyleSheet, Text } from 'react-native';
+import {View, StyleSheet, Text, ImageBackground, Alert, TouchableOpacity } from 'react-native';
 
 export default function SizeButton(props) {
-    return (
-        <View style={style.container}>
-            <Text style={StyleSheet.text}>
-                {props.children}
+    const showConfirm = () => {
+        Alert.alert(
+          "Navegação de imagens",
+          "Função indisponível no momento.",
+          
+          [
+            {
+              text: "Ok",
+              onPress: () => console.log("Ação selecionada: SIM"),
+            }
+          ]
+        )
+      }
 
-            </Text>
-        </View>
+    return (
+        <TouchableOpacity onPress={ showConfirm }>
+            <View style={style.container}>
+                <ImageBackground source={require('../assets/banana.png')} resizeMode="cover" style={style.image}>
+                </ImageBackground>
+            </View>
+        </TouchableOpacity>
     )
 }
 
@@ -27,12 +41,16 @@ const style = StyleSheet.create({
         marginLeft: 10,
         Flex: 1,
         alignItems: 'center',
-        
+      },
+
+      image: {
+        width: 90,
+        height: 90,
+        justifyContent: 'center',
+        flex: 1,
 
 
- 
-        
 
-    }
+      }
 
 })

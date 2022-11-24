@@ -1,6 +1,6 @@
 import { Box, useTheme, VStack, HStack } from 'native-base';
 import React, { Component, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Linking, ImageBackground } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import SizeButton from '../sizebutton/index';
 import Button from '../components/Button2';
 import { MaterialIcons } from "@expo/vector-icons";
@@ -15,8 +15,6 @@ export function Description() {
     const [amount, setAmount] = useState (1);
     let btnDisabled = (amount < 1)? true: false;
 
-
-
     return (
             <VStack style={styles.container}>
                 <Back/>
@@ -29,21 +27,12 @@ export function Description() {
                         <ScrollView>
                             <View style={{flexDirection: 'row', width: '100%', alignContent:'center', marginBottom: 0,}} >
                                 <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-                                    
-                                    <View style={styles.buttontest}>
-                                        <ImageBackground source={require('../assets/banana.png')} resizeMode="cover">
-                                            <SizeButton>
-                                            {/* <Image source={require('../assets/banana.png')} style={styles.buttontest} ></Image> */}
-                                        
-                                            </SizeButton>
-                                            </ImageBackground>
-                                    </View>
-
-                                    <SizeButton>2</SizeButton>
-                                    <SizeButton>3</SizeButton>
-                                    <SizeButton>4</SizeButton>
-                                    <SizeButton>5</SizeButton>
-                                    <SizeButton>6</SizeButton>
+                                    <SizeButton></SizeButton>
+                                    <SizeButton></SizeButton>
+                                    <SizeButton></SizeButton>
+                                    <SizeButton></SizeButton>
+                                    <SizeButton></SizeButton>
+                                    <SizeButton></SizeButton>
                                 </ScrollView>
                             </View>
                                         <HStack marginTop={-10} justifyContent='space-between' alignSelf='center' px='2%' w='90%'>
@@ -128,20 +117,18 @@ const styles = StyleSheet.create({
         marginVertical: 15
 
     },
-    buttontest: {
-        flex: 1,
-        justifyContent: 'center',
+
+
+
+
+
+
+
+
         
 
 
 
-
-
-
-        
-
-
-    }
 
 
 });
