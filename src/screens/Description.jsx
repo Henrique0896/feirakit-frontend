@@ -18,9 +18,6 @@ export function Description() {
   const route = useRoute();
   const { productId } = route.params;
   const [amount, setAmount] = useState(1);
-  const navigation = useNavigation();
- 
-
 
   let btnDisabled = amount < 1 ? true : false;
   return (

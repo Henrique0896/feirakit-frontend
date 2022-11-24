@@ -4,12 +4,22 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { Text, useTheme, View } from "native-base";
-import { Image } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { Logout } from "../store/actions";
 
 export function CustomDrawer(props) {
+  const dispatch=useDispatch();
+  const HandleLogOut = () =>{
+    dispatch(Logout())
+  }
+
+
+
   const { colors } = useTheme();
   return (
-    <View flex={1}>
+    <View flex={1} style={{ backgroundColor: colors.gray[200] }}>
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={{
@@ -37,11 +47,34 @@ export function CustomDrawer(props) {
         >
           Nome Do Usuário
         </Text>
-
-        <DrawerItemList {...props} />
+        <View style={{ backgroundColor: colors.gray[200], paddingTop: 10 }}>
+          <DrawerItemList {...props} />
+        </View>
       </DrawerContentScrollView>
+      <View
+        style={{
+          padding: 10,
+          paddingBottom: 20,
+          borderTopColor: colors.gray[300],
+          borderTopWidth: 2,
+        }}
+      >
+      <TouchableOpacity  onPress={HandleLogOut}>
+      <View
+          style={{
+            flexDirection: "row",
+          }}
+      >
+          <MaterialIcons name="logout" size={20} color={colors.purple[500]} />
+          <Text style={{ marginLeft: 8, fontSize: 18 }}>Sair</Text>
+      </View>
+      </TouchableOpacity>
 
-      <Text>FeriraKit</Text>
+      <View>
+           <Text style={{alignSelf:'center', fontSize: 18,color:colors.gray[300],marginTop:25 }}>FeiraKit</Text>
+           <Text style={{alignSelf:'center', fontSize: 12,color:colors.gray[300],marginTop:-5 }}>1.0.0</Text>
+      </View>
+      </View>
     </View>
   );
 }

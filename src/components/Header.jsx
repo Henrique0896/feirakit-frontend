@@ -2,19 +2,13 @@ import React, { useState } from "react";
 import { VStack, HStack, Icon, Input, useTheme } from "native-base";
 import { Image, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
-import { Logout } from "../store/actions";
 import { useNavigation } from "@react-navigation/native";
 
 
 export function Header() {
   const { colors } = useTheme();
   const [search, setSearch] = useState("");
-  const dispatch=useDispatch();
   const Navigation=useNavigation()
-  const HandleLogOut = () =>{
-    dispatch(Logout())
-  }
 
   return (
     <VStack w="full" alignItems="center" pt={8}>
@@ -45,12 +39,7 @@ export function Header() {
          Navigation.openDrawer();
         }}>
           <View>
-            <MaterialIcons name="menu" size={40} color={colors.blue[600]} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={HandleLogOut}>
-          <View style={{marginLeft:4}} >
-            <MaterialIcons name="logout"  size={30} color={colors.purple[500]} />
+            <MaterialIcons name="menu" size={45} color={colors.blue[600]} />
           </View>
         </TouchableOpacity>
       </HStack>
