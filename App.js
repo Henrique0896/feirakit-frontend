@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler' ;
-import * as React from "react";
 import { store } from "./src/store"
 import { NativeBaseProvider } from "native-base";
 import {

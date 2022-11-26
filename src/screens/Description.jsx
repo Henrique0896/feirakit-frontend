@@ -1,29 +1,26 @@
+import { Box, useTheme, VStack, HStack } from "native-base";
 import React, { useState } from "react";
-import { useRoute } from "@react-navigation/native";
-import { Text, Box, useTheme, VStack, HStack } from "native-base";
 import {
   View,
+  Text,
   Image,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import SizeButton from "../components/SizeButton";
-import Button from "../components/Button";
+import SizeButton from "../sizebutton/index";
+import Button from "../components/Button2";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Back } from "../components/Back";
+import { Button as Back } from "../components/Back";
 
 export function Description() {
   const { colors } = useTheme();
-  const route = useRoute();
-  const { productId } = route.params;
   const [amount, setAmount] = useState(1);
-
   let btnDisabled = amount < 1 ? true : false;
+
   return (
     <VStack style={styles.container}>
       <Back />
-
       <Box style={styles.imagebox}>
         <Image source={require("../assets/banana.png")} style={styles.image} />
       </Box>
@@ -37,12 +34,12 @@ export function Description() {
           }}
         >
           <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-            <SizeButton>1</SizeButton>
-            <SizeButton bgColor={colors.blue}>2</SizeButton>
-            <SizeButton>3</SizeButton>
-            <SizeButton>4</SizeButton>
-            <SizeButton>5</SizeButton>
-            <SizeButton>6</SizeButton>
+            <SizeButton></SizeButton>
+            <SizeButton></SizeButton>
+            <SizeButton></SizeButton>
+            <SizeButton></SizeButton>
+            <SizeButton></SizeButton>
+            <SizeButton></SizeButton>
           </ScrollView>
         </View>
         <HStack
@@ -52,16 +49,12 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text} paddingTop="10">
-            produto {productId}
-          </Text>
-          <Text style={styles.text} paddingTop="10">
-            R$ 8,00
-          </Text>
+          <Text style={styles.text}>Banana</Text>
+          <Text style={styles.text}>R$ 8,00</Text>
         </HStack>
         <View style={styles.descriptionBox}>
-          <Text style={{ fontSize: 14 }}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint
+          <Text style={{ fontSize: 16 }}>
+            Loooorem ipsum dolor sit amet consectetur adipisicing elit. Sint
             cupiditate quos voluptas, vel autem, numquam illo voluptate, minima
             atque sunt a qui quasi nisi natus veniam nihil! Numquam, sed
             corrupti.
@@ -93,7 +86,7 @@ export function Description() {
             <MaterialIcons size={30} name="remove" />
           </TouchableOpacity>
           <View>
-            <Text style={{ fontSize: 20 }}>{amount}</Text>
+            <Text style={{ fontSize: 30 }}>{amount}</Text>
           </View>
           <TouchableOpacity
             onPress={() => setAmount(amount + 1)}
@@ -119,15 +112,15 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   imagebox: {
-    height: "30%",
-    width: "70%",
+    height: "40%",
+    width: "80%",
     display: "flex",
     alignSelf: "center",
     alignItems: "center",
     marginTop: "-5%",
   },
   descriptionBox: {
-    height: "auto",
+    height: "20%",
     width: "90%",
     alignSelf: "center",
     backgroundColor: "#f2f2f2",

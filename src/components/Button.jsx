@@ -8,7 +8,8 @@ import {
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-export default function Button() {
+
+export function Button() {
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -33,6 +34,10 @@ export default function Button() {
         </Text>
       </TouchableOpacity>
     </View>
+
+
+
+
   );
 }
 
