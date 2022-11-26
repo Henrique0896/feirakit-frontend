@@ -4,9 +4,8 @@ import { TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export function Back() {
+export function ButtonBack() {
   const { colors } = useTheme();
-
   const navigation = useNavigation();
 
   function handleGoBack() {

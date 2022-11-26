@@ -9,7 +9,7 @@ import {
 import { FontAwesome5 } from "@expo/vector-icons";
 
 
-export function Button() {
+export function WhatsappButton() {
   return (
     <View style={styles.container}>
       <TouchableOpacity

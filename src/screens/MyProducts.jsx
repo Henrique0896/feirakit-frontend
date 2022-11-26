@@ -1,10 +1,10 @@
 import React from "react";
 import { VStack, Center, Text } from "native-base";
-import { Back } from "../components/Back";
+import { ButtonBack } from "../components/ButtonBack";
 export function MyProducts() {
   return (
     <VStack flex={1} w="full" >
-    <Back/>
+    <ButtonBack/>
       <Center mt='1/2'>
         <Text>Meus produtos</Text>
       </Center>
