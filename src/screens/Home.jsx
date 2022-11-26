@@ -7,66 +7,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 export function Home() {
   const { colors } = useTheme();
 
-  let products = [
-    {
-      id: 1,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Tomate",
-      description: "pequena descrição sobre oproduto",
-      price: 4.5,
-      favorite: true,
-    },
-    {
-      id: 2,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Alface",
-      description: "pequena descrição sobre oproduto",
-      price: 2.5,
-      favorite: false,
-    },
-
-    {
-      id: 3,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Repolho",
-      description: "pequena descrição sobre oproduto",
-      price: 3.5,
-      favorite: false,
-    },
-
-    {
-      id: 4,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Abóbora",
-      description: "pequena descrição sobre oproduto",
-      price: 3.5,
-      favorite: true,
-    },
-    {
-      id: 5,
-      img: require("../assets/exemplo.jpeg"),
-      title: "cenoura",
-      description: "pequena descrição sobre oproduto",
-      price: 3.5,
-      favorite: true,
-    },
-    {
-      id: 6,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Kit frutas",
-      description: "pequena descrição sobre oproduto",
-      price: 3.5,
-      favorite: false,
-    },
-    {
-      id: 7,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Abóbora",
-      description: "pequena descrição sobre oproduto",
-      price: 3.5,
-      favorite: false,
-    },
-  ];
+  let products = [];
 
   const navigation = useNavigation();
   function handleOpenDescription(productId) {

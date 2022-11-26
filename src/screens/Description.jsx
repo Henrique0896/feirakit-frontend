@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { Text, Box, useTheme, VStack, HStack } from "native-base";
 import {
   View,
@@ -22,8 +22,8 @@ export function Description() {
   let btnDisabled = amount < 1 ? true : false;
   return (
     <VStack style={styles.container}>
-      <Back/>
-      
+      <Back />
+
       <Box style={styles.imagebox}>
         <Image source={require("../assets/banana.png")} style={styles.image} />
       </Box>
@@ -52,8 +52,12 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text}  paddingTop='10' >produto {productId}</Text>
-          <Text style={styles.text} paddingTop='10'>R$ 8,00</Text>
+          <Text style={styles.text} paddingTop="10">
+            produto {productId}
+          </Text>
+          <Text style={styles.text} paddingTop="10">
+            R$ 8,00
+          </Text>
         </HStack>
         <View style={styles.descriptionBox}>
           <Text style={{ fontSize: 14 }}>

@@ -1,13 +1,17 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+//screens
 import { Home } from "../screens/Home";
 import { Description } from "../screens/Description";
 import { CustomDrawer } from "../components/CustomDrawer";
 import { ShopCart } from "../screens/ShopCart";
 import { MyProducts } from "../screens/MyProducts";
 import { Settings } from "../screens/Settings";
+//icons
 import { Ionicons } from "@expo/vector-icons";
+//hooks
 import { useTheme } from "native-base";
+
 const { Navigator, Screen } = createNativeStackNavigator();
 
 const Drawer = createDrawerNavigator();
@@ -20,8 +24,8 @@ function HomeDrawer() {
       screenOptions={{
         headerShown: false,
         drawerPosition: "right",
-        drawerActiveBackgroundColor:colors.blue[500],
-        drawerActiveTintColor:colors.gray[200],
+        drawerActiveBackgroundColor: colors.blue[500],
+        drawerActiveTintColor: colors.gray[200],
         drawerLabelStyle: {
           marginLeft: -25,
           fontFamily: "Montserrat_500Medium",

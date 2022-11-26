@@ -4,8 +4,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Image,Alert, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 import { Login as loginAction} from "../store/actions";
+import { useNavigation } from "@react-navigation/native";
 
 export function Login() {
+  const navigation = useNavigation();
   const { colors } = useTheme();
   const [username,setUsername]=useState('');
   const [password,setPassword]=useState('');
@@ -120,6 +122,7 @@ export function Login() {
         mt={4}
         w="90%"
         borderRadius={15}
+        onPress={()=>navigation.navigate('Register')}
       >
         Cadastre-se
       </Button>

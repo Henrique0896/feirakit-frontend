@@ -28,7 +28,9 @@ export default function Button() {
         Whatsapp
         Mensagem
       >
-       <Text style={styles.title}><FontAwesome5 size={20} name='whatsapp'/> COMPRAR</Text>
+        <Text style={styles.title}>
+          <FontAwesome5 size={20} name="whatsapp" /> COMPRAR
+        </Text>
       </TouchableOpacity>
     </View>
   );
