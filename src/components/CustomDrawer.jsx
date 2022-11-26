@@ -9,30 +9,30 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { Logout } from "../store/actions";
 
+const texts = {
+  title: "Sair",
+  description: "Deseja mesmo sair?",
+  optionYes: "Sim",
+  optionNo: "Não",
+};
+
 export function CustomDrawer(props) {
   const dispatch = useDispatch();
   const HandleLogOut = () => {
-    Alert.alert(
-      //title
-      "Sair",
-      //Body
-      "Deseja mesmo sair?",
-      //buttons
-      [
-        {
-          text: "Não",
-          onPress: () => {
-            return;
-          },
+    Alert.alert(texts.title, texts.description, [
+      {
+        text: texts.optionNo,
+        onPress: () => {
+          return;
         },
-        {
-          text: "Sim",
-          onPress: () => {
-            dispatch(Logout());
-          },
+      },
+      {
+        text: texts.optionYes,
+        onPress: () => {
+          dispatch(Logout());
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const { colors } = useTheme();

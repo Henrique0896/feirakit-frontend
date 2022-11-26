@@ -19,7 +19,7 @@ export function Description() {
   const { productId } = route.params;
   const [amount, setAmount] = useState(1);
 
-  let btnDisabled = amount < 1 ? true : false;
+  let btnDisabled = amount === 1 ? true : false;
   return (
     <VStack style={styles.container}>
       <ButtonBack />
@@ -37,12 +37,9 @@ export function Description() {
           }}
         >
           <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-            <ImageButton>1</ImageButton>
-            <ImageButton bgColor={colors.blue}>2</ImageButton>
-            <ImageButton>3</ImageButton>
-            <ImageButton>4</ImageButton>
-            <ImageButton>5</ImageButton>
-            <ImageButton>6</ImageButton>
+            <ImageButton urlImage="https://images.unsplash.com/photo-1550258987-190a2d41a8ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80">
+              1
+            </ImageButton>
           </ScrollView>
         </View>
         <HStack

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function ImageButton(props) {
+export default function ImageButton({urlImage}) {
   const showConfirm = () => {
     Alert.alert(
       "Navegação de imagens",
@@ -26,7 +26,7 @@ export default function ImageButton(props) {
     <TouchableOpacity onPress={showConfirm}>
       <View style={style.container}>
         <ImageBackground
-          source={require("../assets/banana.png")}
+          source={{uri: urlImage}}
           resizeMode="cover"
           style={style.image}
         ></ImageBackground>
