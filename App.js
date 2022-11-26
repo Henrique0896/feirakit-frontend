@@ -1,29 +1,33 @@
-import { StyleSheet, View } from "react-native";
-import { Home } from "./src/screens/Home";
+import 'react-native-gesture-handler' ;
+import * as React from "react";
+import { store } from "./src/store"
 import { NativeBaseProvider } from "native-base";
-import {useFonts,Montserrat_400Regular,Montserrat_700Bold,}from "@expo-google-fonts/montserrat"
-import {THEME}from './src/styles/theme'
+import {
+  useFonts,
+  Montserrat_400Regular,
+  Montserrat_700Bold,
+  Montserrat_500Medium,
+  Montserrat_100Thin,
+} from "@expo-google-fonts/montserrat";
+import { THEME } from "./src/styles/theme";
+
 import { Loading } from "./src/components/Loading";
+import { Routes } from "./src/routes";
+import { Provider } from "react-redux";
+
 export default function App() {
-  
-  const [fontsLoaded] = useFonts({ Montserrat_400Regular,Montserrat_700Bold });
+  const [fontsLoaded] = useFonts({
+    Montserrat_400Regular,
+    Montserrat_700Bold,
+    Montserrat_500Medium,
+    Montserrat_100Thin,
+  });
 
   return (
-    <NativeBaseProvider theme={THEME}>
-      <View style={styles.container}>
-        {fontsLoaded?
-        <Home />:
-        <Loading/>}
-      </View>
-    </NativeBaseProvider>
+    <Provider store={store}>
+        <NativeBaseProvider theme={THEME}>
+          {fontsLoaded ? <Routes /> : <Loading />}
+        </NativeBaseProvider>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
