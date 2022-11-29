@@ -18,12 +18,14 @@ export function Description() {
   const route = useRoute();
   const { productId } = route.params;
   const [amount, setAmount] = useState(1);
+  const [Message, setMessage] = useState("")
 
+  const WhatsAppNumber= "5533998785878"
   let btnDisabled = amount === 1 ? true : false;
   return (
+
     <VStack style={styles.container}>
       <ButtonBack />
-
       <Box style={styles.imagebox}>
         <Image source={require("../assets/banana.png")} style={styles.image} />
       </Box>
@@ -99,7 +101,7 @@ export function Description() {
             <MaterialIcons size={30} name="add" />
           </TouchableOpacity>
         </HStack>
-        <WhatsappButton />
+        <WhatsappButton  WhatsAppNumber= {WhatsAppNumber} Quantity= {amount} ProductName= {`Produto${productId}`} />
       </ScrollView>
     </VStack>
   );
