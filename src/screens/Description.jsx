@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
   image: {
     resizeMode: "center",
     height: "100%",
+    width: "100%"
   },
   imagebox: {
     height: "30%",
