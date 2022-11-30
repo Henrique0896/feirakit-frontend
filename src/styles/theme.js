@@ -24,13 +24,14 @@ export const THEME = extendTheme({
       500: "#585858",
       400:"#A4A4A4",
       300:"#BDBDBD",
+      250:"##C9C7C7",
       200: "#f2f2f2",
     },
     white: "#FFFFFF",
   },
   fonts: {
-    heading: "Montserrat_400Regular",
-    body: "Montserrat_700Bold",
+    heading: "Montserrat_700Bold",
+    body:"Montserrat_400Regular", 
   },
   fontSizes: {
     xs: 8,

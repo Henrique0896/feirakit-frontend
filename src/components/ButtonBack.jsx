@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, HStack, useTheme, View } from "native-base";
+import { VStack, HStack, useTheme, View, Image } from "native-base";
 import { TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -13,7 +13,7 @@ export function ButtonBack() {
   }
   return (
     <VStack pb={-10} mt={10}>
-      <HStack>
+      <HStack alignItems='flex-start'>
         <TouchableOpacity onPress={handleGoBack}>
           <View
             pl={3}
@@ -23,6 +23,7 @@ export function ButtonBack() {
             borderRadius="full"
             borderWidth={4}
             m="9%"
+            mr={0}
             w={60}
             h={60}
           >
@@ -33,6 +34,13 @@ export function ButtonBack() {
             />
           </View>
         </TouchableOpacity>
+        <Image alt='texto feira-kit' 
+        source={require("../assets/logo.png")}
+        style={{ width: 230, height: 70 }}
+        resizeMode="contain"
+        alignSelf='center'
+
+      />
       </HStack>
     </VStack>
   );

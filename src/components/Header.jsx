@@ -24,7 +24,7 @@ export function Header() {
           flex={1}
           leftElement={
             <Icon
-              color={colors.blue[900]}
+              color={colors.blue[700]}
               as={<MaterialIcons name="search" />}
               size={6}
               ml={2}

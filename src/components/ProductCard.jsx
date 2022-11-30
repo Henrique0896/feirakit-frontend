@@ -30,13 +30,13 @@ export function ProductCard({ product, onPress }) {
         alt={product.description}
       />
 
-      <Heading fontWeight="medium" size="sm" mb={1}>
+      <Heading fontWeight="medium" size="sm" mb={1} fontFamily='heading'>
         {product.title}
       </Heading>
       <Text style={{ color: colors.gray[400], fontSize: 14, marginBottom: 4 }}>
         {product.description}
       </Text>
-      <Heading fontWeight="medium" size="sm" mb={1}>
+      <Heading fontWeight="medium" size="sm" mb={1} fontFamily='heading'>
         R$ {product.price.toFixed(2)}
       </Heading>
     </Pressable>
