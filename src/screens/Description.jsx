@@ -18,14 +18,17 @@ export function Description() {
   const route = useRoute();
   const { productId } = route.params;
   const [amount, setAmount] = useState(1);
+  const [urlImage, setUrlImage] = useState(require("../assets/banana.png"))
+  const LinkImage = "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80"
 
+  const WhatsAppNumber= "5533998785878"
   let btnDisabled = amount === 1 ? true : false;
   return (
+
     <VStack style={styles.container}>
       <ButtonBack />
-
       <Box style={styles.imagebox}>
-        <Image source={require("../assets/banana.png")} style={styles.image} />
+        <Image source={urlImage} style={styles.image} />
       </Box>
       <ScrollView>
         <View
@@ -37,7 +40,9 @@ export function Description() {
           }}
         >
           <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-            <ImageButton urlImage="https://images.unsplash.com/photo-1550258987-190a2d41a8ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80">
+            <ImageButton onPress={()=> setUrlImage({uri: LinkImage})}
+            
+            urlImage={LinkImage}>
               1
             </ImageButton>
           </ScrollView>
@@ -99,7 +104,7 @@ export function Description() {
             <MaterialIcons size={30} name="add" />
           </TouchableOpacity>
         </HStack>
-        <WhatsappButton />
+        <WhatsappButton  WhatsAppNumber= {WhatsAppNumber} Quantity= {amount} ProductName= {`Produto${productId}`} />
       </ScrollView>
     </VStack>
   );

@@ -7,23 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function ImageButton({urlImage}) {
-  const showConfirm = () => {
-    Alert.alert(
-      "Navegação de imagens",
-      "Função indisponível no momento.",
-
-      [
-        {
-          text: "Ok",
-          onPress: () => console.log("Ação selecionada: SIM"),
-        },
-      ]
-    );
-  };
-
+export default function ImageButton({urlImage, onPress}) {
   return (
-    <TouchableOpacity onPress={showConfirm}>
+    <TouchableOpacity onPress={onPress}>
       <View style={style.container}>
         <ImageBackground
           source={{uri: urlImage}}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Text, VStack, Icon, Input, useTheme } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Image,Alert, TouchableOpacity } from "react-native";
+import { Image,Alert, TouchableOpacity, Linking } from "react-native";
 import { useDispatch } from "react-redux";
 import { Login as loginAction} from "../store/actions";
 import { useNavigation } from "@react-navigation/native";
@@ -13,6 +13,34 @@ export function Login() {
   const [password,setPassword]=useState('');
   const [inputType,setInputType]=useState('password')
   const dispatch=useDispatch();
+
+  const showConfirm = () => {
+    Alert.alert(
+      "Esqueceu sua senha?",
+      "Entre em contato via WhatsApp.",
+
+      [
+        {
+          text: "WhatsApp",
+          onPress: () => Linking.canOpenURL("whatsapp://send?text=Esqueci minha senha FeiraKit, preciso de ajuda!?").then
+          ((supported) => {
+            if (supported) {
+              return Linking.openURL(
+                "whatsapp://send?phone=5533998785878&text=Esqueci minha senha FeiraKit, preciso de ajuda!"
+              );
+            } else
+              return Linking.openURL(
+                "https://api.whatsapp.com/send?phone=5533998785878&text=Não foi possível concluir esta ação!"
+              );
+          }), 
+        },
+        {
+          text: "Cancelar",
+          onPress: () =>  console.log("Ação selecionada: NÃO"), 
+        },
+      ]
+    );
+  };
 
   const submit = () =>{
     if(username ==='' || password===''){
@@ -111,7 +139,7 @@ export function Login() {
       >
         Entrar
       </Button>
-      <Button width={334} height={54} mt={4} w="90%" borderRadius={15}>
+      <Button onPress={showConfirm} width={334} height={54} mt={4} w="90%" borderRadius={15}>
         Esqueci minha senha
       </Button>
       <Button
