@@ -39,8 +39,8 @@ export function MyProducts() {
     navigation.navigate("ProductForm",{});
   }
 
-  function handleOpenDescription(productId) {
-    navigation.navigate("description", { productId });
+  function handleOpenDescription(productId,isInfo) {
+    navigation.navigate("description", { productId,isInfo });
   }
 
   return (
@@ -100,7 +100,7 @@ export function MyProducts() {
         renderItem={({ item }) => (
           <MyProductItems
             product={item}
-            onPress={() => handleOpenDescription(item.id)}
+            onPress={() => handleOpenDescription(item.id,true)}
           />
         )}
         ListEmptyComponent={() => (

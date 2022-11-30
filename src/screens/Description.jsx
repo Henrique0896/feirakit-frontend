@@ -17,6 +17,7 @@ export function Description() {
   const { colors } = useTheme();
   const route = useRoute();
   const { productId } = route.params;
+  const { isInfo } = route.params;
   const [amount, setAmount] = useState(1);
   const [urlImage, setUrlImage] = useState(require("../assets/banana.png"));
   const LinkImage =
@@ -74,6 +75,9 @@ export function Description() {
             corrupti.
           </Text>
         </View>
+        {!isInfo && 
+        
+        (<>
         <Text
           style={[
             styles.text,
@@ -113,7 +117,7 @@ export function Description() {
           WhatsAppNumber={WhatsAppNumber}
           Quantity={amount}
           ProductName={`Produto${productId}`}
-        />
+        /></>)}
       </ScrollView>
     </VStack>
   );

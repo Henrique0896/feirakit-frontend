@@ -27,8 +27,8 @@ export function Home() {
   ];
 
   const navigation = useNavigation();
-  function handleOpenDescription(productId) {
-    navigation.navigate("description", { productId });
+  function handleOpenDescription(productId,isInfo) {
+    navigation.navigate("description", { productId,isInfo });
   }
 
   return (
@@ -65,7 +65,7 @@ export function Home() {
         renderItem={({ item }) => (
           <ProductCard
             product={item}
-            onPress={() => handleOpenDescription(item.id)}
+            onPress={() => handleOpenDescription(item.id,false)}
           />
         )}
         ListEmptyComponent={() => (
