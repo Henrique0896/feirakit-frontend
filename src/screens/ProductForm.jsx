@@ -12,6 +12,7 @@ import {
   Icon,
   Center,
   Button,
+  Text,
 } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
 import { Platform, ScrollView, TouchableOpacity } from "react-native";
@@ -22,15 +23,19 @@ import { useRoute } from "@react-navigation/native";
 export function ProductForm() {
   const route = useRoute();
   const { product } = route.params;
-
+  const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
+  const ButtonText = product ? "Confirmar" : "Adicionar"
+  const { colors } = useTheme();
+  
+  
   const ObjDate = new Date();
+  ;
+
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
-
-  const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
-  const ButtonText = product ? "Confirmar" : "Adicionar";
-
-  const { colors } = useTheme();
+  let monthDate =
+    ObjDate.getMonth() < 10 ? "0" + (ObjDate.getMonth()+1) : ObjDate.getMonth()+1;
+  
 
   const [title, setTitle] = useState(product ? product.title : "");
   const [unit, setunit] = useState(product ? product.unit : "");
@@ -50,7 +55,7 @@ export function ProductForm() {
   const [dateText, setDateText] = useState(
     product
       ? product.expirationDate
-      : dayDate + "/" + (ObjDate.getMonth() + 1) + "/" + ObjDate.getFullYear()
+      : dayDate + "/" + (monthDate + 1) + "/" + ObjDate.getFullYear()
   );
 
   const onDateChange = (event, selectedDate) => {
@@ -60,12 +65,15 @@ export function ProductForm() {
     let tempDate = new Date(currentdate);
     let temDayDate =
       tempDate.getDate() < 10 ? "0" + tempDate.getDate() : tempDate.getDate();
+    let tempMonthDate =
+      tempDate.getMonth() < 9 ? "0"+ (tempDate.getMonth()+1) : tempDate.getMonth()+1;
     let fDate =
       temDayDate +
       "/" +
-      (tempDate.getMonth() + 1) +
+      tempMonthDate  +
       "/" +
       tempDate.getFullYear();
+
     setDateText(fDate);
   };
   const showDatePicker = () => {
@@ -293,6 +301,12 @@ export function ProductForm() {
             </View>
           </HStack>
 
+           {/* upload image */}
+           <VStack>
+            
+            <TouchableOpacity><MaterialIcons name="add-a-photo" size={30}/></TouchableOpacity>
+            <HStack><Text>Peview Area</Text></HStack>
+           </VStack>
           <Center mt={8}>
             <Button rounded={8} px={8} py={2} fontSize={22}>
               <Heading

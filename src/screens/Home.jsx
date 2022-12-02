@@ -10,28 +10,51 @@ export function Home() {
   let products = [
     {
       id: 1,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Tomate",
-      description: "pequena descrição sobre oproduto",
+      img: [{
+          uri: "https://images.pexels.com/photos/96616/pexels-photo-96616.jpeg?auto=compress&cs=tinysrgb&w=1000&h=500&dpr=1",
+        },
+        {
+          uri: "https://images.pexels.com/photos/3938343/pexels-photo-3938343.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        },
+        {
+          uri:"https://veja.abril.com.br/wp-content/uploads/2016/06/tomate-colesterol-genetica-tk-20121106-original.jpeg?quality=70&strip=info&resize=850,567"
+        }
+      ],
+      title: "Tomate ",
+      description: `O tomate é o fruto do tomateiro.
+Da sua família, fazem também parte as berinjelas,
+as pimentas e os pimentões, além de algumas espécies não comestíveis.`,
       price: 4.5,
-      favorite: true,
+      inventory: 12,
+      expirationDate: "10/12/2023",
+      unit: "kg",
+      category: "2",
     },
     {
       id: 2,
-      img: require("../assets/exemplo.jpeg"),
-      title: "Alface",
-      description: "pequena descrição sobre oproduto",
+      img:[{
+        uri: "https://images.pexels.com/photos/2518893/pexels-photo-2518893.jpeg?auto=compress&cs=tinysrgb&w=1000&h=500&dpr=1",
+      },
+      {
+        uri: "https://images.pexels.com/photos/257259/pexels-photo-257259.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      },],
+      title: "Repolho",
+      description: `O repolho, subespécie da Brassica oleracea, grupo Capitata, é uma variedade peculiar de couve, constituindo um dos vegetais mais utilizados na cozinha, em diversas aplicações (sopas, conservas, acompanhamentos, massas, etc). `,
       price: 2.5,
-      favorite: false,
+      inventory: 19,
+      expirationDate: "01/07/2027",
+      unit: "un",
+      category: "3",
     },
   ];
 
   const navigation = useNavigation();
-  function handleOpenDescription(productId,isInfo) {
-    navigation.navigate("description", { productId,isInfo });
+  function handleOpenDescription(productId, product, isInfo) {
+    navigation.navigate("description", { productId, product, isInfo });
   }
 
   return (
+    
     <VStack
       flex={1}
       w="full"
@@ -65,7 +88,7 @@ export function Home() {
         renderItem={({ item }) => (
           <ProductCard
             product={item}
-            onPress={() => handleOpenDescription(item.id,false)}
+            onPress={() => handleOpenDescription(item.id, item, false)}
           />
         )}
         ListEmptyComponent={() => (

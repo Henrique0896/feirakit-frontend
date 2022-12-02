@@ -12,7 +12,8 @@ export default function ImageButton({urlImage, onPress}) {
     <TouchableOpacity onPress={onPress}>
       <View style={style.container}>
         <ImageBackground
-          source={{uri: urlImage}}
+          borderRadius={12}
+          source={urlImage}
           resizeMode="cover"
           style={style.image}
         ></ImageBackground>
@@ -25,6 +26,7 @@ const style = StyleSheet.create({
   container: {
     width: 100,
     height: 100,
+    padding:2,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 15,
@@ -34,8 +36,6 @@ const style = StyleSheet.create({
     marginVertical: 50,
     marginRight: 10,
     marginLeft: 10,
-    Flex: 1,
-    alignItems: "center",
   },
 
   image: {
@@ -43,5 +43,6 @@ const style = StyleSheet.create({
     height: 90,
     justifyContent: "center",
     flex: 1,
+    alignItems:'center',
   },
 });
