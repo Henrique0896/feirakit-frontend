@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Text, Box, useTheme, VStack, HStack, Heading, FlatList } from "native-base";
+import { Text, Box, useTheme, VStack, HStack, Heading, FlatList, Image } from "native-base";
 import {
   View,
-  Image,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
