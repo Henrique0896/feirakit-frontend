@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { useRoute } from "@react-navigation/native";
 import { Text, Box, useTheme, VStack, HStack } from "native-base";
 import {
   View,
-  Image,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
@@ -14,21 +12,45 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
 
 export function Description() {
-  const { colors } = useTheme();
-  const route = useRoute();
-  const { productId } = route.params;
-  const [amount, setAmount] = useState(1);
-  const [urlImage, setUrlImage] = useState(require("../assets/banana.png"))
-  const LinkImage = "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80"
+  //Mock
+  const product = {
+    nome: "Maçã",
+    categoria: "fruta",
+    descricao: "Essa é uma maçã",
+    unidade: "unidade",
+    estoque: 5,
+    produtor: "Seu João",
+    bestbefore: true,
+    validade: "2022-12-03",
+    desconto: 0,
+    avaliacao: "1",
+    comentarios: "este é um comentário",
+    imagem_url: [
+      "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+      "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+      "https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+      "https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=396&q=80",
+    ],
+    id: "string",
+    preco: 4.5
+  };
 
-  const WhatsAppNumber= "5533998785878"
+  const { colors } = useTheme();
+  
+  const [amount, setAmount] = useState(1);
+
+  const [utlImageActive, setUrlImageActive] = useState(product.imagem_url[0] ?? null)
+
+  const WhatsAppNumber = "5533998785878";
+
   let btnDisabled = amount === 1 ? true : false;
   return (
-
     <VStack style={styles.container}>
       <ButtonBack />
       <Box style={styles.imagebox}>
-        <Image source={urlImage} style={styles.image} />
+        <ImageButton
+          urlImage={utlImageActive}
+        ></ImageButton>
       </Box>
       <ScrollView>
         <View
@@ -40,11 +62,12 @@ export function Description() {
           }}
         >
           <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-            <ImageButton onPress={()=> setUrlImage({uri: LinkImage})}
-            
-            urlImage={LinkImage}>
-              1
-            </ImageButton>
+            {product.imagem_url.map((link) => (
+              <ImageButton
+                onPress={() => setUrlImageActive(link )}
+                urlImage={link}
+              ></ImageButton>
+            ))}
           </ScrollView>
         </View>
         <HStack
@@ -55,10 +78,10 @@ export function Description() {
           w="90%"
         >
           <Text style={styles.text} paddingTop="10">
-            produto {productId}
+            {product.nome}
           </Text>
           <Text style={styles.text} paddingTop="10">
-            R$ 8,00
+            R$ {product.preco}
           </Text>
         </HStack>
         <View style={styles.descriptionBox}>
@@ -104,7 +127,11 @@ export function Description() {
             <MaterialIcons size={30} name="add" />
           </TouchableOpacity>
         </HStack>
-        <WhatsappButton  WhatsAppNumber= {WhatsAppNumber} Quantity= {amount} ProductName= {`Produto${productId}`} />
+        <WhatsappButton
+          WhatsAppNumber={WhatsAppNumber}
+          Quantity={amount}
+          ProductName={`Produto`}
+        />
       </ScrollView>
     </VStack>
   );
@@ -119,7 +146,7 @@ const styles = StyleSheet.create({
   image: {
     resizeMode: "center",
     height: "100%",
-    width: "100%"
+    width: "100%",
   },
   imagebox: {
     height: "30%",
