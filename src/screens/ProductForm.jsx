@@ -109,7 +109,6 @@ export function ProductForm() {
         newImages.push(image);
       });
       
-      console.log(selectedImages)
       selectedImages.map((image) => {
         newImages.push(image);
       });
