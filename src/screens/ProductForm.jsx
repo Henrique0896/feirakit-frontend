@@ -13,29 +13,31 @@ import {
   Center,
   Button,
   Text,
+  FlatList,
+  Image,
 } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
-import { Platform, ScrollView, TouchableOpacity } from "react-native";
+import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+import { LoadingImage } from "../components/Loading";
 
 export function ProductForm() {
   const route = useRoute();
   const { product } = route.params;
   const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
-  const ButtonText = product ? "Confirmar" : "Adicionar"
+  const ButtonText = product ? "Confirmar" : "Adicionar";
   const { colors } = useTheme();
-  
-  
-  const ObjDate = new Date();
-  ;
 
+  const ObjDate = new Date();
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
   let monthDate =
-    ObjDate.getMonth() < 10 ? "0" + (ObjDate.getMonth()+1) : ObjDate.getMonth()+1;
-  
+    ObjDate.getMonth() < 10
+      ? "0" + (ObjDate.getMonth() + 1)
+      : ObjDate.getMonth() + 1;
 
   const [title, setTitle] = useState(product ? product.title : "");
   const [unit, setunit] = useState(product ? product.unit : "");
@@ -66,19 +68,95 @@ export function ProductForm() {
     let temDayDate =
       tempDate.getDate() < 10 ? "0" + tempDate.getDate() : tempDate.getDate();
     let tempMonthDate =
-      tempDate.getMonth() < 9 ? "0"+ (tempDate.getMonth()+1) : tempDate.getMonth()+1;
-    let fDate =
-      temDayDate +
-      "/" +
-      tempMonthDate  +
-      "/" +
-      tempDate.getFullYear();
+      tempDate.getMonth() < 9
+        ? "0" + (tempDate.getMonth() + 1)
+        : tempDate.getMonth() + 1;
+    let fDate = temDayDate + "/" + tempMonthDate + "/" + tempDate.getFullYear();
 
     setDateText(fDate);
   };
   const showDatePicker = () => {
     setShow(true);
   };
+
+  const [images, setImages] = useState(product ? product.img : []);
+  const [isLoadingimages, setIsLoadingImages] = useState(false);
+  const pickImages = async () => {
+    setIsLoadingImages(true);
+    let selectedImages;
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      selectionLimit: 10,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (Platform.OS !== "ios" && result) {
+      selectedImages = result.uri
+        ? [{ uri: result.uri }]
+        : result.selected.reverse().slice(0, 10);
+    } else if(result.selected) {
+      selectedImages = result.uri
+        ? [{ uri: result.uri }]
+        : result.selected.reverse();
+    }
+    
+    if (!result.cancelled) {
+      let newImages = [];
+
+      images.map((image) => {
+        newImages.push(image);
+      });
+      
+      console.log(selectedImages)
+      selectedImages.map((image) => {
+        newImages.push(image);
+      });
+
+      setIsLoadingImages(false);
+      setImages(newImages);
+    }else{
+      setIsLoadingImages(false);
+    }
+  };
+
+
+  const textsRemoveImage = {
+    title: "Remover",
+    description: "Deseja remover esta imagem?",
+    optionYes: "Sim",
+    optionNo: "Não",
+  };
+
+  const removeImage=(uri)=>{
+    
+    setIsLoadingImages(true);
+    Alert.alert(textsRemoveImage.title,textsRemoveImage.description,
+      [
+        {
+          text: textsRemoveImage.optionNo,
+          onPress: () => {
+            return;
+          },
+        },
+        {
+          text: textsRemoveImage.optionYes,
+          onPress: () => {
+            let newImages = [];
+
+            images.map((image) => {
+                if(image.uri !== uri){
+                  newImages.push(image);
+                }   
+            });
+            setIsLoadingImages(false);
+            setImages(newImages);
+          },
+        },
+      ]);
+      
+  }
 
   return (
     <VStack>
@@ -301,12 +379,42 @@ export function ProductForm() {
             </View>
           </HStack>
 
-           {/* upload image */}
-           <VStack>
-            
-            <TouchableOpacity><MaterialIcons name="add-a-photo" size={30}/></TouchableOpacity>
-            <HStack><Text>Peview Area</Text></HStack>
-           </VStack>
+          <HStack mt={4}>
+            <HStack w="80%" alignItems="center">
+              {isLoadingimages ? (
+                <LoadingImage />
+              ) : (
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  data={images}
+                  keyExtractor={(item) => item.uri}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity onLongPress={()=>removeImage(item.uri)}>
+                    <Image
+                      source={{ uri: item.uri }}
+                      style={{ width: 50, height: 50,borderRadius:4 }}
+                      ml={2}
+                      alt="Imagem do produto,selecionada da galeria"
+                    />
+                    </TouchableOpacity>
+                  )}
+                  ListEmptyComponent={() => (
+                    <Text color={colors.gray[400]} fontSize="md">
+                      Nenhuma imagem selecionada
+                    </Text>
+                  )}
+                />
+              )}
+            </HStack>
+            <TouchableOpacity onPress={pickImages} ml={4}>
+              <MaterialIcons
+                name="add-a-photo"
+                size={50}
+                color={colors.blue[700]}
+              />
+            </TouchableOpacity>
+          </HStack>
           <Center mt={8}>
             <Button rounded={8} px={8} py={2} fontSize={22}>
               <Heading

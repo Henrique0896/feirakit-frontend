@@ -87,20 +87,6 @@ export function Description() {
             )}>
         </FlatList>
 
-
-
-
-
-          {/* <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-            <ImageButton
-              onPress={() => setUrlImage(product.img[0])}
-              urlImage={product.img[0]}
-            ></ImageButton>
-            <ImageButton
-              onPress={() => setUrlImage(product.img[1])}
-              urlImage={product.img[1]}
-            ></ImageButton> 
-          </ScrollView>*/}
         </View>
         <HStack
           marginTop={-10}
