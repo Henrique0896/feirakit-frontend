@@ -1,36 +1,61 @@
 import React, { useState } from "react";
 import { Button, Text, VStack, Icon, Input, useTheme } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Image,Alert, TouchableOpacity } from "react-native";
+import { Image, Alert, TouchableOpacity, Linking } from "react-native";
 import { useDispatch } from "react-redux";
-import { Login as loginAction} from "../store/actions";
+import { Login as loginAction } from "../store/actions";
 import { useNavigation } from "@react-navigation/native";
 
 export function Login() {
   const navigation = useNavigation();
   const { colors } = useTheme();
-  const [username,setUsername]=useState('');
-  const [password,setPassword]=useState('');
-  const [inputType,setInputType]=useState('password')
-  const dispatch=useDispatch();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [inputType, setInputType] = useState("password");
+  const dispatch = useDispatch();
 
-  const submit = () =>{
-    if(username ==='' || password===''){
-      return Alert.alert('Erro', 'Usuário ou senha inválidos');
+  const alert = {
+    title: "Esqueceu sua senha?",
+    text: "Entre em contato via WhatsApp.",
+    link: "whatsapp://send?text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!",
+    textButton: "WhatsApp",
+    textButtonCancel: "Cancelar",
+  };
+
+  const showConfirm = () => {
+    Alert.alert(alert.title, alert.text, [
+      {
+        text: alert.textButton,
+        onPress: () =>
+          Linking.canOpenURL(link).then((supported) => {
+            if (!supported) {
+              //operacao concluida com sucesso
+            }
+          }),
+      },
+      {
+        text: textButtonCancel,
+        onPress: () => {
+          return;
+        },
+      },
+    ]);
+  };
+
+  const submit = () => {
+    if (username === "" || password === "") {
+      return Alert.alert("Erro", "Usuário ou senha inválidos");
     }
-    dispatch(loginAction(username,password))
-  }
-  
-  
-  function handleVisibilityPassword(){
-    if(inputType  == 'password'){
-      setInputType('text')
-    }else{
-      setInputType('password')
+    dispatch(loginAction(username, password));
+  };
+
+  function handleVisibilityPassword() {
+    if (inputType == "password") {
+      setInputType("text");
+    } else {
+      setInputType("password");
     }
   }
-   
-  
 
   return (
     <VStack w="full" alignItems="center">
@@ -84,12 +109,16 @@ export function Login() {
         }
         rightElement={
           <TouchableOpacity onPress={handleVisibilityPassword}>
-          <Icon
-            color={colors.blue[700]}
-            as={<MaterialIcons name={inputType=='text'?"visibility-off":'visibility'} />}
-            size={6}
-            marginRight={2}
-          />
+            <Icon
+              color={colors.blue[700]}
+              as={
+                <MaterialIcons
+                  name={inputType == "text" ? "visibility-off" : "visibility"}
+                />
+              }
+              size={6}
+              marginRight={2}
+            />
           </TouchableOpacity>
         }
         placeholder="Senha"
@@ -101,7 +130,7 @@ export function Login() {
       />
       <Button
         bgColor={colors.blue[600]}
-        _pressed={{bgColor:colors.blue[700]}}
+        _pressed={{ bgColor: colors.blue[700] }}
         onPress={submit}
         width={334}
         height={54}
@@ -111,7 +140,14 @@ export function Login() {
       >
         Entrar
       </Button>
-      <Button width={334} height={54} mt={4} w="90%" borderRadius={15}>
+      <Button
+        onPress={showConfirm}
+        width={334}
+        height={54}
+        mt={4}
+        w="90%"
+        borderRadius={15}
+      >
         Esqueci minha senha
       </Button>
       <Button
@@ -122,7 +158,7 @@ export function Login() {
         mt={4}
         w="90%"
         borderRadius={15}
-        onPress={()=>navigation.navigate('Register')}
+        onPress={() => navigation.navigate("Register")}
       >
         Cadastre-se
       </Button>
