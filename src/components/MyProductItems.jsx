@@ -30,7 +30,7 @@ export function MyProductItems({ product, onPress }) {
     >
       <HStack justifyContent="space-between">
         <Image
-          source={product.img[0]}
+          source={{uri:product.imagem_url[0]}}
           style={{
             width: "20%",
             height: 65,
@@ -38,12 +38,12 @@ export function MyProductItems({ product, onPress }) {
             marginBottom: 4,
           }}
           resizeMode="center"
-          alt={product.description}
+          alt={product.descricao}
         />
 
         <VStack alignSelf="center" w="70%" ml={2}>
-          <Heading size={product.title.length > 10 ? "xs" : "md"} mb={1}>
-            {product.title}
+          <Heading size={product.nome.length > 10 ? "xs" : "md"} mb={1}>
+            {product.nome}
           </Heading>
 
           <HStack>
@@ -54,7 +54,7 @@ export function MyProductItems({ product, onPress }) {
               mb={1}
               color={colors.green[300]}
             >
-              R$ {product.price.toFixed(2)}
+              R$ {product.preco.toFixed(2)}
             </Heading>
 
             <Heading
@@ -65,7 +65,7 @@ export function MyProductItems({ product, onPress }) {
               color={colors.gray[400]}
               ml={2}
             >
-              Qtd.Estoque: {product.inventory}
+              Qtd.Estoque: {product.estoque}
             </Heading>
           </HStack>
         </VStack>

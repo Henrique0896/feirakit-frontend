@@ -40,24 +40,24 @@ export function ProductForm() {
       ? "0" + (ObjDate.getMonth() + 1)
       : ObjDate.getMonth() + 1;
 
-  const [title, setTitle] = useState(product ? product.title : "");
-  const [unit, setunit] = useState(product ? product.unit : "");
-  const [category, setCategory] = useState(product ? product.category : "");
+  const [title, setTitle] = useState(product ? product.nome : "");
+  const [unit, setunit] = useState(product ? product.unidade : "");
+  const [category, setCategory] = useState(product ? product.categoria : "");
   const [description, setDescription] = useState(
-    product ? product.description : ""
+    product ? product.descricao : ""
   );
   const [price, setPrice] = useState(
-    product ? product.price.toFixed(2).toString().replace(".", ",") : ""
+    product ? product.preco.toFixed(2).toString().replace(".", ",") : ""
   );
   const [inventory, setInventory] = useState(
-    product ? product.inventory.toString() : ""
+    product ? product.estoque.toString() : ""
   );
 
   const [date, setDate] = useState(ObjDate);
   const [showDate, setShow] = useState(false);
   const [dateText, setDateText] = useState(
     product
-      ? product.expirationDate
+      ? product.validade.split('-',3).join('/')
       : dayDate + "/" + (monthDate + 1) + "/" + ObjDate.getFullYear()
   );
 
@@ -80,7 +80,7 @@ export function ProductForm() {
     setShow(true);
   };
 
-  const [images, setImages] = useState(product ? product.img : []);
+  const [images, setImages] = useState(product ? product.imagem_url : []);
   const [isLoadingimages, setIsLoadingImages] = useState(false);
   const pickImages = async () => {
     setIsLoadingImages(true);
@@ -106,7 +106,7 @@ export function ProductForm() {
       });
 
       selectedImages.map((image) => {
-        newImages.push(image);
+        newImages.push(image.uri);
       });
       setIsLoadingImages(false);
       setImages(newImages);
@@ -138,7 +138,7 @@ export function ProductForm() {
           let newImages = [];
 
           images.map((image) => {
-            if (image.uri !== uri) {
+            if (image !== uri) {
               newImages.push(image);
             }
           });
@@ -256,6 +256,7 @@ export function ProductForm() {
                 Preço:
               </Heading>
               <Input
+                borderColor={colors.blue[600]}
                 placeholder="0,00"
                 placeholderTextColor={colors.blue[500]}
                 type="text"
@@ -312,6 +313,7 @@ export function ProductForm() {
                 Estoque
               </Heading>
               <Input
+              borderColor={colors.blue[600]}
                 placeholder="0"
                 placeholderTextColor={colors.blue[500]}
                 type="text"
@@ -379,16 +381,16 @@ export function ProductForm() {
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   data={images}
-                  keyExtractor={(item) => item.uri}
+                  keyExtractor={(item) => item}
                   renderItem={({ item }) => (
-                    <TouchableOpacity onLongPress={() => removeImage(item.uri)}>
+                    <TouchableOpacity onLongPress={() => removeImage(item)}>
                       <MaterialIcons
                         name="remove-circle"
                         color="#FF0000"
                         style={{ alignSelf: "flex-end",position:'absolute',zIndex:1000 }}
                       ></MaterialIcons>
                       <Image
-                        source={{ uri: item.uri }}
+                        source={{ uri: item }}
                         style={{ width: 50, height: 50, borderRadius: 4 }}
                         ml={2}
                         alt="Imagem do produto,selecionada da galeria"

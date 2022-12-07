@@ -20,8 +20,8 @@ export function Description() {
   const { product } = route.params;
   const { isInfo } = route.params;
   const [amount, setAmount] = useState(1);
-  const [urlImage, setUrlImage] = useState(product.img[0]);
-  const Images = product.img
+  const [urlImage, setUrlImage] = useState(product.imagem_url[0]);
+  const Images = product.imagem_url
   const WhatsAppNumber = "5533998785878";
   let btnDisabled = amount === 1 ? true : false;
 
@@ -31,7 +31,7 @@ export function Description() {
 
   const texts = {
     title: "Exluir",
-    description: `Realmente deseja excluir "${product.title}"`,
+    description: `Realmente deseja excluir "${product.nome}"`,
     optionYes: "Sim",
     optionNo: "Não",
   };
@@ -47,7 +47,7 @@ export function Description() {
       {
         text: texts.optionYes,
         onPress: () => {
-          //chama funcão para excluir o produto do banco pelo id
+          return;
         },
       },
     ]);
@@ -58,7 +58,7 @@ export function Description() {
       <ButtonBack />
       <Box style={styles.imagebox}>
         <Image
-          source={urlImage}
+          source={{uri:urlImage}}
           style={styles.image}
           alt="imagem dos produtos"
         />
@@ -72,16 +72,13 @@ export function Description() {
             marginBottom: 0,
           }}
         >
-
-
-        
         <FlatList showsHorizontalScrollIndicator={false} horizontal
           data={Images}
-          keyExtractor={(Images) => Images.uri}
-          renderItem={({ item,index }) => (
+          keyExtractor={(images)=>images}
+          renderItem={({ index }) => (
             <ImageButton
-              urlImage={product.img[index]}
-              onPress={()=>setUrlImage(product.img[index])}
+              urlImage={product.imagem_url[index]}
+              onPress={()=>setUrlImage(product.imagem_url[index])}
             />
             )}>
         </FlatList>
@@ -94,16 +91,16 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text} paddingTop="10">
-            {product.title}
+          <Text style={styles.text} paddingTop="10" >
+            {product.nome}
           </Text>
           <Text style={styles.text} paddingTop="10">
-            R$ {product.price.toFixed(2)}
+            R$ {product.preco.toFixed(2)}
           </Text>
         </HStack>
         <View style={styles.descriptionBox}>
           <Text style={{ fontSize: 14, textAlign: "left" }}>
-            {product.description}
+            {product.descricao}
           </Text>
         </View>
         {isInfo ? (
@@ -175,7 +172,7 @@ export function Description() {
             <WhatsappButton
               WhatsAppNumber={WhatsAppNumber}
               Quantity={amount}
-              ProductName={`${product.title}`}
+              ProductName={`${product.nome}`}
             />
           </>
         )}
@@ -220,7 +217,7 @@ const styles = StyleSheet.create({
     borderColor: "#0088a7",
   },
   text: {
-    fontSize: 30,
+    fontSize:30 ,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
   },

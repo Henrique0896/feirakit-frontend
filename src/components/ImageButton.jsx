@@ -12,7 +12,7 @@ export default function ImageButton({urlImage, onPress}) {
       <View style={style.container}>
         <ImageBackground
           borderRadius={12}
-          source={urlImage}
+          source={{uri:urlImage}}
           resizeMode="cover"
           style={style.image}
         ></ImageBackground>

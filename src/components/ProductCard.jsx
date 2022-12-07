@@ -4,7 +4,7 @@ import { Text } from "react-native";
 
 export function ProductCard({ product, onPress }) {
   const { colors } = useTheme();
-  const description = product.description.slice(0, 25) + "...";
+  const description = product.descricao.slice(0, 25) + "...";
   return (
     <Pressable
       onPress={onPress}
@@ -19,7 +19,7 @@ export function ProductCard({ product, onPress }) {
       borderColor={colors.blue[500]}
     >
       <Image
-        source={product.img[0]}
+        source={{uri:product.imagem_url[0]}}
         style={{
           width: "100%",
           height: 90,
@@ -27,11 +27,11 @@ export function ProductCard({ product, onPress }) {
           marginBottom: 4,
         }}
         resizeMode="cover"
-        alt={product.description}
+        alt={product.descricao}
       />
 
       <Heading fontWeight="medium" size="sm" mb={1} fontFamily="heading">
-        {product.title}
+        {product.nome}
       </Heading>
       <Text
         style={{
@@ -45,7 +45,7 @@ export function ProductCard({ product, onPress }) {
         {description}
       </Text>
       <Heading fontWeight="medium" size="sm" mt={2} mb={1} fontFamily="heading">
-        R$ {product.price.toFixed(2)}
+        R$ {product.preco.toFixed(2)}
       </Heading>
     </Pressable>
   );
