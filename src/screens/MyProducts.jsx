@@ -117,6 +117,7 @@ as pimentas e os pimentões, além de algumas espécies não comestíveis.`,
       </Heading>
 
       <FlatList
+      paddingX='2%'
         data={products}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}

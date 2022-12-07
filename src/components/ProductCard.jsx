@@ -44,20 +44,7 @@ export function ProductCard({ product, onPress }) {
       >
         {description}
       </Text>
-      <Text
-        style={{
-          backgroundColor: colors.gray[200],
-          color: colors.blue[400],
-          fontSize: 16,
-          marginBottom: 4,
-          height: 30,
-          paddingHorizontal: 2,
-          paddingBottom: 2,
-        }}
-      >
-        Ver Mais
-      </Text>
-      <Heading fontWeight="medium" size="sm" mb={1} fontFamily="heading">
+      <Heading fontWeight="medium" size="sm" mt={2} mb={1} fontFamily="heading">
         R$ {product.price.toFixed(2)}
       </Heading>
     </Pressable>

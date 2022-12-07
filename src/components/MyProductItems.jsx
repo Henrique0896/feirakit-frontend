@@ -20,7 +20,8 @@ export function MyProductItems({ product, onPress }) {
       onPress={onPress}
       mr="4%"
       mb={4}
-      maxH={300}
+      w='98%'
+      maxH={320}
       p={4}
       borderRadius={8}
       borderWidth={1}
