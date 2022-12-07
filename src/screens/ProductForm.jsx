@@ -20,6 +20,7 @@ import { ButtonBack } from "../components/ButtonBack";
 import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
 import { useRoute } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { LoadingImage } from "../components/Loading";
@@ -92,34 +93,28 @@ export function ProductForm() {
       quality: 0.8,
     });
 
-    if (Platform.OS !== "ios" && result) {
+    if (!result.cancelled) {
       selectedImages = result.uri
         ? [{ uri: result.uri }]
         : result.selected.reverse().slice(0, 10);
-    } else if(result.selected) {
-      selectedImages = result.uri
-        ? [{ uri: result.uri }]
-        : result.selected.reverse();
     }
-    
+
     if (!result.cancelled) {
       let newImages = [];
-
       images.map((image) => {
         newImages.push(image);
       });
-      
+
       selectedImages.map((image) => {
         newImages.push(image);
       });
-
       setIsLoadingImages(false);
       setImages(newImages);
-    }else{
+    } else {
+      setImages(images);
       setIsLoadingImages(false);
     }
   };
-
 
   const textsRemoveImage = {
     title: "Remover",
@@ -128,34 +123,31 @@ export function ProductForm() {
     optionNo: "Não",
   };
 
-  const removeImage=(uri)=>{
-    
+  const removeImage = (uri) => {
     setIsLoadingImages(true);
-    Alert.alert(textsRemoveImage.title,textsRemoveImage.description,
-      [
-        {
-          text: textsRemoveImage.optionNo,
-          onPress: () => {
-            return;
-          },
+    Alert.alert(textsRemoveImage.title, textsRemoveImage.description, [
+      {
+        text: textsRemoveImage.optionNo,
+        onPress: () => {
+          return;
         },
-        {
-          text: textsRemoveImage.optionYes,
-          onPress: () => {
-            let newImages = [];
+      },
+      {
+        text: textsRemoveImage.optionYes,
+        onPress: () => {
+          let newImages = [];
 
-            images.map((image) => {
-                if(image.uri !== uri){
-                  newImages.push(image);
-                }   
-            });
-            setIsLoadingImages(false);
-            setImages(newImages);
-          },
+          images.map((image) => {
+            if (image.uri !== uri) {
+              newImages.push(image);
+            }
+          });
+          setIsLoadingImages(false);
+          setImages(newImages);
         },
-      ]);
-      
-  }
+      },
+    ]);
+  };
 
   return (
     <VStack>
@@ -389,13 +381,18 @@ export function ProductForm() {
                   data={images}
                   keyExtractor={(item) => item.uri}
                   renderItem={({ item }) => (
-                    <TouchableOpacity onLongPress={()=>removeImage(item.uri)}>
-                    <Image
-                      source={{ uri: item.uri }}
-                      style={{ width: 50, height: 50,borderRadius:4 }}
-                      ml={2}
-                      alt="Imagem do produto,selecionada da galeria"
-                    />
+                    <TouchableOpacity onLongPress={() => removeImage(item.uri)}>
+                      <MaterialIcons
+                        name="remove-circle"
+                        color="#FF0000"
+                        style={{ alignSelf: "flex-end",position:'absolute',zIndex:1000 }}
+                      ></MaterialIcons>
+                      <Image
+                        source={{ uri: item.uri }}
+                        style={{ width: 50, height: 50, borderRadius: 4 }}
+                        ml={2}
+                        alt="Imagem do produto,selecionada da galeria"
+                      />
                     </TouchableOpacity>
                   )}
                   ListEmptyComponent={() => (
@@ -414,6 +411,18 @@ export function ProductForm() {
               />
             </TouchableOpacity>
           </HStack>
+
+          {images.length !== 0 && (
+            <Heading
+              size="xs"
+              fontFamily="body"
+              fontWeight="light"
+              color="#FF0000"
+            >
+              pressione e segure uma imagem para removê-la
+            </Heading>
+          )}
+
           <Center mt={8}>
             <Button rounded={8} px={8} py={2} fontSize={22}>
               <Heading

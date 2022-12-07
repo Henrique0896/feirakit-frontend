@@ -84,9 +84,7 @@ export function LoadingImage() {
         <Skeleton w={50} h={50} mr={2}/>
         <Skeleton w={50} h={50} mr={2}/>
         <Skeleton w={50} h={50} mr={2}/>
-        <Skeleton w={50} h={50} mr={2}/>
-        <Skeleton w={50} h={50} mr={2}/>
-        <Skeleton w={50} h={50} mr={2}/>
+        <Skeleton w={50} h={50} mr={2}/> 
     </>
   );
 }
