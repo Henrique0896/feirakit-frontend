@@ -77,9 +77,9 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Heading style={styles.text} paddingTop="10" size={product.nome.length > 10 ? "xs" : "md"} mb={1}>
+          <Text style={styles.text} paddingTop="10" >
             {product.nome}
-          </Heading>
+          </Text>
           <Text style={styles.text} paddingTop="10">
             R$ {product.preco}
           </Text>
