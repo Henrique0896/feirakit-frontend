@@ -77,9 +77,11 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text} paddingTop="10" size={product.nome.length > 10 ? "xs" : "md"} mb={1}>
-            {product.nome}
-          </Text>
+          <VStack alignSelf="center" w="70%" ml={2}>
+            <Text style={styles.text} paddingTop="10">
+              {product.nome}
+            </Text>
+          </VStack>
           <Text style={styles.text} paddingTop="10">
             R$ {product.preco}
           </Text>
