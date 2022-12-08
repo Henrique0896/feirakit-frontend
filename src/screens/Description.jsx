@@ -14,7 +14,7 @@ import { ButtonBack } from "../components/ButtonBack";
 export function Description() {
   //Mock
   const product = {
-    nome: "Maçã",
+    nome: "Maçã Vermelha Vermelha",
     categoria: "fruta",
     descricao: "Essa é uma maçã",
     unidade: "unidade",
@@ -41,7 +41,7 @@ export function Description() {
 
   const [utlImageActive, setUrlImageActive] = useState(product.imagem_url[0] ?? null)
 
-  const WhatsAppNumber = "5533998785878";
+  const WhatsAppNumber = "+5533998785878";
 
   let btnDisabled = amount === 1 ? true : false;
   return (
@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
+    lineHeight: 30
     
   },
 });
