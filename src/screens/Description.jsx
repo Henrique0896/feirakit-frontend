@@ -77,7 +77,7 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text} paddingTop="10" >
+          <Text style={styles.text} paddingTop="10" size={product.nome.length > 10 ? "xs" : "md"} mb={1}>
             {product.nome}
           </Text>
           <Text style={styles.text} paddingTop="10">
