@@ -78,7 +78,7 @@ export function Description() {
           w="90%"
         >
           <VStack alignSelf="center" w="70%" ml={2}>
-            <Text style={styles.text} paddingTop="10">
+            <Text style={styles.text} paddingTop="10" font-size="10vw">
               {product.nome}
             </Text>
           </VStack>
@@ -177,5 +177,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
+    
   },
 });
