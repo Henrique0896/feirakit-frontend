@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, Box, useTheme, VStack, HStack } from "native-base";
+import { Text, Box, useTheme, VStack, HStack, Heading } from "native-base";
 import {
   View,
   ScrollView,
@@ -77,9 +77,9 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text} paddingTop="10">
+          <Heading style={styles.text} paddingTop="10" size={product.nome.length > 10 ? "xs" : "md"} mb={1}>
             {product.nome}
-          </Text>
+          </Heading>
           <Text style={styles.text} paddingTop="10">
             R$ {product.preco}
           </Text>
