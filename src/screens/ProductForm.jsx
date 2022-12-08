@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useCallback,useRef } from "react";
 import {
   Heading,
   VStack,
@@ -20,10 +20,11 @@ import { ButtonBack } from "../components/ButtonBack";
 import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
 import { useRoute } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { LoadingImage } from "../components/Loading";
+import BottomSheet,{BottomSheetView} from "@gorhom/bottom-sheet";
+import { CustomBottomSheet } from "../components/CustomBottomSheet";
 
 export function ProductForm() {
   const route = useRoute();
@@ -82,7 +83,10 @@ export function ProductForm() {
 
   const [images, setImages] = useState(product ? product.imagem_url : []);
   const [isLoadingimages, setIsLoadingImages] = useState(false);
+
+
   const pickImages = async () => {
+    setIsSheetOpen(false)
     setIsLoadingImages(true);
     let selectedImages;
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -149,7 +153,27 @@ export function ProductForm() {
     ]);
   };
 
+
+  const pickImagesByCamera  =  ()=>{
+      Alert.alert('Em desenvolvimento','Ainda estamos desenvolvendo esta funcionalidade')
+  }
+  
+
+  const bottomSheetRef = useRef(BottomSheet);
+  const [isSheetOpen,setIsSheetOpen]=useState(false);
+  
+  const snapPoints=['30%'];
+
+  const openActionsSheet = useCallback((index)=>{
+     bottomSheetRef.current?.snapToIndex(index);
+     setIsSheetOpen(true)
+  },[]);
+
+ 
+
+
   return (
+    
     <VStack>
       <ButtonBack />
 
@@ -405,7 +429,7 @@ export function ProductForm() {
                 />
               )}
             </HStack>
-            <TouchableOpacity onPress={pickImages} ml={4}>
+            <TouchableOpacity onPress={()=>openActionsSheet(0)} ml={4}>
               <MaterialIcons
                 name="add-a-photo"
                 size={50}
@@ -438,6 +462,22 @@ export function ProductForm() {
           </Center>
         </ScrollView>
       </KeyboardAvoidingView>
+      
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        index={-1}
+        enablePanDownToClose={true}
+        onClose={()=>setIsSheetOpen[false]}
+      >
+        <BottomSheetView>
+          <CustomBottomSheet actionGallery={pickImages} actionCamera={pickImagesByCamera}/>
+        </BottomSheetView>
+      </BottomSheet>
+    
+      
+    
     </VStack>
+
   );
 }
