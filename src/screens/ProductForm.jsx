@@ -15,6 +15,7 @@ import {
   Text,
   FlatList,
   Image,
+  Checkbox,
 } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
 import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
@@ -40,9 +41,10 @@ export function ProductForm() {
     ObjDate.getMonth() < 10
       ? "0" + (ObjDate.getMonth() + 1)
       : ObjDate.getMonth() + 1;
-
+  const id =product ? product.nome : ObjDate.getTime().toString()
   const [title, setTitle] = useState(product ? product.nome : "");
   const [unit, setunit] = useState(product ? product.unidade : "");
+  const [bestBefore,setBestBefore]=useState(product ? product.bestbefore : false)
   const [category, setCategory] = useState(product ? product.categoria : "");
   const [description, setDescription] = useState(
     product ? product.descricao : ""
@@ -97,6 +99,7 @@ export function ProductForm() {
   const [isLoadingImage, setIsLoadingImages] = useState(false);
 
   const pickImages = async () => {
+    setIsLoadingImages(true);
     closeActionsSheet();
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -107,7 +110,7 @@ export function ProductForm() {
       );
       return;
     }
-    setIsLoadingImages(true);
+    
     let selectedImages;
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -174,8 +177,8 @@ export function ProductForm() {
   };
 
   const pickImagesByCamera = async () => {
-    closeActionsSheet();
     setIsLoadingImages(true);
+    closeActionsSheet();
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert(
@@ -204,6 +207,39 @@ export function ProductForm() {
     setIsLoadingImages(false);
   };
 
+
+  const checkForm=()=>{
+    if(id == ''
+      ||images == []
+      ||price==''
+      ||title==''
+      ||inventory==''
+      ||dateText==''
+      ||unit==''
+      ||category==''
+      ){
+        Alert.alert('Informações',"por favor preencha todas as informações antes de continuar")
+        return
+      }
+
+
+    let  objProduct= {
+         id: id,
+         imagem_url: images,
+         preco:price,
+         nome: title,
+         descricao: description,
+         estoque: inventory,
+         validade:dateText ,
+         unidade: unit,
+         categoria: category,
+         produtor:"Manuel gomes",
+         bestbefore:bestBefore,
+    //   comentarios:[],
+    //   avaliacao:[]
+     }
+   console.log(objProduct);
+  }
   return (
     <VStack>
       <ButtonBack />
@@ -226,7 +262,7 @@ export function ProductForm() {
             {HeaderText}
           </Heading>
           <Heading
-            mt={"4"}
+            mt={"2"}
             size="md"
             color={colors.blue[700]}
             fontFamily="body"
@@ -250,7 +286,7 @@ export function ProductForm() {
             }}
           />
           <Heading
-            mt={"4"}
+            mt={"2"}
             size="md"
             color={colors.blue[700]}
             fontFamily="body"
@@ -275,7 +311,7 @@ export function ProductForm() {
           </Select>
 
           <Heading
-            mt={"4"}
+            mt={"2"}
             size="md"
             color={colors.blue[700]}
             fontFamily="body"
@@ -299,7 +335,9 @@ export function ProductForm() {
               borderWidth: 2,
             }}
           />
-          <HStack justifyContent="space-between" mt={4}>
+
+          <Checkbox isChecked={bestBefore} mt={4} _text={{color:colors.blue[700]}}  onChange={setBestBefore}>O produto será colhido após a compra </Checkbox>
+          <HStack justifyContent="space-between" mt={2}>
             <View w="1/3">
               <Heading
                 mt={"2"}
@@ -356,7 +394,7 @@ export function ProductForm() {
             </View>
           </HStack>
 
-          <HStack justifyContent="space-between" mt={4}>
+          <HStack justifyContent="space-between" mt={2}>
             <View w="1/3">
               <Heading
                 mt={"2"}
@@ -485,7 +523,7 @@ export function ProductForm() {
           )}
 
           <Center mt={8}>
-            <Button rounded={8} px={8} py={2} fontSize={22}>
+            <Button rounded={8} px={8} py={2} fontSize={22} onPress={checkForm}>
               <Heading
                 color={colors.gray[200]}
                 fontFamily="body"
@@ -523,5 +561,6 @@ export function ProductForm() {
         </BottomSheetView>
       </BottomSheet>
     </VStack>
+    
   );
 }

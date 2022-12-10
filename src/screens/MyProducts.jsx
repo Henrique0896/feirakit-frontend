@@ -34,7 +34,7 @@ export function MyProducts() {
       unidade: "kg",
       categoria: "2",
       produtor:"Manuel gomes",
-      bestbefore:true,
+      bestbefore:false,
       comentarios:[],
       avaliacao:[]
     },
