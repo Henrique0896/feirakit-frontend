@@ -116,7 +116,7 @@ export function MyProducts() {
 
       <FlatList
       paddingX='2%'
-        data={products}
+        data={products} 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         w="100%"

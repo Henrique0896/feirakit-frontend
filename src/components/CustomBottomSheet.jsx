@@ -6,7 +6,7 @@ export function CustomBottomSheet({actionGallery,actionCamera}) {
 
   const { colors } = useTheme();
   return (
-    <HStack justifyContent='center'>
+    <HStack justifyContent='center' >
         <VStack w='45%' h='90%' alignItems='center' justifyContent='center'>
           <TouchableOpacity onPress={actionCamera}>
            <MaterialIcons name='camera-alt' size={70} color={colors.blue[700]}/>

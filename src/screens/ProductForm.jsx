@@ -1,4 +1,4 @@
-import React, { useState,useCallback,useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   Heading,
   VStack,
@@ -23,7 +23,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { LoadingImage } from "../components/Loading";
-import BottomSheet,{BottomSheetView} from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../components/CustomBottomSheet";
 
 export function ProductForm() {
@@ -58,7 +58,7 @@ export function ProductForm() {
   const [showDate, setShow] = useState(false);
   const [dateText, setDateText] = useState(
     product
-      ? product.validade.split('-',3).join('/')
+      ? product.validade.split("-", 3).join("/")
       : dayDate + "/" + (monthDate + 1) + "/" + ObjDate.getFullYear()
   );
 
@@ -81,12 +81,32 @@ export function ProductForm() {
     setShow(true);
   };
 
-  const [images, setImages] = useState(product ? product.imagem_url : []);
-  const [isLoadingimages, setIsLoadingImages] = useState(false);
+  const bottomSheetRef = useRef(BottomSheet);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const snapPoints = ["30%"];
+  const openActionsSheet = useCallback((index) => {
+    bottomSheetRef.current?.snapToIndex(index);
+    setIsSheetOpen(true);
+  }, []);
+  const closeActionsSheet = () => {
+    bottomSheetRef.current?.close();
+    setIsSheetOpen(false);
+  };
 
+  const [images, setImages] = useState(product ? product.imagem_url : []);
+  const [isLoadingImage, setIsLoadingImages] = useState(false);
 
   const pickImages = async () => {
-    setIsSheetOpen(false)
+    closeActionsSheet();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert(
+        "Permissões",
+        "O app precisa dessas permissões para adicionar imagens ao seu produto!"
+      );
+      return;
+    }
     setIsLoadingImages(true);
     let selectedImages;
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -112,12 +132,12 @@ export function ProductForm() {
       selectedImages.map((image) => {
         newImages.push(image.uri);
       });
-      setIsLoadingImages(false);
+
       setImages(newImages);
     } else {
       setImages(images);
-      setIsLoadingImages(false);
     }
+    setIsLoadingImages(false);
   };
 
   const textsRemoveImage = {
@@ -153,27 +173,38 @@ export function ProductForm() {
     ]);
   };
 
+  const pickImagesByCamera = async () => {
+    closeActionsSheet();
+    setIsLoadingImages(true);
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert(
+        "Permissão",
+        "Você se recusou a permitir que este aplicativo acesse sua câmera!"
+      );
+      return;
+    }
 
-  const pickImagesByCamera  =  ()=>{
-      Alert.alert('Em desenvolvimento','Ainda estamos desenvolvendo esta funcionalidade')
-  }
-  
+    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true });
 
-  const bottomSheetRef = useRef(BottomSheet);
-  const [isSheetOpen,setIsSheetOpen]=useState(false);
-  
-  const snapPoints=['30%'];
-
-  const openActionsSheet = useCallback((index)=>{
-     bottomSheetRef.current?.snapToIndex(index);
-     setIsSheetOpen(true)
-  },[]);
-
- 
-
+    let capturedImage;
+    if (!result.cancelled) {
+      capturedImage = result.uri;
+    }
+    if (!result.cancelled) {
+      let newImages = [];
+      images.map((image) => {
+        newImages.push(image);
+      });
+      newImages.push(capturedImage);
+      setImages(newImages);
+    } else {
+      setImages(images);
+    }
+    setIsLoadingImages(false);
+  };
 
   return (
-    
     <VStack>
       <ButtonBack />
 
@@ -337,7 +368,7 @@ export function ProductForm() {
                 Estoque
               </Heading>
               <Input
-              borderColor={colors.blue[600]}
+                borderColor={colors.blue[600]}
                 placeholder="0"
                 placeholderTextColor={colors.blue[500]}
                 type="text"
@@ -398,7 +429,7 @@ export function ProductForm() {
 
           <HStack mt={4}>
             <HStack w="80%" alignItems="center">
-              {isLoadingimages ? (
+              {isLoadingImage ? (
                 <LoadingImage />
               ) : (
                 <FlatList
@@ -411,7 +442,11 @@ export function ProductForm() {
                       <MaterialIcons
                         name="remove-circle"
                         color="#FF0000"
-                        style={{ alignSelf: "flex-end",position:'absolute',zIndex:1000 }}
+                        style={{
+                          alignSelf: "flex-end",
+                          position: "absolute",
+                          zIndex: 1000,
+                        }}
                       ></MaterialIcons>
                       <Image
                         source={{ uri: item }}
@@ -429,7 +464,7 @@ export function ProductForm() {
                 />
               )}
             </HStack>
-            <TouchableOpacity onPress={()=>openActionsSheet(0)} ml={4}>
+            <TouchableOpacity onPress={() => openActionsSheet(0)} ml={4}>
               <MaterialIcons
                 name="add-a-photo"
                 size={50}
@@ -462,22 +497,23 @@ export function ProductForm() {
           </Center>
         </ScrollView>
       </KeyboardAvoidingView>
-      
+
       <BottomSheet
+        backgroundStyle={{backgroundColor:colors.red[100]}}
+        handleIndicatorStyle={{backgroundColor:colors.red[100]}}
         ref={bottomSheetRef}
         snapPoints={snapPoints}
         index={-1}
         enablePanDownToClose={true}
-        onClose={()=>setIsSheetOpen[false]}
+        onClose={() => setIsSheetOpen[false]}
       >
-        <BottomSheetView>
-          <CustomBottomSheet actionGallery={pickImages} actionCamera={pickImagesByCamera}/>
+        <BottomSheetView >
+          <CustomBottomSheet
+            actionGallery={pickImages}
+            actionCamera={pickImagesByCamera}
+          />
         </BottomSheetView>
       </BottomSheet>
-    
-      
-    
     </VStack>
-
   );
 }

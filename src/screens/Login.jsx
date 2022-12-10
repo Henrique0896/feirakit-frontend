@@ -34,7 +34,7 @@ export function Login() {
           }),
       },
       {
-        text: textButtonCancel,
+        text: alert.textButtonCancel,
         onPress: () => {
           return;
         },
