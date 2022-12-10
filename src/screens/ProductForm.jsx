@@ -499,15 +499,23 @@ export function ProductForm() {
       </KeyboardAvoidingView>
 
       <BottomSheet
-        backgroundStyle={{backgroundColor:colors.red[100]}}
-        handleIndicatorStyle={{backgroundColor:colors.red[100]}}
+        backgroundStyle={{ backgroundColor: colors.blue[100] }}
+        handleIndicatorStyle={{ backgroundColor: colors.blue[800] }}
+        handleStyle={{
+          borderColor: colors.blue[800],
+          borderWidth: 2,
+          borderBottomWidth: 0,
+          borderRadius: 10,
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
         ref={bottomSheetRef}
         snapPoints={snapPoints}
         index={-1}
         enablePanDownToClose={true}
         onClose={() => setIsSheetOpen[false]}
       >
-        <BottomSheetView >
+        <BottomSheetView>
           <CustomBottomSheet
             actionGallery={pickImages}
             actionCamera={pickImagesByCamera}
