@@ -45,8 +45,6 @@ export function Description() {
     navigation.navigate("ProductForm", { product });
   }
 
-  
-
   const deleteProduct = (id) => {
     Alert.alert(texts.title, texts.description, [
       {
