@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Text, Box, useTheme, VStack, HStack, Heading, FlatList, Image } from "native-base";
+import {
+  Text,
+  Box,
+  useTheme,
+  VStack,
+  HStack,
+  Heading,
+  FlatList,
+  Image,
+} from "native-base";
 import {
   View,
   ScrollView,
@@ -21,7 +30,7 @@ export function Description() {
   const { isInfo } = route.params;
   const [amount, setAmount] = useState(1);
   const [urlImage, setUrlImage] = useState(product.imagem_url[0]);
-  const Images = product.imagem_url
+  const Images = product.imagem_url;
   const WhatsAppNumber = "5533998785878";
   let btnDisabled = amount === 1 ? true : false;
 
@@ -56,34 +65,71 @@ export function Description() {
   return (
     <VStack style={styles.container}>
       <ButtonBack />
+      
       <Box style={styles.imagebox}>
         <Image
-          source={{uri:urlImage}}
+          source={{ uri: urlImage }}
           style={styles.image}
           alt="imagem dos produtos"
         />
       </Box>
       <ScrollView height='100%'>
-        <View
-          style={{
-            flexDirection: "row",
-            width: "100%",
-            alignContent: "center",
-            marginBottom: 0,
-          }}
-        >
-        <FlatList showsHorizontalScrollIndicator={false} horizontal
-          data={Images}
-          keyExtractor={(images)=>images}
-          renderItem={({ index }) => (
-            <ImageButton
-              urlImage={product.imagem_url[index]}
-              onPress={()=>setUrlImage(product.imagem_url[index])}
-            />
-            )}>
-        </FlatList>
-
-        </View>
+          <FlatList
+            width={'100%'}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            contentContainerStyle={{paddingHorizontal:"2%",
+            width:"90%"}}
+            data={Images}
+            keyExtractor={(images) => images}
+            renderItem={({ index }) => (
+              <ImageButton
+                urlImage={product.imagem_url[index]}
+                onPress={() => setUrlImage(product.imagem_url[index])}
+              />
+            )}
+          ></FlatList>
+        
+        {isInfo && (
+          <HStack
+          mt={-5}
+            alignItems="center"
+            justifyContent="space-evenly"
+            style={styles.actionsContainer}
+          >
+            <TouchableOpacity
+              style={[
+                styles.btnActions,
+                {
+                  borderColor: colors.purple[200],
+                  backgroundColor:colors.gray[200]
+                },
+              ]}
+              onPress={() => handleOpenEdit(product)}
+            >
+              <MaterialIcons name="edit" size={25} color={colors.purple[600]} />
+              <Heading color={colors.purple[600]}>Editar</Heading>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.btnActions,
+                {
+                  borderColor: colors.red[600],
+                  backgroundColor:colors.gray[200]
+                },
+              ]}
+              onPress={() => deleteProduct(product.id)}
+            >
+              <MaterialIcons
+                name="delete-outline"
+                size={25}
+                color={colors.red[600]}
+              />
+              <Heading color={colors.red[600]}>Excluir</Heading>
+            </TouchableOpacity>
+          </HStack>
+        )}
+        
         <HStack
           marginTop={-10}
           justifyContent="space-between"
@@ -91,7 +137,7 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text} paddingTop="10" >
+          <Text style={styles.text} paddingTop="10">
             {product.nome}
           </Text>
           <Text style={styles.text} paddingTop="10">
@@ -103,36 +149,7 @@ export function Description() {
             {product.descricao}
           </Text>
         </View>
-        {isInfo ? (
-          <HStack
-            mt={2}
-            alignItems="center"
-            justifyContent="space-evenly"
-            bgColor={colors.blue[100]}
-            style={styles.actionsContainer}
-      
-          >
-            <TouchableOpacity
-              style={[styles.btnActions,{borderColor:colors.purple[200],backgroundColor:colors.gray[200]}]}
-              onPress={() => handleOpenEdit(product)}
-            >
-              <MaterialIcons name="edit" size={25} color={colors.purple[600]} />
-              <Heading color={colors.purple[600]}>Editar</Heading>
-            </TouchableOpacity>
-            <TouchableOpacity
-            
-              style={[styles.btnActions,{borderColor:colors.red[600],backgroundColor:colors.gray[200]}]}
-              onPress={() => deleteProduct(product.id)}
-            >
-              <MaterialIcons
-                name="delete-outline"
-                size={25}
-                color={colors.red[600]}
-              />
-              <Heading color={colors.red[600]}>Excluir</Heading>
-            </TouchableOpacity>
-          </HStack>
-        ) : (
+        {!isInfo && (
           <>
             <Text
               style={[
@@ -206,7 +223,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "#f2f2f2",
     padding: 12,
-    borderRadius:20,
+    borderRadius: 20,
   },
   qtdButton: {
     height: "100%",
@@ -217,7 +234,7 @@ const styles = StyleSheet.create({
     borderColor: "#0088a7",
   },
   text: {
-    fontSize:30 ,
+    fontSize: 30,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
   },
@@ -225,18 +242,18 @@ const styles = StyleSheet.create({
   btnActions: {
     borderWidth: 2,
     borderRadius: 8,
-    width:'40%',
+    width: "40%",
     paddingHorizontal: 16,
     paddingVertical: 2,
-    flexDirection:"row",
-    justifyContent:"space-evenly",
-    alignItems:"center"
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
 
-  actionsContainer:{
-    borderRadius:20,
-    paddingVertical:16,
-    width:'90%',
-    alignSelf:"center"
-  }
+  actionsContainer: {
+    borderRadius: 20,
+    paddingVertical: 16,
+    width: "90%",
+    alignSelf: "center",
+  },
 });
