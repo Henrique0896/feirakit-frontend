@@ -76,3 +76,15 @@ export function Loading() {
     </Center>
   );
 }
+
+export function LoadingImage() {
+  return (
+    <>
+        <Skeleton w={50} h={50} mr={2}/>
+        <Skeleton w={50} h={50} mr={2}/>
+        <Skeleton w={50} h={50} mr={2}/>
+        <Skeleton w={50} h={50} mr={2}/>
+        <Skeleton w={50} h={50} mr={2}/> 
+    </>
+  );
+}

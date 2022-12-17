@@ -13,6 +13,7 @@ export default (state = initialState, action) => {
       };
     case "LOGOUT":
       return {
+        ...state,
         authToken: null,
       };
     default:
