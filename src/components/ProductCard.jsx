@@ -17,6 +17,7 @@ export function ProductCard({ product, onPress }) {
       borderRadius={8}
       borderWidth={1}
       borderColor={colors.blue[500]}
+      style={{shadowColor:colors.blue[500],elevation:5}}
     >
       <Image
         source={{uri:product.imagem_url[0]}}

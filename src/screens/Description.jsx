@@ -65,7 +65,7 @@ export function Description() {
   return (
     <VStack style={styles.container}>
       <ButtonBack />
-      
+
       <Box style={styles.imagebox}>
         <Image
           source={{ uri: urlImage }}
@@ -73,26 +73,26 @@ export function Description() {
           alt="imagem dos produtos"
         />
       </Box>
-      <ScrollView height='100%'>
-          <FlatList
-            width={'100%'}
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            contentContainerStyle={{paddingHorizontal:"2%",
-            width:"90%"}}
-            data={Images}
-            keyExtractor={(images) => images}
-            renderItem={({ index }) => (
-              <ImageButton
-                urlImage={product.imagem_url[index]}
-                onPress={() => setUrlImage(product.imagem_url[index])}
-              />
-            )}
-          ></FlatList>
-        
+      <ScrollView height="100%">
+        <FlatList
+          width={"100%"}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          contentContainerStyle={{ paddingHorizontal: "2%", width: "90%" }}
+          data={Images}
+          keyExtractor={(images) => images}
+          renderItem={({ index }) => (
+            <ImageButton
+              urlImage={product.imagem_url[index]}
+              onPress={() => setUrlImage(product.imagem_url[index])}
+            />
+          )}
+        ></FlatList>
+
         {isInfo && (
           <HStack
-          mt={-5}
+            mt={-5}
+            mb={1}
             alignItems="center"
             justifyContent="space-evenly"
             style={styles.actionsContainer}
@@ -102,20 +102,28 @@ export function Description() {
                 styles.btnActions,
                 {
                   borderColor: colors.purple[200],
-                  backgroundColor:colors.gray[200]
+                  backgroundColor: colors.gray[200],
+                  shadowColor:colors.purple[400],
+                  elevation:14
                 },
               ]}
               onPress={() => handleOpenEdit(product)}
             >
-              <MaterialIcons name="edit" size={25} color={colors.purple[600]} />
-              <Heading color={colors.purple[600]}>Editar</Heading>
+                <MaterialIcons
+                  name="edit"
+                  size={25}
+                  color={colors.purple[600]}
+                />
+                <Heading color={colors.purple[600]}>Editar</Heading>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.btnActions,
                 {
-                  borderColor: colors.red[600],
-                  backgroundColor:colors.gray[200]
+                  borderColor: colors.red[400],
+                  backgroundColor: colors.gray[200],
+                  shadowColor:colors.red[800],
+                  elevation:14
                 },
               ]}
               onPress={() => deleteProduct(product.id)}
@@ -129,7 +137,7 @@ export function Description() {
             </TouchableOpacity>
           </HStack>
         )}
-        
+
         <HStack
           marginTop={-10}
           justifyContent="space-between"
@@ -240,7 +248,7 @@ const styles = StyleSheet.create({
   },
 
   btnActions: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 8,
     width: "40%",
     paddingHorizontal: 16,
