@@ -31,13 +31,12 @@ export function Description() {
   const [amount, setAmount] = useState(1);
   const [urlImage, setUrlImage] = useState(product.imagem_url[0]);
   const Images = product.imagem_url;
-  const WhatsAppNumber = "5533998785878";
+  const WhatsAppNumber = "+5533998785878";
   let btnDisabled = amount === 1 ? true : false;
 
   function handleOpenEdit(product) {
     navigation.navigate("ProductForm", { product });
   }
-
   const texts = {
     title: "Exluir",
     description: `Realmente deseja excluir "${product.nome}"`,
@@ -145,9 +144,11 @@ export function Description() {
           px="2%"
           w="90%"
         >
-          <Text style={styles.text} paddingTop="10">
-            {product.nome}
-          </Text>
+          <VStack alignSelf="center" w="70%" ml={2}>
+            <Text style={styles.text} paddingTop="10" font-size="10vw">
+              {product.nome}
+            </Text>
+          </VStack>
           <Text style={styles.text} paddingTop="10">
             R$ {product.preco.toFixed(2)}
           </Text>
@@ -245,6 +246,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
+    lineHeight: 30
+    
   },
 
   btnActions: {
