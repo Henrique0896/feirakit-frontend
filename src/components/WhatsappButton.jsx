@@ -9,20 +9,24 @@ import {
 import { FontAwesome5 } from "@expo/vector-icons";
 
 
-export function WhatsappButton() {
+export function WhatsappButton({WhatsAppNumber, Quantity, ProductName }) {
+
+      let Message = `Olá gostaria de comprar ${Quantity} unidade do produto "${ProductName}". Obrigado!`
+  
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> 
+  
       <TouchableOpacity
         style={styles.btnContainer}
         onPress={() =>
-          Linking.canOpenURL("whatsapp://send?text=oi?").then((supported) => {
+          Linking.canOpenURL(`whatsapp://send?text=${Message}`).then((supported) => {
             if (supported) {
               return Linking.openURL(
-                "whatsapp://send?phone=5533998785878&text=Oi"
+                `whatsapp://send?phone=${WhatsAppNumber}&text= ${Message}`
               );
             } else
               return Linking.openURL(
-                "https://api.whatsapp.com/send?phone=5533998785878&text=Oi"
+                `https://api.whatsapp.com/send?phone=${WhatsAppNumber}&text=${Message}`
               );
           })
         }
