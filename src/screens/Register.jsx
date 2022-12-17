@@ -271,8 +271,10 @@ export function Register() {
         <Button
           bgColor={colors.blue[600]}
           height={54}
+          width={334}
           mt={4}
           borderRadius={15}
+          alignSelf="center"
           alignContent="center"
         >
           Cadastrar
