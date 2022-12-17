@@ -32,18 +32,20 @@ export function Description() {
   const [urlImage, setUrlImage] = useState(product.imagem_url[0]);
   const Images = product.imagem_url;
   const WhatsAppNumber = "5533998785878";
-  let btnDisabled = amount === 1 ? true : false;
-
-  function handleOpenEdit(product) {
-    navigation.navigate("ProductForm", { product });
-  }
-
   const texts = {
     title: "Exluir",
     description: `Realmente deseja excluir "${product.nome}"`,
     optionYes: "Sim",
     optionNo: "Não",
   };
+
+  let btnDisabled = amount === 1 ? true : false;
+
+  function handleOpenEdit(product) {
+    navigation.navigate("ProductForm", { product });
+  }
+
+  
 
   const deleteProduct = (id) => {
     Alert.alert(texts.title, texts.description, [
