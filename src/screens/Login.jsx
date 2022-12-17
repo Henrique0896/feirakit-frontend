@@ -64,7 +64,7 @@ export function Login() {
         style={{ width: 187, height: 170 }}
         resizeMode="contain"
       />
-      <Text alignSelf="flex-start" color={colors.blue[600]} ml={4}>
+      <Text alignSelf="flex-start" color={colors.blue[600]} ml={4} fontFamily='heading'>
         Fazer Login
       </Text>
       <Input
