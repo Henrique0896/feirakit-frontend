@@ -44,7 +44,7 @@ export function Description() {
   function handleOpenEdit(product) {
     navigation.navigate("ProductForm", { product });
   }
-
+ 
   const deleteProduct = (id) => {
     Alert.alert(texts.title, texts.description, [
       {
