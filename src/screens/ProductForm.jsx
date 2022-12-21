@@ -227,8 +227,8 @@ export function ProductForm() {
         return
       }
 
-    if(id===null){
-      objProduct= {
+    
+     objProduct= {
          nome_usuario: "string",
          nome: title,
          categoria: category,
@@ -243,26 +243,14 @@ export function ProductForm() {
          preco:parseFloat(price),
          imagem_url: images
      }
-    //  addProduct(objProduct)
-    
-    }else{
-      objProduct={
-         id,
-         imagem_url: images,
-         preco:parseFloat(price),
-         nome: title,
-         descricao: description,
-         estoque: parseInt(inventory),
-         validade:dateText.split('/',3).reverse().join('-'),
-         unidade: unit,
-         categoria: category,
-         produtor:"Manuel gomes",
-         bestbefore:bestBefore,
-    //   comentarios:[],
-    //   avaliacao:[]
-      }
-      // updateProduct(objProduct)
-    }
+
+     if(id===null){
+        addProduct(objProduct)
+     }else{
+      objProduct.id=id
+      updateProduct(objProduct)
+     }
+
     console.log(objProduct);
     setIsLoading(false)
   }
