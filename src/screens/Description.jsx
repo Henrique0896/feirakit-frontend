@@ -21,6 +21,7 @@ import ImageButton from "../components/ImageButton";
 import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
+import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function Description() {
   const navigation = useNavigation();
@@ -46,6 +47,7 @@ export function Description() {
   }
  
   const deleteProduct = (id) => {
+    console.log(id)
     Alert.alert(texts.title, texts.description, [
       {
         text: texts.optionNo,
@@ -56,7 +58,7 @@ export function Description() {
       {
         text: texts.optionYes,
         onPress: () => {
-          return;
+          apiFeiraKit.delete('/products',{'id':id}).then(()=>console.log("sucesso")).catch(err=>console.log(err))
         },
       },
     ]);

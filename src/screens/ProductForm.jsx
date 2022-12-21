@@ -26,6 +26,7 @@ import * as ImagePicker from "expo-image-picker";
 import { LoadingImage } from "../components/Loading";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../components/CustomBottomSheet";
+import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function ProductForm() {
   const route = useRoute();
@@ -40,8 +41,8 @@ export function ProductForm() {
   let monthDate =
     ObjDate.getMonth() < 10
       ? "0" + (ObjDate.getMonth() + 1)
-      : ObjDate.getMonth() + 1;
-  const id =product ? product.nome : ObjDate.getTime().toString()
+      : ObjDate.getMonth() ;
+  const id =product ? product.id : null ;
   const [title, setTitle] = useState(product ? product.nome : "");
   const [unit, setunit] = useState(product ? product.unidade : "");
   const [bestBefore,setBestBefore]=useState(product ? product.bestbefore : false)
@@ -55,12 +56,12 @@ export function ProductForm() {
   const [inventory, setInventory] = useState(
     product ? product.estoque.toString() : ""
   );
-
+  const [isLoading,setIsLoading]=useState(false);
   const [date, setDate] = useState(ObjDate);
   const [showDate, setShow] = useState(false);
   const [dateText, setDateText] = useState(
     product
-      ? product.validade.split("-", 3).join("/")
+      ? product.validade.split("-", 3).reverse().join("/")
       : dayDate + "/" + (monthDate + 1) + "/" + ObjDate.getFullYear()
   );
 
@@ -69,6 +70,7 @@ export function ProductForm() {
     setShow(false);
     setDate(currentdate);
     let tempDate = new Date(currentdate);
+
     let temDayDate =
       tempDate.getDate() < 10 ? "0" + tempDate.getDate() : tempDate.getDate();
     let tempMonthDate =
@@ -209,6 +211,8 @@ export function ProductForm() {
 
 
   const checkForm=()=>{
+    setIsLoading(true)
+    let objProduct=null
     if(id == ''
       ||images == []
       ||price==''
@@ -219,27 +223,71 @@ export function ProductForm() {
       ||category==''
       ){
         Alert.alert('Informações',"por favor preencha todas as informações antes de continuar")
+        setIsLoading(false)
         return
       }
 
-
-    let  objProduct= {
-         id: id,
+    if(id===null){
+      objProduct= {
+         nome_usuario: "string",
+         nome: title,
+         categoria: category,
+         descricao: description,
+         unidade: unit,
+         estoque: parseInt(inventory),
+         produtor:"Manuel gomes",
+         bestbefore:bestBefore,
+         validade:dateText.split('/',3).reverse().join('-'),
+         avaliacao: "1",
+         comentarios:'não há comentarios',
+         preco:parseFloat(price),
+         imagem_url: images
+     }
+    //  addProduct(objProduct)
+    
+    }else{
+      objProduct={
+         id,
          imagem_url: images,
-         preco:price,
+         preco:parseFloat(price),
          nome: title,
          descricao: description,
-         estoque: inventory,
-         validade:dateText ,
+         estoque: parseInt(inventory),
+         validade:dateText.split('/',3).reverse().join('-'),
          unidade: unit,
          categoria: category,
          produtor:"Manuel gomes",
          bestbefore:bestBefore,
     //   comentarios:[],
     //   avaliacao:[]
-     }
-   console.log(objProduct);
+      }
+      // updateProduct(objProduct)
+    }
+    console.log(objProduct);
+    setIsLoading(false)
   }
+  
+
+  const addProduct=async(objProduct)=>{
+    await apiFeiraKit.post('/products',objProduct)
+    .then(response =>console.log(response))
+    .catch((error)=>{
+      console.log(' ====>um erro ocorreu: '+error)
+    })
+    setIsLoading(false)
+  }
+
+  const updateProduct=async(objProduct)=>{
+    await apiFeiraKit.post('/products',objProduct)
+    .then(response =>console.log(response))
+    .catch((error)=>{
+      console.log(' ====>um erro ocorreu: '+error)
+    })
+    setIsLoading(false)
+  }
+
+  
+
   return (
     <VStack>
       <ButtonBack />
@@ -304,10 +352,11 @@ export function ProductForm() {
             accessibilityLabel="Escolha a categoria do produto"
             onValueChange={(itemValue) => setCategory(itemValue)}
           >
-            <Select.Item label="Legumes" value="1" />
-            <Select.Item label="Frutas" value="2" />
-            <Select.Item label="Hortalicas" value="3" />
-            <Select.Item label="Plantas medicinais" value="4" />
+            {/* 'fruta', 'legume', 'verdura, hortalicas' */}
+            <Select.Item label="Legume" value="legume" />
+            <Select.Item label="Fruta" value="fruta" />
+            <Select.Item label="Hortaliça" value="hortalicas" />
+            <Select.Item label="Verdura" value="verdura" />
           </Select>
 
           <Heading
@@ -385,11 +434,13 @@ export function ProductForm() {
                 accessibilityLabel="Escolha o tipo de unidade"
                 onValueChange={(itemValue) => setunit(itemValue)}
               >
-                <Select.Item label="Kilograma" value="kg" />
-                <Select.Item label="Dúzia" value="dz" />
-                <Select.Item label="Grama" value="g" />
-                <Select.Item label="Uma unidade" value="un" />
-                <Select.Item label="Litro" value="lt" />
+                <Select.Item label="Kilograma" value="kilograma" />
+                <Select.Item label="Dúzia" value="duzia" />
+                <Select.Item label="Grama" value="grama" />
+                <Select.Item label="Uma unidade" value="unidade" />
+                <Select.Item label="Cartela" value="cartela" />
+                <Select.Item label="Dezena" value="dezena" />
+                
               </Select>
             </View>
           </HStack>
@@ -523,7 +574,7 @@ export function ProductForm() {
           )}
 
           <Center mt={8}>
-            <Button rounded={8} px={8} py={2} fontSize={22} onPress={checkForm}>
+            <Button isLoading={isLoading} disabled={isLoading} rounded={8} px={8} py={2} fontSize={22} onPress={checkForm}>
               <Heading
                 color={colors.gray[200]}
                 fontFamily="body"
