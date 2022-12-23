@@ -22,6 +22,7 @@ import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
 import apiFeiraKit from "../services/ApiFeiraKit";
+import { formToJSON } from "axios";
 
 export function Description() {
   const navigation = useNavigation();
@@ -47,7 +48,6 @@ export function Description() {
   }
  
   const deleteProduct = (id) => {
-    console.log(id)
     Alert.alert(texts.title, texts.description, [
       {
         text: texts.optionNo,
@@ -58,7 +58,15 @@ export function Description() {
       {
         text: texts.optionYes,
         onPress: () => {
-          apiFeiraKit.delete('/products',{'id':id}).then(()=>console.log("sucesso")).catch(err=>console.log(err))
+          let objDelete={'id':id}
+           apiFeiraKit.delete('/products',{ data: objDelete})
+          .then(()=>{
+            navigation.goBack()
+          })
+          .catch((error)=>{
+            console.log(error.request);
+            console.log('====>um erro ocorreu: '+error.response.data)
+          })
         },
       },
     ]);
@@ -80,7 +88,7 @@ export function Description() {
           width={"100%"}
           showsHorizontalScrollIndicator={false}
           horizontal
-          contentContainerStyle={{ paddingHorizontal: "2%", width: "90%" }}
+          contentContainerStyle={{ paddingHorizontal: "2%" }}
           data={Images}
           keyExtractor={(images) => images}
           renderItem={({ index }) => (

@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useCallback} from "react";
 import {
   VStack,
   HStack,
@@ -8,14 +8,15 @@ import {
   Heading,
   FlatList,
   Center,
-  Pressable,
+  View
 } from "native-base";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import apiFeiraKit from "../services/ApiFeiraKit";
+
 
 export function MyProducts() {
   const { colors } = useTheme();
@@ -33,6 +34,7 @@ export function MyProducts() {
   }
 
   const getAllProducts=()=>{
+    
     apiFeiraKit.get('/products')
     .then(({data})=>{
       setProducts(data)
@@ -43,7 +45,8 @@ export function MyProducts() {
 
   }
    
-  useEffect(getAllProducts,[])
+  useFocusEffect(
+    useCallback(getAllProducts,[]))
 
   return (
     <VStack flex={1} w="full" px="2%">
@@ -105,13 +108,12 @@ export function MyProducts() {
           />
         )}
         ListEmptyComponent={() => (
-          <Pressable
+          <View
           bgColor={colors.gray[250]}
-          onPress={()=>getAllProducts()}
           mr="4%"
           mb={4}
           w='98%'
-          maxH={320}
+          h={'90%'}
           p={4}
           borderRadius={8}
           borderWidth={1}
@@ -133,11 +135,14 @@ export function MyProducts() {
                  nenhum produto encontrado
                 </Heading>
             </VStack>
+
             <Center>
+              <TouchableOpacity onPress={()=>getAllProducts()}>
               <MaterialIcons color={colors.gray[300]} name="refresh" size={50}/>
+              </TouchableOpacity>
             </Center>
           </HStack>
-           </Pressable>
+           </View>
         )}
       />
     </VStack>

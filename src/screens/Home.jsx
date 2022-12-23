@@ -1,14 +1,13 @@
 import { VStack, Heading, useTheme, FlatList, Center, Text } from "native-base";
 import { Header } from "../components/Header";
 import { ProductCard } from "../components/ProductCard";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect,useState } from "react";
+import { useState,useCallback} from "react";
 
 import apiFeiraKit from "../services/ApiFeiraKit";
 import { LoadingProducts } from "../components/Loading";
 import { TouchableOpacity } from "react-native";
-
 
 export function Home() {
   const { colors } = useTheme();
@@ -25,21 +24,24 @@ export function Home() {
 
 
   const getAllProducts=()=>{
+    setIsLoading(true)
     apiFeiraKit.get('/products')
     .then(({data})=>{
-      setProducts(data)
+     setProducts(data.reverse())
+     setIsLoading(false)
     }) 
     .catch((error)=>{
-      console.log(error)
+      setProducts([])
       setIconName('sync-problem')
       setEmptyText(":'(\n Ocorreu um erro,tente novamente")
+      console.log(error)
     })
-    setIsLoading(false)
+    
   }
    
-  useEffect(getAllProducts,[])
-
-  
+  useFocusEffect(
+    useCallback(getAllProducts,[])
+  )
 
   return (
     
@@ -55,9 +57,9 @@ export function Home() {
     >
       <Header />
 
-      {isLoading ?
+    {isLoading ?
       <LoadingProducts/>
-      : 
+    :
       <>
       <Heading
         size="md"
@@ -101,8 +103,8 @@ export function Home() {
           </Center>
         )}
       />
-      </>
-      }
+      </>}
+      
     </VStack>
   );
 }

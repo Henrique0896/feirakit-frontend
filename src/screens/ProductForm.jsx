@@ -21,7 +21,7 @@ import { ButtonBack } from "../components/ButtonBack";
 import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRoute } from "@react-navigation/native";
+import { useRoute,useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { LoadingImage } from "../components/Loading";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
@@ -30,7 +30,8 @@ import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function ProductForm() {
   const route = useRoute();
-  const { product } = route.params;
+  const navigation=useNavigation();
+  const {product} =route.params
   const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
   const ButtonText = product ? "Confirmar" : "Adicionar";
   const { colors } = useTheme();
@@ -39,13 +40,13 @@ export function ProductForm() {
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
   let monthDate =
-    ObjDate.getMonth() < 10
-      ? "0" + (ObjDate.getMonth() + 1)
-      : ObjDate.getMonth() ;
-  const id =product ? product.id : null ;
+    ObjDate.getMonth() < 10 ? "0" + ObjDate.getMonth() : ObjDate.getMonth();
+  const id = product ? product.id : null;
   const [title, setTitle] = useState(product ? product.nome : "");
   const [unit, setunit] = useState(product ? product.unidade : "");
-  const [bestBefore,setBestBefore]=useState(product ? product.bestbefore : false)
+  const [bestBefore, setBestBefore] = useState(
+    product ? product.bestbefore : false
+  );
   const [category, setCategory] = useState(product ? product.categoria : "");
   const [description, setDescription] = useState(
     product ? product.descricao : ""
@@ -56,7 +57,7 @@ export function ProductForm() {
   const [inventory, setInventory] = useState(
     product ? product.estoque.toString() : ""
   );
-  const [isLoading,setIsLoading]=useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = useState(ObjDate);
   const [showDate, setShow] = useState(false);
   const [dateText, setDateText] = useState(
@@ -112,8 +113,9 @@ export function ProductForm() {
       );
       return;
     }
-    
+
     let selectedImages;
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
@@ -137,7 +139,6 @@ export function ProductForm() {
       selectedImages.map((image) => {
         newImages.push(image.uri);
       });
-
       setImages(newImages);
     } else {
       setImages(images);
@@ -202,6 +203,7 @@ export function ProductForm() {
         newImages.push(image);
       });
       newImages.push(capturedImage);
+
       setImages(newImages);
     } else {
       setImages(images);
@@ -209,71 +211,79 @@ export function ProductForm() {
     setIsLoadingImages(false);
   };
 
+  const checkForm = () => {
+    setIsLoading(true);
+    let objProduct = null;
+    if (
+      id == "" ||
+      images == [] ||
+      price == "" ||
+      title == "" ||
+      inventory == "" ||
+      dateText == "" ||
+      unit == "" ||
+      category == ""
+    ) {
+      Alert.alert(
+        "Informações",
+        "por favor preencha todas as informações antes de continuar"
+      );
+      setIsLoading(false);
+      return;
+    }
 
-  const checkForm=()=>{
-    setIsLoading(true)
-    let objProduct=null
-    if(id == ''
-      ||images == []
-      ||price==''
-      ||title==''
-      ||inventory==''
-      ||dateText==''
-      ||unit==''
-      ||category==''
-      ){
-        Alert.alert('Informações',"por favor preencha todas as informações antes de continuar")
-        setIsLoading(false)
-        return
-      }
+    objProduct = {
+      nome_usuario: "string",
+      nome: title,
+      categoria: category,
+      descricao: description,
+      unidade: unit,
+      estoque: parseInt(inventory),
+      produtor: "Manuel gomes",
+      bestbefore: bestBefore,
+      validade: dateText.split("/", 3).reverse().join("-"),
+      avaliacao: "1",
+      comentarios: ["não há comentarios"],
+      preco: parseInt(price),
+      imagem_url: images,
+    };
+    if (id === null) {
+      addProduct(objProduct);
+    } else {
+      objProduct.id = id;
+      updateProduct(objProduct);
+    }
+  };
 
-    
-     objProduct= {
-         nome_usuario: "string",
-         nome: title,
-         categoria: category,
-         descricao: description,
-         unidade: unit,
-         estoque: parseInt(inventory),
-         produtor:"Manuel gomes",
-         bestbefore:bestBefore,
-         validade:dateText.split('/',3).reverse().join('-'),
-         avaliacao: "1",
-         comentarios:'não há comentarios',
-         preco:parseFloat(price),
-         imagem_url: images
-     }
+  const addProduct = async (objProduct) => {
+    let jsonProduct = JSON.stringify(objProduct);
+    console.log(jsonProduct);
+    await apiFeiraKit
+      .post("/products", jsonProduct)
+      .then((response) => {
+        navigation.goBack()
+        console.log("sucesso");
+      })
+      .catch((error) => {
+        alert('Algo deu errado,tente novamente')
+        console.log(" ====>um erro ocorreu: " + error);
+      });
+    setIsLoading(false);
+  };
 
-     if(id===null){
-        addProduct(objProduct)
-     }else{
-      objProduct.id=id
-      updateProduct(objProduct)
-     }
-
-    console.log(objProduct);
-    setIsLoading(false)
-  }
-  
-
-  const addProduct=async(objProduct)=>{
-    await apiFeiraKit.post('/products',objProduct)
-    .then(response =>console.log(response))
-    .catch((error)=>{
-      console.log(' ====>um erro ocorreu: '+error)
-    })
-    setIsLoading(false)
-  }
-
-  const updateProduct=async(objProduct)=>{
-    await apiFeiraKit.post('/products',objProduct)
-    .then(response =>console.log(response))
-    .catch((error)=>{
-      console.log(' ====>um erro ocorreu: '+error)
-    })
-    setIsLoading(false)
-  }
-
+  const updateProduct = async (objProduct) => {
+    let jsonProduct = JSON.stringify(objProduct);
+    await apiFeiraKit
+      .put("/products", jsonProduct)
+      .then((response) => {
+        navigation.goBack()
+      })
+      .catch((error) => {
+        alert('Algo deu errado,tente novamente')
+        console.log(" ====>um erro ocorreu: " + error);
+      });
+    setIsLoading(false);
+  };
   
 
   return (
@@ -340,7 +350,6 @@ export function ProductForm() {
             accessibilityLabel="Escolha a categoria do produto"
             onValueChange={(itemValue) => setCategory(itemValue)}
           >
-            {/* 'fruta', 'legume', 'verdura, hortalicas' */}
             <Select.Item label="Legume" value="legume" />
             <Select.Item label="Fruta" value="fruta" />
             <Select.Item label="Hortaliça" value="hortalicas" />
@@ -373,7 +382,14 @@ export function ProductForm() {
             }}
           />
 
-          <Checkbox isChecked={bestBefore} mt={4} _text={{color:colors.blue[700]}}  onChange={setBestBefore}>O produto será colhido após a compra </Checkbox>
+          <Checkbox
+            isChecked={bestBefore}
+            mt={4}
+            _text={{ color: colors.blue[700] }}
+            onChange={setBestBefore}
+          >
+            O produto será colhido após a compra{" "}
+          </Checkbox>
           <HStack justifyContent="space-between" mt={2}>
             <View w="1/3">
               <Heading
@@ -428,7 +444,6 @@ export function ProductForm() {
                 <Select.Item label="Uma unidade" value="unidade" />
                 <Select.Item label="Cartela" value="cartela" />
                 <Select.Item label="Dezena" value="dezena" />
-                
               </Select>
             </View>
           </HStack>
@@ -562,7 +577,15 @@ export function ProductForm() {
           )}
 
           <Center mt={8}>
-            <Button isLoading={isLoading} disabled={isLoading} rounded={8} px={8} py={2} fontSize={22} onPress={checkForm}>
+            <Button
+              isLoading={isLoading}
+              disabled={isLoading}
+              rounded={8}
+              px={8}
+              py={2}
+              fontSize={22}
+              onPress={checkForm}
+            >
               <Heading
                 color={colors.gray[200]}
                 fontFamily="body"
@@ -600,6 +623,5 @@ export function ProductForm() {
         </BottomSheetView>
       </BottomSheet>
     </VStack>
-    
   );
 }
