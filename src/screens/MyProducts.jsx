@@ -44,6 +44,18 @@ export function MyProducts() {
     })
 
   }
+
+  const getProductsByName=(name)=>{
+    
+    apiFeiraKit.get(`/products/byname/${name}`)
+    .then(({data})=>{
+      setProducts(data)
+    }) 
+    .catch((error)=>{
+      console.log(error)
+    })
+
+  }
    
   useFocusEffect(
     useCallback(getAllProducts,[]))
@@ -73,6 +85,7 @@ export function MyProducts() {
           borderRadius={8}
           mr={2}
           onChangeText={setSearch}
+          onSubmitEditing={()=>{getProductsByName(search)}}
           style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
         />
 
