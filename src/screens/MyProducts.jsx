@@ -148,7 +148,7 @@ export function MyProducts() {
                   mb={1}
                   color={colors.gray[500]}
                 >
-                  nenhum produto encontrado
+                  Você ainda não tem produtos cadatrados
                 </Heading>
               </VStack>
 
