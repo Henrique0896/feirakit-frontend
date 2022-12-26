@@ -15,14 +15,15 @@ import { ButtonBack } from "../components/ButtonBack";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function MyProducts() {
   const { colors } = useTheme();
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
-
   const navigation = useNavigation();
+  const user=useSelector((state) => state.AuthReducers.userData)
   function handleOpenAdd() {
     navigation.navigate("ProductForm", {});
   }
@@ -31,9 +32,9 @@ export function MyProducts() {
     navigation.navigate("description", { productId, product, isInfo });
   }
 
-  const getAllProducts = () => {
+  const getProductsByNameUsuario = () => {
     apiFeiraKit
-      .get("/products")
+      .get(`/products/bynameUsuario/${user.nome_completo}`)
       .then(({ data }) => {
         setProducts(data);
       })
@@ -42,9 +43,9 @@ export function MyProducts() {
       });
   };
 
-  const getProductsByName = (name) => {
+  const getProductsByName = (productName) => {
     apiFeiraKit
-      .get(`/products/byname/${name}`)
+      .get(`/products/byname/${productName}`)
       .then(({ data }) => {
         setProducts(data);
       })
@@ -53,13 +54,14 @@ export function MyProducts() {
       });
   };
 
-  useFocusEffect(useCallback(getAllProducts, []));
+  useFocusEffect(useCallback(getProductsByNameUsuario, []));
 
   return (
     <VStack flex={1} w="full" px="2%">
       <ButtonBack />
       <HStack alignItems="center" w="96%" alignSelf="center">
         <Input
+        isDisabled
           bgColor={colors.gray[300]}
           borderWidth={2}
           borderColor={colors.gray[400]}
@@ -151,7 +153,7 @@ export function MyProducts() {
               </VStack>
 
               <Center>
-                <TouchableOpacity onPress={() => getAllProducts()}>
+                <TouchableOpacity onPress={() => getProductsByNameUsuario()}>
                   <MaterialIcons
                     color={colors.gray[300]}
                     name="refresh"

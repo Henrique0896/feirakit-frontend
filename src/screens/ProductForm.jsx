@@ -26,6 +26,7 @@ import * as ImagePicker from "expo-image-picker";
 import { LoadingImage } from "../components/Loading";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../components/CustomBottomSheet";
+import { useSelector } from "react-redux";
 import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function ProductForm() {
@@ -34,8 +35,8 @@ export function ProductForm() {
   const { product } = route.params;
   const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
   const ButtonText = product ? "Confirmar" : "Adicionar";
+  const producer = product ? product.produtor : useSelector((state) => state.AuthReducers.userData).nome_completo ;
   const { colors } = useTheme();
-
   const ObjDate = new Date();
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
@@ -233,13 +234,13 @@ export function ProductForm() {
     }
 
     objProduct = {
-      nome_usuario: "string",
+      nome_usuario: producer,
       nome: title,
       categoria: category,
       descricao: description,
       unidade: unit,
       estoque: parseInt(inventory),
-      produtor: "Manuel gomes",
+      produtor: producer,
       bestbefore: bestBefore,
       validade: dateText.split("/", 3).reverse().join("-"),
       avaliacao: "1",
