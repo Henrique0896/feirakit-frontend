@@ -6,8 +6,10 @@ import {
 import { Text, useTheme, View } from "native-base";
 import { Image, TouchableOpacity, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { Logout } from "../store/actions";
+
+
 
 const texts = {
   title: "Sair",
@@ -17,6 +19,9 @@ const texts = {
 };
 
 export function CustomDrawer(props) {
+  const user = useSelector((state) => state.AuthReducers.userData)
+  
+
   const dispatch = useDispatch();
   const HandleLogOut = () => {
     Alert.alert(texts.title, texts.description, [

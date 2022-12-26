@@ -11,14 +11,10 @@ export const Init = () => {
   };
 };
 
-export const Login = (username, password) => {
+export const Login = (user) => {
   return async (dispatch) => {
-    let token = null;
-    //criar a validação se o usuário existe nop banco posteriormente
-    if (username && password) {
-      token = username + password;
-      await AsyncStorage.setItem("token", token);
-    }
+    let token = user.id;
+    await AsyncStorage.setItem("token", token);
     dispatch({
       type: "LOGIN",
       payload: token,

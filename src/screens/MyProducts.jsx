@@ -1,4 +1,4 @@
-import React, { useState,useCallback} from "react";
+import React, { useState, useCallback } from "react";
 import {
   VStack,
   HStack,
@@ -8,7 +8,7 @@ import {
   Heading,
   FlatList,
   Center,
-  View
+  View,
 } from "native-base";
 import { TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
@@ -17,13 +17,11 @@ import { MyProductItem } from "../components/MyProductItem";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import apiFeiraKit from "../services/ApiFeiraKit";
 
-
 export function MyProducts() {
   const { colors } = useTheme();
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
-  
-  
+
   const navigation = useNavigation();
   function handleOpenAdd() {
     navigation.navigate("ProductForm", {});
@@ -33,32 +31,29 @@ export function MyProducts() {
     navigation.navigate("description", { productId, product, isInfo });
   }
 
-  const getAllProducts=()=>{
-    
-    apiFeiraKit.get('/products')
-    .then(({data})=>{
-      setProducts(data)
-    }) 
-    .catch((error)=>{
-      console.log(error)
-    })
+  const getAllProducts = () => {
+    apiFeiraKit
+      .get("/products")
+      .then(({ data }) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-  }
+  const getProductsByName = (name) => {
+    apiFeiraKit
+      .get(`/products/byname/${name}`)
+      .then(({ data }) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-  const getProductsByName=(name)=>{
-    
-    apiFeiraKit.get(`/products/byname/${name}`)
-    .then(({data})=>{
-      setProducts(data)
-    }) 
-    .catch((error)=>{
-      console.log(error)
-    })
-
-  }
-   
-  useFocusEffect(
-    useCallback(getAllProducts,[]))
+  useFocusEffect(useCallback(getAllProducts, []));
 
   return (
     <VStack flex={1} w="full" px="2%">
@@ -85,7 +80,9 @@ export function MyProducts() {
           borderRadius={8}
           mr={2}
           onChangeText={setSearch}
-          onSubmitEditing={()=>{getProductsByName(search)}}
+          onSubmitEditing={() => {
+            getProductsByName(search);
+          }}
           style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
         />
 
@@ -108,8 +105,8 @@ export function MyProducts() {
       </Heading>
 
       <FlatList
-      paddingX='2%'
-        data={products} 
+        paddingX="2%"
+        data={products}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         w="100%"
@@ -122,22 +119,26 @@ export function MyProducts() {
         )}
         ListEmptyComponent={() => (
           <View
-          bgColor={colors.gray[250]}
-          mr="4%"
-          mb={4}
-          w='98%'
-          h={'90%'}
-          p={4}
-          borderRadius={8}
-          borderWidth={1}
-          borderColor={colors.gray[500]}
-          justifyContent="space-between"
-        >
-          <HStack justifyContent="space-between">
-            <Center>
-              <MaterialIcons color={colors.gray[300]} name="remove-shopping-cart" size={50}/>
-            </Center>
-            <VStack alignSelf="center" w="70%" ml={2}>
+            bgColor={colors.gray[250]}
+            mr="4%"
+            mb={4}
+            w="98%"
+            h={"90%"}
+            p={4}
+            borderRadius={8}
+            borderWidth={1}
+            borderColor={colors.gray[500]}
+            justifyContent="space-between"
+          >
+            <HStack justifyContent="space-between">
+              <Center>
+                <MaterialIcons
+                  color={colors.gray[300]}
+                  name="remove-shopping-cart"
+                  size={50}
+                />
+              </Center>
+              <VStack alignSelf="center" w="70%" ml={2}>
                 <Heading
                   fontWeight="medium"
                   fontFamily="heading"
@@ -145,17 +146,21 @@ export function MyProducts() {
                   mb={1}
                   color={colors.gray[500]}
                 >
-                 nenhum produto encontrado
+                  nenhum produto encontrado
                 </Heading>
-            </VStack>
+              </VStack>
 
-            <Center>
-              <TouchableOpacity onPress={()=>getAllProducts()}>
-              <MaterialIcons color={colors.gray[300]} name="refresh" size={50}/>
-              </TouchableOpacity>
-            </Center>
-          </HStack>
-           </View>
+              <Center>
+                <TouchableOpacity onPress={() => getAllProducts()}>
+                  <MaterialIcons
+                    color={colors.gray[300]}
+                    name="refresh"
+                    size={50}
+                  />
+                </TouchableOpacity>
+              </Center>
+            </HStack>
+          </View>
         )}
       />
     </VStack>

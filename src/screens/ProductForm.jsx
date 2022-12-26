@@ -21,7 +21,7 @@ import { ButtonBack } from "../components/ButtonBack";
 import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRoute,useNavigation } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { LoadingImage } from "../components/Loading";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
@@ -30,8 +30,8 @@ import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function ProductForm() {
   const route = useRoute();
-  const navigation=useNavigation();
-  const {product} =route.params
+  const navigation = useNavigation();
+  const { product } = route.params;
   const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
   const ButtonText = product ? "Confirmar" : "Adicionar";
   const { colors } = useTheme();
@@ -257,15 +257,13 @@ export function ProductForm() {
 
   const addProduct = async (objProduct) => {
     let jsonProduct = JSON.stringify(objProduct);
-    console.log(jsonProduct);
     await apiFeiraKit
       .post("/products", jsonProduct)
       .then((response) => {
-        navigation.goBack()
-        console.log("sucesso");
+        navigation.goBack();
       })
       .catch((error) => {
-        alert('Algo deu errado,tente novamente')
+        alert("Algo deu errado,tente novamente");
         console.log(" ====>um erro ocorreu: " + error);
       });
     setIsLoading(false);
@@ -276,20 +274,18 @@ export function ProductForm() {
     await apiFeiraKit
       .put("/products", jsonProduct)
       .then((response) => {
-        navigation.goBack()
+        navigation.goBack();
       })
       .catch((error) => {
-        alert('Algo deu errado,tente novamente')
+        alert("Algo deu errado,tente novamente");
         console.log(" ====>um erro ocorreu: " + error);
       });
     setIsLoading(false);
   };
-  
 
   return (
     <VStack>
       <ButtonBack />
-
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         keyboardVerticalOffset={8}

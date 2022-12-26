@@ -5,7 +5,7 @@ import { Image, Alert, TouchableOpacity, Linking } from "react-native";
 import { useDispatch } from "react-redux";
 import { Login as loginAction } from "../store/actions";
 import { useNavigation } from "@react-navigation/native";
-
+import ApiFeiraKit from '../services/ApiFeiraKit'
 export function Login() {
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -46,7 +46,18 @@ export function Login() {
     if (username === "" || password === "") {
       return Alert.alert("Erro", "Usuário ou senha inválidos");
     }
-    dispatch(loginAction(username, password));
+    
+    ApiFeiraKit.get(`/users/byname/${username}`)
+    .then(({data})=>{
+      if (data.length === 0 ||data[0].senha !== password  ){
+        return Alert.alert("Erro", "Usuário ou senha inválidos")
+      }
+      dispatch(loginAction(data[0]));
+    })
+    .catch(()=>{
+      return Alert.alert("Erro", "Um Erro inesperado ocorreu,tente novamente")
+     }
+    )
   };
 
   function handleVisibilityPassword() {
@@ -83,7 +94,7 @@ export function Login() {
             ml={2}
           />
         }
-        placeholder="Digite seu e-mail ou CPF"
+        placeholder="Digite seu nome de usuário"
         fontFamily={"Montserrat_500Medium"}
         placeholderTextColor={colors.blue[700]}
         fontSize={14}

@@ -64,7 +64,6 @@ export function Description() {
             navigation.goBack()
           })
           .catch((error)=>{
-            console.log(error.request);
             console.log('====>um erro ocorreu: '+error.response.data)
           })
         },
