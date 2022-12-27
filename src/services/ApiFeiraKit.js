@@ -1,7 +1,8 @@
 import axios from 'axios';
+import {API_URL}from '@env';
 
 const apiFeiraKit= axios.create({
-   baseURL:'http://192.168.0.139:5000',//url da api
+   baseURL:API_URL,
    headers: {
     'accept':'application/json',
     'Content-Type': 'application/json'

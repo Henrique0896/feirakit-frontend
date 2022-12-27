@@ -12,6 +12,7 @@ export function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [inputType, setInputType] = useState("password");
+  const[isLoading,setIsLoading]=useState(false)
   const dispatch = useDispatch();
 
   const alert = {
@@ -43,21 +44,26 @@ export function Login() {
   };
 
   const submit = () => {
+    setIsLoading(true)
     if (username === "" || password === "") {
+      setIsLoading(false)
       return Alert.alert("Erro", "Usuário ou senha inválidos");
     }
     
     ApiFeiraKit.get(`/users/byname/${username}`)
     .then(({data})=>{
       if (data.length === 0 ||data[0].senha !== password  ){
+        setIsLoading(false)
         return Alert.alert("Erro", "Usuário ou senha inválidos")
       }
       dispatch(loginAction(data[0]));
     })
     .catch(()=>{
+      setIsLoading(false)
       return Alert.alert("Erro", "Um Erro inesperado ocorreu,tente novamente")
      }
     )
+    
   };
 
   function handleVisibilityPassword() {
@@ -148,6 +154,7 @@ export function Login() {
         mt={4}
         w="90%"
         borderRadius={15}
+        isLoading={isLoading}
       >
         Entrar
       </Button>
