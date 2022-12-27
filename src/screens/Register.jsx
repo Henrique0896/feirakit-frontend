@@ -20,7 +20,7 @@ export function Register() {
     <VStack w="full" alignItems="center">
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ width:"100%",paddingBottom:100}}>
         <ButtonBack />
-        <Text alignSelf="flex-start" ml={4}>
+        <Text alignSelf="flex-start" mt={8} ml={4}>
           Informações da Conta
         </Text>
         <Input
@@ -147,28 +147,6 @@ export function Register() {
           leftElement={
             <Icon
               color={colors.blue[900]}
-              as={<MaterialIcons name="calendar-today" />}
-              size={6}
-              ml={2}
-            />
-          }
-          placeholder="Data de nascimento"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[900]}
               as={<MaterialIcons name="call" />}
               size={6}
               ml={2}
@@ -181,26 +159,6 @@ export function Register() {
           borderRadius={8}
           mr={4}
         />
-        <Text alignSelf="flex-start" ml={4} mb={4} mt={4}>
-          Sexo
-        </Text>
-        <Radio.Group
-          color={colors.blue[600]}
-          name="generogroup"
-          value={value}
-          onChange={(nextValue) => {
-            setValue(nextValue);
-          }}
-        >
-          <HStack>
-            <Radio _text={{color:colors.blue[600]}} value="Masculino" my="1" style={{paddingHorizontal:20}}>
-              Masculino
-            </Radio>
-            <Radio _text={{color:colors.blue[600]}} value="Feminino" my="1">
-              Feminino
-            </Radio>
-          </HStack>
-        </Radio.Group>
         <Text alignSelf="flex-start" ml={4} mt={4}>
           Endereço
         </Text>
@@ -312,11 +270,14 @@ export function Register() {
         />
         <Button
           bgColor={colors.blue[600]}
-          height={42}
+          height={54}
+          width={334}
           mt={4}
           borderRadius={15}
+          alignSelf="center"
+          alignContent="center"
         >
-          Cadastar
+          Cadastrar
         </Button>
       </ScrollView>
     </VStack>

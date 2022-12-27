@@ -28,11 +28,11 @@ export function Login() {
       {
         text: alert.textButton,
         onPress: () =>
-          Linking.canOpenURL(link).then((supported) => {
-            if (!supported) {
-              //operacao concluida com sucesso
+          Linking.canOpenURL(alert.link).then((supported) => {
+            if (supported) {
+              return Linking.openURL(alert.link)
             }
-          }),
+          }).catch(() => {}),
       },
       {
         text: alert.textButtonCancel,
