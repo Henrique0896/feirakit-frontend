@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   VStack,
   HStack,
@@ -7,59 +7,23 @@ import {
   useTheme,
   Heading,
   FlatList,
+  Center,
+  View,
 } from "native-base";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { MaterialIcons } from "@expo/vector-icons";
-import { MyProductItems } from "../components/MyProductItems";
-import { useNavigation } from "@react-navigation/native";
+import { MyProductItem } from "../components/MyProductItem";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function MyProducts() {
   const { colors } = useTheme();
   const [search, setSearch] = useState("");
-  
-  let products=[
-    {
-      id: 1,
-      imagem_url: [
-          "https://images.pexels.com/photos/96616/pexels-photo-96616.jpeg?auto=compress&cs=tinysrgb&w=1000&h=500&dpr=1",
-          "https://images.pexels.com/photos/3938343/pexels-photo-3938343.jpeg?auto=compress&cs=tinysrgb&w=1600",
-          "https://veja.abril.com.br/wp-content/uploads/2016/06/tomate-colesterol-genetica-tk-20121106-original.jpeg?quality=70&strip=info&resize=850,567"
-      ],
-      nome: "Tomate ",
-      descricao: `O tomate é o fruto do tomateiro.Da sua família, fazem também parte as berinjelas,as pimentas e os pimentões, além de algumas espécies não comestíveis.`,
-      preco: 4.5,
-      estoque: 12,
-      validade: "10/12/2023",
-      unidade: "kg",
-      categoria: "2",
-      produtor:"Manuel gomes",
-      bestbefore:false,
-      comentarios:[],
-      avaliacao:[]
-    },
-
-    {
-      id: 2,
-      imagem_url: [
-        "https://images.pexels.com/photos/2518893/pexels-photo-2518893.jpeg?auto=compress&cs=tinysrgb&w=1000&h=500&dpr=1",
-        "https://images.pexels.com/photos/257259/pexels-photo-257259.jpeg?auto=compress&cs=tinysrgb&w=1600",
-      ],
-      nome: "Repolho ",
-      descricao: `O repolho, subespécie da Brassica oleracea, grupo Capitata, é uma variedade peculiar de couve, constituindo um dos vegetais mais utilizados na cozinha, em diversas aplicações (sopas, conservas, acompanhamentos, massas, etc). `,
-      preco: 2.0,
-      estoque: 7,
-      validade: "17-12-2025",
-      unidade: "kg",
-      categoria: "2",
-      produtor:"Manuel gomes",
-      bestbefore:true,
-      comentarios:[],
-      avaliacao:[]
-    },
-  ]
-  
+  const [products, setProducts] = useState([]);
   const navigation = useNavigation();
+  const user=useSelector((state) => state.AuthReducers.userData)
   function handleOpenAdd() {
     navigation.navigate("ProductForm", {});
   }
@@ -68,11 +32,36 @@ export function MyProducts() {
     navigation.navigate("description", { productId, product, isInfo });
   }
 
+  const getProductsByNameUsuario = () => {
+    apiFeiraKit
+      .get(`/products/bynameUsuario/${user.nome_completo}`)
+      .then(({ data }) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getProductsByName = (productName) => {
+    apiFeiraKit
+      .get(`/products/byname/${productName}`)
+      .then(({ data }) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useFocusEffect(useCallback(getProductsByNameUsuario, []));
+
   return (
     <VStack flex={1} w="full" px="2%">
       <ButtonBack />
       <HStack alignItems="center" w="96%" alignSelf="center">
         <Input
+        isDisabled
           bgColor={colors.gray[300]}
           borderWidth={2}
           borderColor={colors.gray[400]}
@@ -93,6 +82,9 @@ export function MyProducts() {
           borderRadius={8}
           mr={2}
           onChangeText={setSearch}
+          onSubmitEditing={() => {
+            getProductsByName(search);
+          }}
           style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
         />
 
@@ -115,31 +107,62 @@ export function MyProducts() {
       </Heading>
 
       <FlatList
-      paddingX='2%'
-        data={products} 
+        paddingX="2%"
+        data={products}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         w="100%"
         keyExtractor={(product) => product.id}
         renderItem={({ item }) => (
-          <MyProductItems
+          <MyProductItem
             product={item}
             onPress={() => handleOpenDescription(item.id, item, true)}
           />
         )}
         ListEmptyComponent={() => (
-          <Center flex={1} h={400}>
-            <MaterialIcons
-              name="storefront"
-              size={80}
-              color={colors.gray[300]}
-              mt
-            />
-            {"\n"}
-            <Text color={colors.gray[300]} fontSize="4xl" textAlign="center">
-              Não há Produtos para mostrar.
-            </Text>
-          </Center>
+          <View
+            bgColor={colors.gray[250]}
+            mr="4%"
+            mb={4}
+            w="98%"
+            h={"90%"}
+            p={4}
+            borderRadius={8}
+            borderWidth={1}
+            borderColor={colors.gray[500]}
+            justifyContent="space-between"
+          >
+            <HStack justifyContent="space-between">
+              <Center>
+                <MaterialIcons
+                  color={colors.gray[300]}
+                  name="remove-shopping-cart"
+                  size={50}
+                />
+              </Center>
+              <VStack alignSelf="center" w="70%" ml={2}>
+                <Heading
+                  fontWeight="medium"
+                  fontFamily="heading"
+                  size="sm"
+                  mb={1}
+                  color={colors.gray[500]}
+                >
+                  Você ainda não tem produtos cadatrados
+                </Heading>
+              </VStack>
+
+              <Center>
+                <TouchableOpacity onPress={() => getProductsByNameUsuario()}>
+                  <MaterialIcons
+                    color={colors.gray[300]}
+                    name="refresh"
+                    size={50}
+                  />
+                </TouchableOpacity>
+              </Center>
+            </HStack>
+          </View>
         )}
       />
     </VStack>

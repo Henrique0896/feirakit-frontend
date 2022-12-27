@@ -13,7 +13,6 @@ import { THEME } from "./src/styles/theme";
 import { Loading } from "./src/components/Loading";
 import { Routes } from "./src/routes";
 import { Provider } from "react-redux";
-
 export default function App() {
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,

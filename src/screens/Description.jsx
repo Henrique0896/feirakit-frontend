@@ -21,6 +21,8 @@ import ImageButton from "../components/ImageButton";
 import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
+import apiFeiraKit from "../services/ApiFeiraKit";
+import { color } from "react-native-reanimated";
 
 export function Description() {
   const navigation = useNavigation();
@@ -31,12 +33,14 @@ export function Description() {
   const [amount, setAmount] = useState(1);
   const [urlImage, setUrlImage] = useState(product.imagem_url[0]);
   const Images = product.imagem_url;
-  const WhatsAppNumber = "+5533998785878";
-  let btnDisabled = amount === 1 ? true : false;
 
-  function handleOpenEdit(product) {
-    navigation.navigate("ProductForm", { product });
-  }
+  const [WhatsAppNumber,setWhatsAppNumber] = useState('');
+  apiFeiraKit.get(`/users/byname/${product.produtor}`)
+  .then(({ data }) => {
+    setWhatsAppNumber(data[0].telefone);
+  })
+  .catch(error=>console.log(error))
+  
   const texts = {
     title: "Exluir",
     description: `Realmente deseja excluir "${product.nome}"`,
@@ -44,6 +48,12 @@ export function Description() {
     optionNo: "Não",
   };
 
+  let btnDisabled = amount === 1 ? true : false;
+
+  function handleOpenEdit(product) {
+    navigation.navigate("ProductForm", { product });
+  }
+ 
   const deleteProduct = (id) => {
     Alert.alert(texts.title, texts.description, [
       {
@@ -55,7 +65,14 @@ export function Description() {
       {
         text: texts.optionYes,
         onPress: () => {
-          return;
+          let objDelete={'id':id}
+           apiFeiraKit.delete('/products',{ data: objDelete})
+          .then(()=>{
+            navigation.goBack()
+          })
+          .catch((error)=>{
+            console.log('====>um erro ocorreu: '+error.response.data)
+          })
         },
       },
     ]);
@@ -77,7 +94,7 @@ export function Description() {
           width={"100%"}
           showsHorizontalScrollIndicator={false}
           horizontal
-          contentContainerStyle={{ paddingHorizontal: "2%", width: "90%" }}
+          contentContainerStyle={{ paddingHorizontal: "2%" }}
           data={Images}
           keyExtractor={(images) => images}
           renderItem={({ index }) => (
@@ -199,6 +216,7 @@ export function Description() {
               WhatsAppNumber={WhatsAppNumber}
               Quantity={amount}
               ProductName={`${product.nome}`}
+              Name={`${product.produtor}`}
             />
           </>
         )}
