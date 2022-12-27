@@ -22,7 +22,7 @@ import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
 import apiFeiraKit from "../services/ApiFeiraKit";
-import { formToJSON } from "axios";
+import { color } from "react-native-reanimated";
 
 export function Description() {
   const navigation = useNavigation();
@@ -33,7 +33,19 @@ export function Description() {
   const [amount, setAmount] = useState(1);
   const [urlImage, setUrlImage] = useState(product.imagem_url[0]);
   const Images = product.imagem_url;
-  const WhatsAppNumber = "5533998785878";
+  const [WhatsAppNumber,setWhatsAppNumber] = useState('');
+  apiFeiraKit.get(`/users/byname/${product.produtor}`)
+  .then(({ data }) => {
+    setWhatsAppNumber(data[0].telefone);
+  })
+  .catch(error=>console.log(error))
+  
+
+
+  
+
+
+
   const texts = {
     title: "Exluir",
     description: `Realmente deseja excluir "${product.nome}"`,
@@ -207,6 +219,7 @@ export function Description() {
               WhatsAppNumber={WhatsAppNumber}
               Quantity={amount}
               ProductName={`${product.nome}`}
+              Name={`${product.produtor}`}
             />
           </>
         )}

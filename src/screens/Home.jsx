@@ -15,13 +15,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
 import apiFeiraKit from "../services/ApiFeiraKit";
 import { LoadingProducts } from "../components/Loading";
-import { Image, TouchableOpacity, View } from "react-native";
+import { Image,TouchableOpacity, View } from "react-native";
 
 export function Home() {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [iconName, setIconName] = useState("storefront");
   const [emptyText, setEmptyText] = useState("Não há Produtos para mostrar.");
+  const [headerText, setHeaderText] = useState("Todos os produtos");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -32,6 +33,8 @@ export function Home() {
 
   const getAllProducts = () => {
     setIsLoading(true);
+    setSearch("");
+    setHeaderText(`Todos os produtos`);
     apiFeiraKit
       .get("/products")
       .then(({ data }) => {
@@ -48,6 +51,8 @@ export function Home() {
   };
 
   const getProductsByName = (name) => {
+    setIsLoading(true);
+    setHeaderText(`Resultado para: "${name}"`);
     apiFeiraKit
       .get(`/products/byname/${name}`)
       .then(({ data }) => {
@@ -56,6 +61,7 @@ export function Home() {
       .catch((error) => {
         console.log(error);
       });
+    setIsLoading(false);
   };
 
   useFocusEffect(useCallback(getAllProducts, []));
@@ -96,6 +102,7 @@ export function Home() {
             fontSize={14}
             borderRadius={8}
             mr={4}
+            value={search}
             onChangeText={setSearch}
             onSubmitEditing={() => {
               getProductsByName(search);
@@ -119,17 +126,30 @@ export function Home() {
         <LoadingProducts />
       ) : (
         <>
-          <Heading
-            size="md"
-            mt={2}
-            color={colors.gray[500]}
-            justifyItems="left"
-            w="full"
-            mb={4}
-          >
-            Todos os produtos
-          </Heading>
+          <HStack w="full" alignItems="center">
 
+            {headerText !== 'Todos os produtos' &&
+            (
+            <>
+            <TouchableOpacity style={{justifyContent:'center',marginRight:5,marginTop:-7}}
+            onPress={()=>getAllProducts()}
+             >
+             <MaterialIcons name='clear' size={22}/>
+            </TouchableOpacity>
+            </>
+            )
+            }
+            <Heading
+              size="md"
+              mt={2}
+              color={colors.gray[500]}
+              justifyItems="left"
+              w="full"
+              mb={4}
+            >
+              {headerText}
+            </Heading> 
+          </HStack>
           <FlatList
             data={products}
             showsVerticalScrollIndicator={false}
