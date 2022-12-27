@@ -28,37 +28,31 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../components/CustomBottomSheet";
 import { useSelector } from "react-redux";
 import apiFeiraKit from "../services/ApiFeiraKit";
+import { useForm, Controller, set } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 export function ProductForm() {
   const route = useRoute();
   const navigation = useNavigation();
   const { product } = route.params;
+  const { colors } = useTheme();
   const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
   const ButtonText = product ? "Confirmar" : "Adicionar";
-  const producer = product ? product.produtor : useSelector((state) => state.AuthReducers.userData).nome_completo ;
-  const { colors } = useTheme();
+  const producer = product
+    ? product.produtor
+    : useSelector((state) => state.AuthReducers.userData).nome_completo;
+
   const ObjDate = new Date();
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
   let monthDate =
     ObjDate.getMonth() < 10 ? "0" + ObjDate.getMonth() : ObjDate.getMonth();
+
   const id = product ? product.id : null;
-  const [title, setTitle] = useState(product ? product.nome : "");
-  const [unit, setunit] = useState(product ? product.unidade : "");
-  const [bestBefore, setBestBefore] = useState(
-    product ? product.bestbefore : false
-  );
-  const [category, setCategory] = useState(product ? product.categoria : "");
-  const [description, setDescription] = useState(
-    product ? product.descricao : ""
-  );
-  const [price, setPrice] = useState(
-    product ? product.preco.toFixed(2).toString().replace(".", ",") : ""
-  );
-  const [inventory, setInventory] = useState(
-    product ? product.estoque.toString() : ""
-  );
+
   const [isLoading, setIsLoading] = useState(false);
+
   const [date, setDate] = useState(ObjDate);
   const [showDate, setShow] = useState(false);
   const [dateText, setDateText] = useState(
@@ -101,6 +95,7 @@ export function ProductForm() {
 
   const [images, setImages] = useState(product ? product.imagem_url : []);
   const [isLoadingImage, setIsLoadingImages] = useState(false);
+  const [emptyImage, setEmptyImage] = useState(false);
 
   const pickImages = async () => {
     setIsLoadingImages(true);
@@ -114,9 +109,7 @@ export function ProductForm() {
       );
       return;
     }
-
     let selectedImages;
-
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
@@ -141,8 +134,10 @@ export function ProductForm() {
         newImages.push(image.uri);
       });
       setImages(newImages);
+      setEmptyImage(false);
     } else {
       setImages(images);
+      setEmptyImage(false);
     }
     setIsLoadingImages(false);
   };
@@ -175,6 +170,9 @@ export function ProductForm() {
           });
           setIsLoadingImages(false);
           setImages(newImages);
+          if (newImages.length === 0) {
+            setEmptyImage(true);
+          }
         },
       },
     ]);
@@ -211,53 +209,61 @@ export function ProductForm() {
     }
     setIsLoadingImages(false);
   };
-
-  const checkForm = () => {
+  const productSchema = yup.object({
+    nome: yup.string().required("informe o nome do produto"),
+    categoria: yup.string().required("selecione a categoria do produto"),
+    descricao: yup.string().required("Adicione uma descrição para o produto"),
+    unidade: yup.string().required("selecione o tipo de unidade"),
+    estoque: yup
+      .string()
+      .required("informe a quantidade de produtos em estoque"),
+    preco: yup.string().required("informe o preço do produto"),
+  });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      nome: product ? product.nome : "",
+      descricao: product ? product.descricao : "",
+      preco: product ? product.preco.toString() : "",
+      categoria: product ? product.categoria : "",
+      estoque: product ? product.estoque.toString() : "",
+      unidade: product ? product.unidade : "",
+      bestbefore: product ? product.bestbefore : false,
+      produtor: producer,
+      comentarios: ["não há comentarios"],
+    },
+    resolver: yupResolver(productSchema),
+  });
+  const handleSigin = (data) => {
     setIsLoading(true);
-    let objProduct = null;
-    if (
-      id == "" ||
-      images == [] ||
-      price == "" ||
-      title == "" ||
-      inventory == "" ||
-      dateText == "" ||
-      unit == "" ||
-      category == ""
-    ) {
-      Alert.alert(
-        "Informações",
-        "por favor preencha todas as informações antes de continuar"
-      );
+    let objProduct = {
+      ...data,
+      nome_usuario: producer,
+      imagem_url: images,
+      validade: dateText.split("/", 3).reverse().join("-"),
+      preco: parseInt(data.preco),
+      estoque: parseInt(data.estoque),
+      avaliacao: "1",
+    };
+    if (objProduct.imagem_url.length === 0) {
+      setEmptyImage(true);
       setIsLoading(false);
       return;
     }
 
-    objProduct = {
-      nome_usuario: producer,
-      nome: title,
-      categoria: category,
-      descricao: description,
-      unidade: unit,
-      estoque: parseInt(inventory),
-      produtor: producer,
-      bestbefore: bestBefore,
-      validade: dateText.split("/", 3).reverse().join("-"),
-      avaliacao: "1",
-      comentarios: ["não há comentarios"],
-      preco: parseInt(price),
-      imagem_url: images,
-    };
     if (id === null) {
-      addProduct(objProduct);
+      addProduct(JSON.stringify(objProduct));
     } else {
       objProduct.id = id;
-      updateProduct(objProduct);
+      updateProduct(JSON.stringify(objProduct));
     }
   };
 
   const addProduct = async (objProduct) => {
-    let jsonProduct = JSON.stringify(objProduct);
+    let jsonProduct = objProduct;
     await apiFeiraKit
       .post("/products", jsonProduct)
       .then((response) => {
@@ -271,7 +277,7 @@ export function ProductForm() {
   };
 
   const updateProduct = async (objProduct) => {
-    let jsonProduct = JSON.stringify(objProduct);
+    let jsonProduct = objProduct;
     await apiFeiraKit
       .put("/products", jsonProduct)
       .then((response) => {
@@ -313,21 +319,33 @@ export function ProductForm() {
           >
             Nome do Produto:
           </Heading>
-          <Input
-            borderColor={colors.blue[600]}
-            placeholderTextColor={colors.blue[500]}
-            placeholder="Nome do Produto"
-            fontSize="md"
-            fontWeight="thin"
-            fontFamily="body"
-            value={title}
-            onChangeText={setTitle}
-            color={colors.blue[700]}
-            _focus={{
-              backgroundColor: colors.gray[200],
-              borderWidth: 2,
-            }}
+
+          <Controller
+            control={control}
+            name="nome"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                borderColor={
+                  errors.nome ? colors.purple[500] : colors.blue[600]
+                }
+                placeholderTextColor={
+                  errors.nome ? colors.purple[500] : colors.blue[500]
+                }
+                placeholder="Nome do Produto"
+                fontSize="md"
+                fontWeight="thin"
+                fontFamily="body"
+                value={value}
+                onChangeText={onChange}
+                color={colors.blue[700]}
+                _focus={{
+                  backgroundColor: colors.gray[200],
+                  borderWidth: 2,
+                }}
+              />
+            )}
           />
+
           <Heading
             mt={"2"}
             size="md"
@@ -337,21 +355,32 @@ export function ProductForm() {
           >
             Categoria:
           </Heading>
-          <Select
-            placeholderTextColor={colors.blue[500]}
-            color={colors.blue[700]}
-            borderColor={colors.blue[600]}
-            selectedValue={category}
-            placeholder="Selecione a categoria do produto"
-            fontSize="md"
-            accessibilityLabel="Escolha a categoria do produto"
-            onValueChange={(itemValue) => setCategory(itemValue)}
-          >
-            <Select.Item label="Legume" value="legume" />
-            <Select.Item label="Fruta" value="fruta" />
-            <Select.Item label="Hortaliça" value="hortalicas" />
-            <Select.Item label="Verdura" value="verdura" />
-          </Select>
+
+          <Controller
+            control={control}
+            name="categoria"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                placeholderTextColor={
+                  errors.categoria ? colors.purple[500] : colors.blue[500]
+                }
+                color={errors.categoria ? colors.purple[500] : colors.blue[600]}
+                borderColor={
+                  errors.categoria ? colors.purple[500] : colors.blue[600]
+                }
+                selectedValue={value}
+                placeholder="Selecione a categoria do produto"
+                fontSize="md"
+                accessibilityLabel="Escolha a categoria do produto"
+                onValueChange={onChange}
+              >
+                <Select.Item label="Legume" value="legume" />
+                <Select.Item label="Fruta" value="fruta" />
+                <Select.Item label="Hortaliça" value="hortalicas" />
+                <Select.Item label="Verdura" value="verdura" />
+              </Select>
+            )}
+          />
 
           <Heading
             mt={"2"}
@@ -362,31 +391,49 @@ export function ProductForm() {
           >
             Descrição:
           </Heading>
-          <TextArea
-            borderColor={colors.blue[600]}
-            placeholderTextColor={colors.blue[500]}
-            placeholder="descrição do produto"
-            flexWrap="wrap"
-            fontSize="md"
-            value={description}
-            onChangeText={setDescription}
-            fontWeight="thin"
-            fontFamily="body"
-            color={colors.blue[700]}
-            _focus={{
-              backgroundColor: colors.gray[200],
-              borderWidth: 2,
-            }}
+
+          <Controller
+            control={control}
+            name="descricao"
+            render={({ field: { onChange, value } }) => (
+              <TextArea
+                borderColor={
+                  errors.descricao ? colors.purple[500] : colors.blue[600]
+                }
+                placeholderTextColor={
+                  errors.descricao ? colors.purple[500] : colors.blue[500]
+                }
+                placeholder="descrição do produto"
+                flexWrap="wrap"
+                fontSize="md"
+                value={value}
+                onChangeText={onChange}
+                fontWeight="thin"
+                fontFamily="body"
+                color={colors.blue[700]}
+                _focus={{
+                  backgroundColor: colors.gray[200],
+                  borderWidth: 2,
+                }}
+              />
+            )}
           />
 
-          <Checkbox
-            isChecked={bestBefore}
-            mt={4}
-            _text={{ color: colors.blue[700] }}
-            onChange={setBestBefore}
-          >
-            O produto será colhido após a compra{" "}
-          </Checkbox>
+          <Controller
+            control={control}
+            name="bestbefore"
+            render={({ field: { onChange, value } }) => (
+              <Checkbox
+                isChecked={value}
+                mt={4}
+                _text={{ color: colors.blue[700] }}
+                onChange={onChange}
+              >
+                O produto será colhido após a compra{" "}
+              </Checkbox>
+            )}
+          />
+
           <HStack justifyContent="space-between" mt={2}>
             <View w="1/3">
               <Heading
@@ -398,20 +445,31 @@ export function ProductForm() {
               >
                 Preço:
               </Heading>
-              <Input
-                borderColor={colors.blue[600]}
-                placeholder="0,00"
-                placeholderTextColor={colors.blue[500]}
-                type="text"
-                fontSize="md"
-                value={price}
-                onChangeText={setPrice}
-                color={colors.blue[700]}
-                keyboardType="numeric"
-                _focus={{
-                  backgroundColor: colors.gray[200],
-                  borderWidth: 2,
-                }}
+
+              <Controller
+                control={control}
+                name="preco"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    borderColor={
+                      errors.preco ? colors.purple[500] : colors.blue[600]
+                    }
+                    placeholder="0,00"
+                    placeholderTextColor={
+                      errors.preco ? colors.purple[500] : colors.blue[500]
+                    }
+                    type="text"
+                    fontSize="md"
+                    value={value}
+                    onChangeText={onChange}
+                    color={colors.blue[700]}
+                    keyboardType="numeric"
+                    _focus={{
+                      backgroundColor: colors.gray[200],
+                      borderWidth: 2,
+                    }}
+                  />
+                )}
               />
             </View>
 
@@ -425,23 +483,34 @@ export function ProductForm() {
               >
                 Unidade
               </Heading>
-              <Select
-                placeholderTextColor={colors.blue[500]}
-                color={colors.blue[700]}
-                borderColor={colors.blue[600]}
-                selectedValue={unit}
-                placeholder="tipo de unidade"
-                fontSize="md"
-                accessibilityLabel="Escolha o tipo de unidade"
-                onValueChange={(itemValue) => setunit(itemValue)}
-              >
-                <Select.Item label="Kilograma" value="kilograma" />
-                <Select.Item label="Dúzia" value="duzia" />
-                <Select.Item label="Grama" value="grama" />
-                <Select.Item label="Uma unidade" value="unidade" />
-                <Select.Item label="Cartela" value="cartela" />
-                <Select.Item label="Dezena" value="dezena" />
-              </Select>
+
+              <Controller
+                control={control}
+                name="unidade"
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    placeholderTextColor={
+                      errors.unidade ? colors.purple[500] : colors.blue[500]
+                    }
+                    color={colors.blue[700]}
+                    borderColor={
+                      errors.unidade ? colors.purple[500] : colors.blue[600]
+                    }
+                    selectedValue={value}
+                    placeholder="tipo de unidade"
+                    fontSize="md"
+                    accessibilityLabel="Escolha o tipo de unidade"
+                    onValueChange={onChange}
+                  >
+                    <Select.Item label="Kilograma" value="kilograma" />
+                    <Select.Item label="Dúzia" value="duzia" />
+                    <Select.Item label="Grama" value="grama" />
+                    <Select.Item label="Uma unidade" value="unidade" />
+                    <Select.Item label="Cartela" value="cartela" />
+                    <Select.Item label="Dezena" value="dezena" />
+                  </Select>
+                )}
+              />
             </View>
           </HStack>
 
@@ -456,20 +525,31 @@ export function ProductForm() {
               >
                 Estoque
               </Heading>
-              <Input
-                borderColor={colors.blue[600]}
-                placeholder="0"
-                placeholderTextColor={colors.blue[500]}
-                type="text"
-                fontSize="md"
-                color={colors.blue[700]}
-                keyboardType="numeric"
-                onChangeText={setInventory}
-                value={inventory}
-                _focus={{
-                  backgroundColor: colors.gray[200],
-                  borderWidth: 2,
-                }}
+
+              <Controller
+                control={control}
+                name="estoque"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    borderColor={
+                      errors.estoque ? colors.purple[500] : colors.blue[600]
+                    }
+                    placeholder="0"
+                    placeholderTextColor={
+                      errors.estoque ? colors.purple[500] : colors.blue[500]
+                    }
+                    type="text"
+                    fontSize="md"
+                    color={colors.blue[700]}
+                    keyboardType="numeric"
+                    onChangeText={onChange}
+                    value={value}
+                    _focus={{
+                      backgroundColor: colors.gray[200],
+                      borderWidth: 2,
+                    }}
+                  />
+                )}
               />
             </View>
 
@@ -546,8 +626,13 @@ export function ProductForm() {
                     </TouchableOpacity>
                   )}
                   ListEmptyComponent={() => (
-                    <Text color={colors.gray[400]} fontSize="md">
-                      Nenhuma imagem selecionada
+                    <Text
+                      color={emptyImage ? colors.purple[500] : colors.gray[400]}
+                      fontSize="md"
+                    >
+                      {emptyImage
+                        ? "Adicione uma imagem"
+                        : "Nenhuma imagem selecionada"}
                     </Text>
                   )}
                 />
@@ -557,7 +642,7 @@ export function ProductForm() {
               <MaterialIcons
                 name="add-a-photo"
                 size={50}
-                color={colors.blue[700]}
+                color={emptyImage ? colors.purple[500] : colors.blue[700]}
               />
             </TouchableOpacity>
           </HStack>
@@ -567,7 +652,7 @@ export function ProductForm() {
               size="xs"
               fontFamily="body"
               fontWeight="light"
-              color="#FF0000"
+              color="#4a4a4a"
             >
               pressione e segure uma imagem para removê-la
             </Heading>
@@ -581,7 +666,7 @@ export function ProductForm() {
               px={8}
               py={2}
               fontSize={22}
-              onPress={checkForm}
+              onPress={handleSubmit(handleSigin)}
             >
               <Heading
                 color={colors.gray[200]}
