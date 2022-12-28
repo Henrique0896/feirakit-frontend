@@ -39,6 +39,8 @@ export function ButtonBack() {
         style={{ width: 230, height: 70 }}
         resizeMode="contain"
         alignSelf='center'
+        alignContent='center'
+        alignItems='center'
 
       />
       </HStack>
