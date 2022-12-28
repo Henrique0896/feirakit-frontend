@@ -14,6 +14,7 @@ const texts = {
   description: "Deseja mesmo sair?",
   optionYes: "Sim",
   optionNo: "Não",
+  
 };
 
 export function CustomDrawer(props) {
@@ -21,15 +22,15 @@ export function CustomDrawer(props) {
   const HandleLogOut = () => {
     Alert.alert(texts.title, texts.description, [
       {
-        text: texts.optionNo,
+        text: texts.optionYes,
         onPress: () => {
+          dispatch(Logout());
           return;
         },
       },
       {
-        text: texts.optionYes,
+        text: texts.optionNo,
         onPress: () => {
-          dispatch(Logout());
         },
       },
     ]);
