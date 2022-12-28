@@ -7,6 +7,7 @@ import { CustomDrawer } from "../components/CustomDrawer";
 import { ShopCart } from "../screens/ShopCart";
 import { MyProducts } from "../screens/MyProducts";
 import { Settings } from "../screens/Settings";
+import { Sobre } from "../screens/Sobre";
 //icons
 import { Ionicons } from "@expo/vector-icons";
 //hooks
@@ -66,6 +67,15 @@ function HomeDrawer() {
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name="settings-outline" size={22} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Sobre"
+        component={Sobre}
+        options={{
+          drawerIcon: ({ color }) => (
+            <Ionicons name="help-circle-outline" size={25} color={color} />
           ),
         }}
       />
