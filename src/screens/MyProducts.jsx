@@ -43,60 +43,20 @@ export function MyProducts() {
       });
   };
 
-  const getProductsByName = (productName) => {
-    apiFeiraKit
-      .get(`/products/byname/${productName}`)
-      .then(({ data }) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
+  
   useFocusEffect(useCallback(getProductsByNameUsuario, []));
 
   return (
     <VStack flex={1} w="full" px="2%">
       <ButtonBack />
-      <HStack alignItems="center" w="96%" alignSelf="center">
-        <Input
-        isDisabled
-          bgColor={colors.gray[300]}
-          borderWidth={2}
-          borderColor={colors.gray[400]}
-          h={10}
-          flex={1}
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[700]}
-              as={<MaterialIcons name="search" />}
-              size={6}
-              ml={2}
-            />
-          }
-          placeholder="Pesquisar"
-          placeholderTextColor={colors.blue[700]}
-          fontSize={14}
-          borderRadius={8}
-          mr={2}
-          onChangeText={setSearch}
-          onSubmitEditing={() => {
-            getProductsByName(search);
-          }}
-          style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
-        />
-
-        <TouchableOpacity onPress={() => handleOpenAdd()}>
+       <TouchableOpacity style={{alignSelf:'flex-end',marginTop:-60,marginRight:10}} onPress={() => handleOpenAdd()}>
           <View>
-            <MaterialIcons name="add" size={45} color={colors.blue[600]} />
+            <MaterialIcons name="add" size={50} color={colors.blue[600]}/>
           </View>
         </TouchableOpacity>
-      </HStack>
       <Heading
         size="md"
-        mt={2}
+        mt={4}
         color={colors.gray[500]}
         justifyItems="left"
         w="full"
