@@ -22,7 +22,6 @@ import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
 import apiFeiraKit from "../services/ApiFeiraKit";
-import { color } from "react-native-reanimated";
 
 export function Description() {
   const navigation = useNavigation();
