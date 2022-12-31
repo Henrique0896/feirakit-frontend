@@ -28,7 +28,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../components/CustomBottomSheet";
 import { useSelector } from "react-redux";
 import apiFeiraKit from "../services/ApiFeiraKit";
-import { useForm, Controller, set } from "react-hook-form";
+import { useForm, Controller} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
@@ -214,8 +214,7 @@ export function ProductForm() {
     categoria: yup.string().required("selecione a categoria do produto"),
     descricao: yup.string().required("Adicione uma descrição para o produto"),
     unidade: yup.string().required("selecione o tipo de unidade"),
-    estoque: yup
-      .string()
+    estoque: yup.string()
       .required("informe a quantidade de produtos em estoque"),
     preco: yup.string().required("informe o preço do produto"),
   });
@@ -323,7 +322,7 @@ export function ProductForm() {
           <Controller
             control={control}
             name="nome"
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }}) => (
               <Input
                 borderColor={
                   errors.nome ? colors.purple[500] : colors.blue[600]
@@ -362,11 +361,11 @@ export function ProductForm() {
             render={({ field: { onChange, value } }) => (
               <Select
                 placeholderTextColor={
-                  errors.categoria ? colors.purple[500] : colors.blue[500]
+                   colors.blue[500]
                 }
-                color={errors.categoria ? colors.purple[500] : colors.blue[600]}
+                color={ colors.blue[600]}
                 borderColor={
-                  errors.categoria ? colors.purple[500] : colors.blue[600]
+                   colors.blue[600]
                 }
                 selectedValue={value}
                 placeholder="Selecione a categoria do produto"

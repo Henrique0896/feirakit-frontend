@@ -77,7 +77,7 @@ export function Home() {
       px={4}
       pb={0}
     >
-      <VStack w="full" alignItems="center" pt={8}>
+      <VStack w="full" alignItems="center">
         <Image
           source={require("../assets/logo.png")}
           style={{ width: 230, height: 70 }}
