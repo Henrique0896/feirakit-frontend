@@ -56,7 +56,7 @@ export function Register() {
   };
 
 const userSchema = yup.object({
-    nome_completo: yup.string().required("informe o seu nome completo"),
+    nome: yup.string().required("informe o seu nome completo"),
     email: yup.string().required().email('Informe um email válido'),
     telefone: yup.string().min(8).required('Informe um numero de whatsapp'),
     senha:yup.string().min(6).required("informe a senha"),
@@ -203,7 +203,7 @@ const {
 
         <Controller
           control={control}
-          name="nome_completo"
+          name="nome"
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}

@@ -39,9 +39,9 @@ export function ProductForm() {
   const { colors } = useTheme();
   const HeaderText = product ? "Editar Produto" : "Adicionar Produto";
   const ButtonText = product ? "Confirmar" : "Adicionar";
-  const producer = product
-    ? product.produtor
-    : useSelector((state) => state.AuthReducers.userData).nome_completo;
+  const producerId = product
+    ? product.produtor_id
+    : useSelector((state) => state.AuthReducers.userData).id;
 
   const ObjDate = new Date();
   let dayDate =
@@ -231,8 +231,7 @@ export function ProductForm() {
       estoque: product ? product.estoque.toString() : "",
       unidade: product ? product.unidade : "",
       bestbefore: product ? product.bestbefore : false,
-      produtor: producer,
-      comentarios: ["não há comentarios"],
+      produtor_id: producerId,
     },
     resolver: yupResolver(productSchema),
   });
@@ -240,12 +239,10 @@ export function ProductForm() {
     setIsLoading(true);
     let objProduct = {
       ...data,
-      nome_usuario: producer,
       imagem_url: images,
       validade: dateText.split("/", 3).reverse().join("-"),
       preco: parseInt(data.preco),
       estoque: parseInt(data.estoque),
-      avaliacao: "1",
     };
     if (objProduct.imagem_url.length === 0) {
       setEmptyImage(true);

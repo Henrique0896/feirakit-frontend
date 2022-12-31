@@ -34,8 +34,9 @@ export function MyProducts() {
 
   const getProductsByNameUsuario = () => {
     apiFeiraKit
-      .get(`/products/bynameUsuario/${user.nome_completo}`)
+      .get(`/products/by-id-usuario/${user.id}`)
       .then(({ data }) => {
+        console.log(data)
         setProducts(data);
       })
       .catch((error) => {
