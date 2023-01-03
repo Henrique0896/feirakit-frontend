@@ -7,6 +7,7 @@ import { CustomDrawer } from "../components/CustomDrawer";
 import { ShopCart } from "../screens/ShopCart";
 import { MyProducts } from "../screens/MyProducts";
 import { Settings } from "../screens/Settings";
+import { MyAccount } from "../screens/MyAccount";
 //icons
 import { Ionicons } from "@expo/vector-icons";
 //hooks
@@ -84,6 +85,15 @@ function HomeDrawer() {
           ),
         }}
       />
+      <Drawer.Screen
+        name="Minha Conta"
+        component={MyAccount}
+        options={{
+          drawerIcon: ({ color }) => (
+            <Ionicons name="person-circle-outline" size={25} color={color} />
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -93,6 +103,8 @@ export function AppRoutes() {
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="homeStack" component={HomeDrawer} />
       <Screen name="description" component={Description} />
+      <Screen name="myaccount" component={MyAccount} />
     </Navigator>
   );
 }
+
