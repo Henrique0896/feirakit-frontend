@@ -8,6 +8,7 @@ import { ShopCart } from "../screens/ShopCart";
 import { MyProducts } from "../screens/MyProducts";
 import { Settings } from "../screens/Settings";
 import { MyAccount } from "../screens/MyAccount";
+import { ChangePassword } from "../screens/ChangePassword";
 //icons
 import { Ionicons } from "@expo/vector-icons";
 //hooks
@@ -18,8 +19,7 @@ const { Navigator, Screen } = createNativeStackNavigator();
 
 const Drawer = createDrawerNavigator();
 
-
-function ProductRoutes(){
+function ProductRoutes() {
   const { colors } = useTheme();
   return (
     <Navigator screenOptions={{ headerShown: false }}>
@@ -27,10 +27,16 @@ function ProductRoutes(){
       <Screen name="ProductForm" component={ProductForm} />
     </Navigator>
   );
-
-
+};
+function MyAccountRoutes() {
+  const { colors } = useTheme();
+  return (
+    <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="MyAccount" component={MyAccount} />
+      <Screen name="ChangePassword" component={ChangePassword} />
+    </Navigator>
+  );
 }
-
 
 function HomeDrawer() {
   const { colors } = useTheme();
@@ -55,6 +61,15 @@ function HomeDrawer() {
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name="home-outline" size={22} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Minha Conta"
+        component={MyAccountRoutes}
+        options={{
+          drawerIcon: ({ color }) => (
+            <Ionicons name="person-circle-outline" size={25} color={color} />
           ),
         }}
       />
@@ -85,15 +100,6 @@ function HomeDrawer() {
           ),
         }}
       />
-      <Drawer.Screen
-        name="Minha Conta"
-        component={MyAccount}
-        options={{
-          drawerIcon: ({ color }) => (
-            <Ionicons name="person-circle-outline" size={25} color={color} />
-          ),
-        }}
-      />
     </Drawer.Navigator>
   );
 }
@@ -107,4 +113,3 @@ export function AppRoutes() {
     </Navigator>
   );
 }
-

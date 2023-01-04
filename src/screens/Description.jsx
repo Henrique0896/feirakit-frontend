@@ -102,18 +102,14 @@ export function Description() {
                 {
                   borderColor: colors.purple[200],
                   backgroundColor: colors.gray[200],
-                  shadowColor:colors.purple[400],
-                  elevation:14
+                  shadowColor: colors.purple[400],
+                  elevation: 14,
                 },
               ]}
               onPress={() => handleOpenEdit(product)}
             >
-                <MaterialIcons
-                  name="edit"
-                  size={25}
-                  color={colors.purple[600]}
-                />
-                <Heading color={colors.purple[600]}>Editar</Heading>
+              <MaterialIcons name="edit" size={25} color={colors.purple[600]} />
+              <Heading color={colors.purple[600]}>Editar</Heading>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -121,8 +117,8 @@ export function Description() {
                 {
                   borderColor: colors.red[400],
                   backgroundColor: colors.gray[200],
-                  shadowColor:colors.red[800],
-                  elevation:14
+                  shadowColor: colors.red[800],
+                  elevation: 14,
                 },
               ]}
               onPress={() => deleteProduct(product.id)}
@@ -246,8 +242,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
-    lineHeight: 30
-    
+    lineHeight: 30,
   },
 
   btnActions: {
