@@ -12,8 +12,8 @@ export function ButtonBack() {
     navigation.goBack();
   }
   return (
-    <VStack pb={-10} mt={2}>
-      <StatusBar></StatusBar>
+    <VStack pb={-10} mt={2} mb={2}>
+      <StatusBar/>
       <HStack alignItems='flex-start'>
         <TouchableOpacity onPress={handleGoBack}>
           <View

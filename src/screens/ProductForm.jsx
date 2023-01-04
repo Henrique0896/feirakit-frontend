@@ -47,7 +47,7 @@ export function ProductForm() {
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
   let monthDate =
-    ObjDate.getMonth() < 10 ? "0" + ObjDate.getMonth() : ObjDate.getMonth();
+    ObjDate.getMonth() < 10 ?  ObjDate.getMonth() : ObjDate.getMonth();
 
   const id = product ? product.id : null;
 
@@ -58,7 +58,7 @@ export function ProductForm() {
   const [dateText, setDateText] = useState(
     product
       ? product.validade.split("-", 3).reverse().join("/")
-      : dayDate + "/" + (monthDate + 1) + "/" + ObjDate.getFullYear()
+      : dayDate + "/" + monthDate + 1 + "/" + ObjDate.getFullYear()
   );
 
   const onDateChange = (event, selectedDate) => {

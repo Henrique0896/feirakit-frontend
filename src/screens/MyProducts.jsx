@@ -20,7 +20,6 @@ import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function MyProducts() {
   const { colors } = useTheme();
-  const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
   const navigation = useNavigation();
   const user=useSelector((state) => state.AuthReducers.userData)
@@ -36,7 +35,6 @@ export function MyProducts() {
     apiFeiraKit
       .get(`/products/by-id-usuario/${user.id}`)
       .then(({ data }) => {
-        console.log(data)
         setProducts(data);
       })
       .catch((error) => {
