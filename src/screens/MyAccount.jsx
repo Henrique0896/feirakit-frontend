@@ -253,7 +253,7 @@ export function MyAccount() {
           alignSelf="center"
           alignContent="center"
           alignItems="center"
-          onPress={() => navigation.navigate('ChangePassword') }
+          onPress={() => navigation.navigate("ChangePassword")}
         >
           <Text style={styles.txt} color={colors.gray[200]}>
             Alterar Senha
