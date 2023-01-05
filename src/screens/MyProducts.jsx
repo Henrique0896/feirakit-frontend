@@ -10,7 +10,7 @@ import {
   Center,
   View,
 } from "native-base";
-import { TouchableOpacity } from "react-native";
+import { ActivityIndicator, ActivityIndicatorComponent, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
@@ -21,6 +21,7 @@ import apiFeiraKit from "../services/ApiFeiraKit";
 export function MyProducts() {
   const { colors } = useTheme();
   const [products, setProducts] = useState([]);
+  const[ isLoading,setIsLoading ]= useState(true);
   const navigation = useNavigation();
   const user=useSelector((state) => state.AuthReducers.userData)
   function handleOpenAdd() {
@@ -31,19 +32,22 @@ export function MyProducts() {
     navigation.navigate("description", { productId, product, isInfo });
   }
 
-  const getProductsByNameUsuario = () => {
+  const getProductsByIdUsuario = () => {
+    setIsLoading(true)
     apiFeiraKit
       .get(`/products/by-id-usuario/${user.id}`)
       .then(({ data }) => {
         setProducts(data);
+        
       })
       .catch((error) => {
         console.log(error);
       });
+      setIsLoading(false)
   };
 
   
-  useFocusEffect(useCallback(getProductsByNameUsuario, []));
+  useFocusEffect(useCallback(getProductsByIdUsuario, []));
 
   return (
     <VStack flex={1} w="full" px="2%">
@@ -64,7 +68,8 @@ export function MyProducts() {
       >
         Meus produtos
       </Heading>
-
+      {isLoading ?
+      <ActivityIndicator size="large"/>:
       <FlatList
         paddingX="2%"
         data={products}
@@ -112,7 +117,7 @@ export function MyProducts() {
               </VStack>
 
               <Center>
-                <TouchableOpacity onPress={() => getProductsByNameUsuario()}>
+                <TouchableOpacity onPress={() => getProductsByIdUsuario()}>
                   <MaterialIcons
                     color={colors.gray[300]}
                     name="refresh"
@@ -123,7 +128,7 @@ export function MyProducts() {
             </HStack>
           </View>
         )}
-      />
+      />}
     </VStack>
   );
 }

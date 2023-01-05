@@ -28,11 +28,13 @@ export function Login() {
       {
         text: alert.textButton,
         onPress: () =>
-          Linking.canOpenURL(alert.link).then((supported) => {
-            if (supported) {
-              return Linking.openURL(alert.link)
-            }
-          }).catch(() => {}),
+          Linking.canOpenURL(alert.link)
+            .then((supported) => {
+              if (supported) {
+                return Linking.openURL(alert.link);
+              }
+            })
+            .catch(() => {}),
       },
       {
         text: alert.textButtonCancel,
@@ -81,7 +83,12 @@ export function Login() {
         style={{ width: 187, height: 170 }}
         resizeMode="contain"
       />
-      <Text alignSelf="flex-start" color={colors.blue[600]} ml={4} fontFamily='heading'>
+      <Text
+        alignSelf="flex-start"
+        color={colors.blue[600]}
+        ml={4}
+        fontFamily="heading"
+      >
         Fazer Login
       </Text>
       <Input

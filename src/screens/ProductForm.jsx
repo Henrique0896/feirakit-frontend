@@ -235,13 +235,13 @@ export function ProductForm() {
     },
     resolver: yupResolver(productSchema),
   });
-  const handleSigin = (data) => {
+  const handleNewProduct= (data) => {
     setIsLoading(true);
     let objProduct = {
       ...data,
       imagem_url: images,
       validade: dateText.split("/", 3).reverse().join("-"),
-      preco: parseInt(data.preco),
+      preco: parseFloat(data.preco),
       estoque: parseInt(data.estoque),
     };
     if (objProduct.imagem_url.length === 0) {
@@ -459,7 +459,7 @@ export function ProductForm() {
                     value={value}
                     onChangeText={onChange}
                     color={colors.blue[700]}
-                    keyboardType="numeric"
+                    keyboardType="decimal-pad"
                     _focus={{
                       backgroundColor: colors.gray[200],
                       borderWidth: 2,
@@ -662,7 +662,7 @@ export function ProductForm() {
               px={8}
               py={2}
               fontSize={22}
-              onPress={handleSubmit(handleSigin)}
+              onPress={handleSubmit(handleNewProduct)}
             >
               <Heading
                 color={colors.gray[200]}

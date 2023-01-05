@@ -6,6 +6,8 @@ import { CustomDrawer } from "../components/CustomDrawer";
 import { MyProducts } from "../screens/MyProducts";
 import { MyAccount } from "../screens/MyAccount";
 import { Sobre } from "../screens/Sobre";
+import { ChangePassword } from "../screens/ChangePassword";
+//icons
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "native-base";
 import { ProductForm } from "../screens/ProductForm";
@@ -20,6 +22,15 @@ function ProductRoutes() {
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="MyProducts" component={MyProducts} />
       <Screen name="ProductForm" component={ProductForm} />
+    </Navigator>
+  );
+};
+function MyAccountRoutes() {
+  const { colors } = useTheme();
+  return (
+    <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="MyAccount" component={MyAccount} />
+      <Screen name="ChangePassword" component={ChangePassword} />
     </Navigator>
   );
 }
@@ -50,7 +61,24 @@ function HomeDrawer() {
           ),
         }}
       />
-
+      <Drawer.Screen
+        name="Minha Conta"
+        component={MyAccountRoutes}
+        options={{
+          drawerIcon: ({ color }) => (
+            <Ionicons name="person-circle-outline" size={25} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Meu Carrinho"
+        component={ShopCart}
+        options={{
+          drawerIcon: ({ color }) => (
+            <Ionicons name="cart-outline" size={22} color={color} />
+          ),
+        }}
+      />
       <Drawer.Screen
         name="Meus Produtos"
         component={ProductRoutes}
