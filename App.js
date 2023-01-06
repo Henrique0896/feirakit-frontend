@@ -19,8 +19,8 @@ export default function App() {
     Montserrat_700Bold,
     Montserrat_500Medium,
     Montserrat_100Thin,
-  });
-
+  }); 
+ 
   return (
     <Provider store={store}>
         <NativeBaseProvider theme={THEME}>

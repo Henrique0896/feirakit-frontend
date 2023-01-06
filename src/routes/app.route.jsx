@@ -7,7 +7,6 @@ import { MyProducts } from "../screens/MyProducts";
 import { MyAccount } from "../screens/MyAccount";
 import { Sobre } from "../screens/Sobre";
 import { ChangePassword } from "../screens/ChangePassword";
-//icons
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "native-base";
 import { ProductForm } from "../screens/ProductForm";
@@ -62,24 +61,6 @@ function HomeDrawer() {
         }}
       />
       <Drawer.Screen
-        name="Minha Conta"
-        component={MyAccountRoutes}
-        options={{
-          drawerIcon: ({ color }) => (
-            <Ionicons name="person-circle-outline" size={25} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Meu Carrinho"
-        component={ShopCart}
-        options={{
-          drawerIcon: ({ color }) => (
-            <Ionicons name="cart-outline" size={22} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
         name="Meus Produtos"
         component={ProductRoutes}
         options={{
@@ -88,9 +69,10 @@ function HomeDrawer() {
           ),
         }}
       />
+      
       <Drawer.Screen
         name="Minha Conta"
-        component={MyAccount}
+        component={MyAccountRoutes}
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name="person-circle-outline" size={25} color={color} />

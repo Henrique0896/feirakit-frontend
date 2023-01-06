@@ -7,19 +7,18 @@ import {
   Select,
   Input,
   useTheme,
-  HStack,
-  Heading,
+  HStack
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { useState, useRef } from "react";
-import ViaCep from "../services/ViaCep";
 import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import ViaCep from "../services/ViaCep";
 import apiFeiraKit from "../services/ApiFeiraKit";
 import { useNavigation } from "@react-navigation/native";
 import { Login as loginAction } from "../store/actions";
@@ -28,14 +27,6 @@ import { TextInputMask } from "react-native-masked-text";
 export function Register() {
   const [inputType, setInputType] = useState("password");
   const [IsLoading, setIsLoading] = useState(false);
-  const [cep, setCep] = useState("");
-  const [street, setStreet] = useState("");
-  const [number, setNumber] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [district, setDistrict] = useState("");
-  const [complement, setComplement] = useState("");
-  const [adressError, setAdressError] = useState(false);
   const cellRef = useRef(null);
   const { colors } = useTheme();
   const dispatch = useDispatch();
@@ -48,20 +39,10 @@ export function Register() {
       setInputType("password");
     }
   };
-  const getAddressData = async (cep) => {
-    await ViaCep.get(`${cep}/json/`)
-      .then(({ data }) => {
-        setState(data.uf);
-        setCity(data.localidade);
-        setDistrict(data.bairro);
-        setStreet(data.logradouro);
-        setComplement(data.complemento);
-      })
-      .catch((err) => console.log(err));
-  };
-
+  
   const userSchema = yup.object({
-    nome: yup.string().required("informe o seu nome completo"),
+    nome: yup.string()
+    .required("informe o seu nome completo"),
     email: yup
       .string()
       .required("Informe um email válido")
@@ -71,51 +52,57 @@ export function Register() {
       .string()
       .min(6, "a senha deve ter pelo menos 6 dígitos")
       .required("informe uma senha"),
+    cep: yup.string().min(7, "CEP Inválido").required("Informe um CEP"),
+    rua: yup.string().required("informe o nome da rua"),
+    numero: yup.string().required("informe o numero da sua residência"),
+    complemento: yup.string(),
+    bairro: yup.string().required("informe o bairro"),
+    cidade: yup.string().required("informe o nome da cidade"),
+    estado: yup.string().required("selecione o estado"),
   });
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue
   } = useForm({
     resolver: yupResolver(userSchema),
+    
   });
 
   const handleCreateUser = (data) => {
     setIsLoading(true);
-    if (
-      street == "" ||
-      number == "" ||
-      district == "" ||
-      city == "" ||
-      state == "" ||
-      cep == ""
-    ) {
-      setAdressError(true);
-      setIsLoading(false);
-      return;
-    }
-    let adress = `${street}, ${number}, ${district}, ${city} - ${state},${cep.slice(
-      0,
-      5
-    )}-${cep.slice(-3)}`;
+    let adress = `${data.rua}, ${data.numero}, ${data.bairro}, ${data.cidade} - ${data.estado},${data.cep}`
     let objUser = {
-      ...data,
+      email:data.email,
+      senha:data.senha,
+      nome:data.nome,
       endereco: adress,
       telefone: cellRef?.current.getRawValue(),
     };
-
-    console.log(objUser);
     setIsLoading(false);
     apiFeiraKit
-      .post("/users", JSON.stringify(objUser))
-      .then((response) => {
-        login(objUser.nome, objUser.senha);
+    .post("/users", JSON.stringify(objUser))
+    .then((response) => {
+         login(objUser.nome, objUser.senha);
+       })
+    .catch((err) => {
+         console.log(err);
+         setIsLoading(false);
+    });
+  };
+
+  const getAddressData = async (cep) => {
+    await ViaCep.get(`${cep}/json/`)
+      .then(({ data }) => {
+        setValue('estado',data.uf)
+        setValue('cidade',data.localidade);
+        setValue('bairro',data.bairro);
+        setValue('rua',data.logradouro);
+        setValue('complemento',data.complemento);
       })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
+      .catch((err) => console.log(err));
   };
 
   const login = (username) => {
@@ -358,161 +345,264 @@ export function Register() {
           mr={4}
           bgColor={colors.gray[100]}
         >
-          <TextInputMask
-            type={"custom"}
-            options={{
-              mask: "99999-999",
-            }}
-            color={errors.telefone ? colors.purple[500] : colors.blue[900]}
-            placeholder="*CEP"
-            style={{
-              fontFamily: "Montserrat_400Regular",
-              fontSize: 14,
-              marginLeft: 11,
-            }}
-            width="70%"
-            placeholderTextColor={
-              adressError ? colors.purple[500] : colors.blue[800]
-            }
-            onChangeText={setCep}
-            onEndEditing={() => getAddressData(cep)}
-            keyboardType="numeric"
+          <Controller
+            control={control}
+            name="cep"
+            render={({ field: { onChange, value } }) => (
+              <TextInputMask
+                type={"custom"}
+                options={{
+                  mask: "99999-999",
+                }}
+                color={errors.cep ? colors.purple[500] : colors.blue[900]}
+                placeholder="*CEP"
+                style={{
+                  fontFamily: "Montserrat_400Regular",
+                  fontSize: 14,
+                  marginLeft: 11,
+                }}
+                width="70%"
+                placeholderTextColor={
+                  errors.cep ? colors.purple[500] : colors.blue[800]
+                }
+                value={value}
+                onChangeText={onChange}
+                onEndEditing={() => {
+                  getAddressData(value);
+                }}
+                keyboardType="numeric"
+              />
+            )}
           />
         </HStack>
+        {errors.cep && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.cep.message}
+          </Text>
+        )}
 
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* Rua"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={
-            adressError ? colors.purple[500] : colors.blue[800]
-          }
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-          value={street}
-          onChangeText={(text) => setStreet(text)}
+        <Controller
+          control={control}
+          name="rua"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="* Rua"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.rua ? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* Numero"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={
-            adressError ? colors.purple[500] : colors.blue[800]
-          }
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-          keyboardType="default"
-          value={number}
-          onChangeText={setNumber}
+        {errors.rua && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.rua.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="numero"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="* Numero"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.numero? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              keyboardType="default"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="*Complemento (opcional)"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[800]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-          value={complement}
-          onChangeText={(text) => setComplement(text)}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="*Bairro"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={
-            adressError ? colors.purple[500] : colors.blue[800]
-          }
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-          value={district}
-          onChangeText={(text) => setDistrict(text)}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          value={city}
-          placeholder="* Cidade"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={
-            adressError ? colors.purple[500] : colors.blue[800]
-          }
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-          onChangeText={(text) => setCity(text)}
+        {errors.numero && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.numero.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="complemento"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="Complemento (opcional)"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={colors.blue[800]}
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
         />
 
-        <Select
-          w="96%"
-          mt={4}
-          h={54}
-          borderRadius={8}
-          placeholderTextColor={
-            adressError ? colors.purple[500] : colors.blue[800]
-          }
-          color={colors.blue[900]}
-          selectedValue={state}
-          placeholder="Selecione o estado"
-          fontSize="md"
-          accessibilityLabel="Escolha a categoria do produto"
-          onValueChange={(itemvalue) => setState(itemvalue)}
-        >
-          <Select.Item label="Acre" value="AC" />
-          <Select.Item label="Alagoas" value="AL" />
-          <Select.Item label="Amapá" value="AP" />
-          <Select.Item label="Amazonas" value="AM" />
-          <Select.Item label="Bahia" value="BA" />
-          <Select.Item label="Ceará" value="CE" />
-          <Select.Item label="Distrito Federal" value="DF" />
-          <Select.Item label="Espírito Santo" value="ES" />
-          <Select.Item label="Goiás" value="GO" />
-          <Select.Item label="Maranhão" value="MA" />
-          <Select.Item label="Mato Grosso" value="MT" />
-          <Select.Item label="Mato Grosso do Sul" value="MS" />
-          <Select.Item label="Minas Gerais" value="MG" />
-          <Select.Item label="Pará" value="PA" />
-          <Select.Item label="Paraíba" value="PB" />
-          <Select.Item label="Paraná" value="PR" />
-          <Select.Item label="Pernambuco" value="PE" />
-          <Select.Item label="Piauí" value="PI" />
-          <Select.Item label="Rio de Janeiro" value="RJ" />
-          <Select.Item label="Rio Grande do Norte" value="RN" />
-          <Select.Item label="Rio Grande do Sul" value="RS" />
-          <Select.Item label="Rondônia" value="RO" />
-          <Select.Item label="Roraima" value="RR" />
-          <Select.Item label="Santa Catarina" value="SC" />
-          <Select.Item label="São Paulo" value="SP" />
-          <Select.Item label="Sergipe" value="SE" />
-          <Select.Item label="Tocantins" value="TO" />
-        </Select>
+        <Controller
+          control={control}
+          name="bairro"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="*Bairro"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.bairro ? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
+        {errors.bairro && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.bairro.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="cidade"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              value={value}
+              placeholder="* Cidade"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.cidade ? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              onChangeText={onChange}
+            />
+          )}
+        />
+        {errors.cidade && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.cidade.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="estado"
+          render={({ field: { onChange, value } }) => (
+            <Select
+              w="96%"
+              mt={4}
+              h={54}
+              borderRadius={8}
+              placeholderTextColor={
+                errors.estado ? colors.purple[500] : colors.blue[800]
+              }
+              color={colors.blue[900]}
+              selectedValue={value}
+              placeholder="Selecione o estado"
+              fontSize="md"
+              accessibilityLabel="Escolha a categoria do produto"
+              onValueChange={onChange}
+            >
+              <Select.Item label="Acre" value="AC" />
+              <Select.Item label="Alagoas" value="AL" />
+              <Select.Item label="Amapá" value="AP" />
+              <Select.Item label="Amazonas" value="AM" />
+              <Select.Item label="Bahia" value="BA" />
+              <Select.Item label="Ceará" value="CE" />
+              <Select.Item label="Distrito Federal" value="DF" />
+              <Select.Item label="Espírito Santo" value="ES" />
+              <Select.Item label="Goiás" value="GO" />
+              <Select.Item label="Maranhão" value="MA" />
+              <Select.Item label="Mato Grosso" value="MT" />
+              <Select.Item label="Mato Grosso do Sul" value="MS" />
+              <Select.Item label="Minas Gerais" value="MG" />
+              <Select.Item label="Pará" value="PA" />
+              <Select.Item label="Paraíba" value="PB" />
+              <Select.Item label="Paraná" value="PR" />
+              <Select.Item label="Pernambuco" value="PE" />
+              <Select.Item label="Piauí" value="PI" />
+              <Select.Item label="Rio de Janeiro" value="RJ" />
+              <Select.Item label="Rio Grande do Norte" value="RN" />
+              <Select.Item label="Rio Grande do Sul" value="RS" />
+              <Select.Item label="Rondônia" value="RO" />
+              <Select.Item label="Roraima" value="RR" />
+              <Select.Item label="Santa Catarina" value="SC" />
+              <Select.Item label="São Paulo" value="SP" />
+              <Select.Item label="Sergipe" value="SE" />
+              <Select.Item label="Tocantins" value="TO" />
+            </Select>
+          )}
+        />
+        {errors.estado && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.estado.message}
+          </Text>
+        )}
 
         <Button
           bgColor={colors.blue[600]}

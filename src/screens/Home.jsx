@@ -8,6 +8,7 @@ import {
   FlatList,
   Center,
   Text,
+  StatusBar
 } from "native-base";
 import { ProductCard } from "../components/ProductCard";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -77,6 +78,7 @@ export function Home() {
       px={4}
       pb={0}
     >
+      <StatusBar/>
       <VStack w="full" alignItems="center">
         <Image
           source={require("../assets/logo.png")}

@@ -100,6 +100,7 @@ export function Description() {
         <FlatList
           width={"100%"}
           showsHorizontalScrollIndicator={false}
+          mt={-4}
           horizontal
           contentContainerStyle={{ paddingHorizontal: "2%" }}
           data={Images}
@@ -115,7 +116,7 @@ export function Description() {
         {isInfo && (
           <HStack
             mt={-5}
-            mb={1}
+            mb={3}
             alignItems="center"
             justifyContent="space-evenly"
             style={styles.actionsContainer}

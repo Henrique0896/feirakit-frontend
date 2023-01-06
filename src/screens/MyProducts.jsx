@@ -2,15 +2,13 @@ import React, { useState, useCallback } from "react";
 import {
   VStack,
   HStack,
-  Icon,
-  Input,
   useTheme,
   Heading,
   FlatList,
   Center,
   View,
 } from "native-base";
-import { ActivityIndicator, ActivityIndicatorComponent, TouchableOpacity } from "react-native";
+import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
@@ -38,12 +36,13 @@ export function MyProducts() {
       .get(`/products/by-id-usuario/${user.id}`)
       .then(({ data }) => {
         setProducts(data);
-        
+        setIsLoading(false)
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false)
       });
-      setIsLoading(false)
+      
   };
 
   
@@ -69,7 +68,7 @@ export function MyProducts() {
         Meus produtos
       </Heading>
       {isLoading ?
-      <ActivityIndicator size="large"/>:
+      <ActivityIndicator size="large"/> :
       <FlatList
         paddingX="2%"
         data={products}

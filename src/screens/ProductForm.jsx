@@ -97,6 +97,60 @@ export function ProductForm() {
   const [isLoadingImage, setIsLoadingImages] = useState(false);
   const [emptyImage, setEmptyImage] = useState(false);
 
+  const productSchema = yup.object({
+    nome: yup.string().required("informe o nome do produto"),
+    categoria: yup.string().required("selecione a categoria do produto"),
+    descricao: yup.string().required("Adicione uma descrição para o produto"),
+    unidade: yup.string().required("selecione o tipo de unidade"),
+    estoque: yup.string()
+      .required("informe a quantidade de produtos em estoque"),
+    preco: yup.string().required("informe o preço do produto"),
+    imagem_url:yup.array().required("Adicione uma imagem"),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue
+  } = useForm({
+    defaultValues: {
+      nome: product ? product.nome : "",
+      descricao: product ? product.descricao : "",
+      preco: product ? product.preco.toString() : "",
+      categoria: product ? product.categoria : "",
+      estoque: product ? product.estoque.toString() : "",
+      unidade: product ? product.unidade : "",
+      bestbefore: product ? product.bestbefore : false,
+      produtor_id: producerId,
+      imagem_url:product&& product.imagem_url
+    },
+    resolver: yupResolver(productSchema),
+  });
+  
+  const handleNewProduct= (data) => {
+    setIsLoading(true);
+    let objProduct = {
+      ...data,
+      imagem_url: images,
+      validade: dateText.split("/", 3).reverse().join("-"),
+      preco: parseFloat(data.preco),
+      estoque: parseInt(data.estoque),
+    };
+    if (objProduct.imagem_url.length === 0) {
+      setEmptyImage(true);
+      setIsLoading(false);
+      return;
+    }
+    if (id === null) {
+       addProduct(JSON.stringify(objProduct));
+    } else {
+      objProduct.id = id;
+      updateProduct(JSON.stringify(objProduct));
+    }
+  };
+
+
   const pickImages = async () => {
     setIsLoadingImages(true);
     closeActionsSheet();
@@ -134,9 +188,11 @@ export function ProductForm() {
         newImages.push(image.uri);
       });
       setImages(newImages);
+      setValue('imagem_url',newImages)
       setEmptyImage(false);
     } else {
       setImages(images);
+      setValue('imagem_url',images)
       setEmptyImage(false);
     }
     setIsLoadingImages(false);
@@ -147,35 +203,6 @@ export function ProductForm() {
     description: "Deseja remover esta imagem?",
     optionYes: "Sim",
     optionNo: "Não",
-  };
-
-  const removeImage = (uri) => {
-    setIsLoadingImages(true);
-    Alert.alert(textsRemoveImage.title, textsRemoveImage.description, [
-      {
-        text: textsRemoveImage.optionNo,
-        onPress: () => {
-          return;
-        },
-      },
-      {
-        text: textsRemoveImage.optionYes,
-        onPress: () => {
-          let newImages = [];
-
-          images.map((image) => {
-            if (image !== uri) {
-              newImages.push(image);
-            }
-          });
-          setIsLoadingImages(false);
-          setImages(newImages);
-          if (newImages.length === 0) {
-            setEmptyImage(true);
-          }
-        },
-      },
-    ]);
   };
 
   const pickImagesByCamera = async () => {
@@ -202,62 +229,46 @@ export function ProductForm() {
         newImages.push(image);
       });
       newImages.push(capturedImage);
-
       setImages(newImages);
+      setValue('imagem_url',newImages)
+
     } else {
       setImages(images);
+      setValue('imagem_url',images) 
     }
     setIsLoadingImages(false);
   };
-  const productSchema = yup.object({
-    nome: yup.string().required("informe o nome do produto"),
-    categoria: yup.string().required("selecione a categoria do produto"),
-    descricao: yup.string().required("Adicione uma descrição para o produto"),
-    unidade: yup.string().required("selecione o tipo de unidade"),
-    estoque: yup.string()
-      .required("informe a quantidade de produtos em estoque"),
-    preco: yup.string().required("informe o preço do produto"),
-  });
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      nome: product ? product.nome : "",
-      descricao: product ? product.descricao : "",
-      preco: product ? product.preco.toString() : "",
-      categoria: product ? product.categoria : "",
-      estoque: product ? product.estoque.toString() : "",
-      unidade: product ? product.unidade : "",
-      bestbefore: product ? product.bestbefore : false,
-      produtor_id: producerId,
-    },
-    resolver: yupResolver(productSchema),
-  });
-  const handleNewProduct= (data) => {
-    setIsLoading(true);
-    let objProduct = {
-      ...data,
-      imagem_url: images,
-      validade: dateText.split("/", 3).reverse().join("-"),
-      preco: parseFloat(data.preco),
-      estoque: parseInt(data.estoque),
-    };
-    if (objProduct.imagem_url.length === 0) {
-      setEmptyImage(true);
-      setIsLoading(false);
-      return;
-    }
 
-    if (id === null) {
-      addProduct(JSON.stringify(objProduct));
-    } else {
-      objProduct.id = id;
-      updateProduct(JSON.stringify(objProduct));
-    }
+const removeImage = (uri) => {
+    setIsLoadingImages(true);
+    Alert.alert(textsRemoveImage.title, textsRemoveImage.description, [
+      {
+        text: textsRemoveImage.optionNo,
+        onPress: () => {
+          return;
+        },
+      },
+      {
+        text: textsRemoveImage.optionYes,
+        onPress: () => {
+          let newImages = [];
+
+          images.map((image) => {
+            if (image !== uri) {
+              newImages.push(image);
+            }
+          });
+          setIsLoadingImages(false);
+          setImages(newImages);
+          setValue('imagem_url',newImages)
+          if (newImages.length === 0) {
+            setEmptyImage(true);
+          }
+        },
+      },
+    ]);
   };
-
+  
   const addProduct = async (objProduct) => {
     let jsonProduct = objProduct;
     await apiFeiraKit
@@ -358,11 +369,11 @@ export function ProductForm() {
             render={({ field: { onChange, value } }) => (
               <Select
                 placeholderTextColor={
-                   colors.blue[500]
+                  errors.categoria ? colors.purple[500] : colors.blue[600]
                 }
                 color={ colors.blue[600]}
                 borderColor={
-                   colors.blue[600]
+                  errors.categoria ? colors.purple[500] : colors.blue[500]
                 }
                 selectedValue={value}
                 placeholder="Selecione a categoria do produto"
@@ -591,7 +602,12 @@ export function ProductForm() {
               )}
             </View>
           </HStack>
+        
 
+         <Controller
+          control={control}
+          name='imagem_url'
+          render={()=>(
           <HStack mt={4}>
             <HStack w="80%" alignItems="center">
               {isLoadingImage ? (
@@ -623,7 +639,7 @@ export function ProductForm() {
                   )}
                   ListEmptyComponent={() => (
                     <Text
-                      color={emptyImage ? colors.purple[500] : colors.gray[400]}
+                      color={errors.imagem_url ? colors.purple[500] : colors.gray[400]}
                       fontSize="md"
                     >
                       {emptyImage
@@ -638,11 +654,12 @@ export function ProductForm() {
               <MaterialIcons
                 name="add-a-photo"
                 size={50}
-                color={emptyImage ? colors.purple[500] : colors.blue[700]}
+                color={errors.imagem_url? colors.purple[500] : colors.blue[700]}
               />
             </TouchableOpacity>
-          </HStack>
-
+          </HStack>)} 
+          />
+         
           {images.length !== 0 && (
             <Heading
               size="xs"
@@ -675,7 +692,6 @@ export function ProductForm() {
           </Center>
         </ScrollView>
       </KeyboardAvoidingView>
-
       <BottomSheet
         backgroundStyle={{ backgroundColor: colors.blue[100] }}
         handleIndicatorStyle={{ backgroundColor: colors.blue[800] }}
