@@ -26,6 +26,7 @@ import { useDispatch,useSelector } from "react-redux";
 import { Login as loginAction } from "../store/actions";
 import { Logout } from "../store/actions";
 import apiFeiraKit from "../services/ApiFeiraKit";
+import { showMessage} from "react-native-flash-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextInputMask } from "react-native-masked-text";
 import * as yup from "yup";
@@ -111,6 +112,10 @@ export function MyAccount() {
           apiFeiraKit
             .put("/users", JSON.stringify(objUser))
             .then((response) => {
+              showMessage({
+                message: "Dados alterados com sucesso",
+                type: "success",
+              });
               login(objUser.nome, objUser.senha);
             })
             .catch((err) => {

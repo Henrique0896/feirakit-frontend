@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { Login as loginAction } from "../store/actions";
 import apiFeiraKit from "../services/ApiFeiraKit";
+import { showMessage} from "react-native-flash-message";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -52,6 +53,10 @@ export function ChangePassword() {
     apiFeiraKit
       .put("/users", JSON.stringify(userNewPassword))
       .then((response) => {
+        showMessage({
+          message: "Senha alterada com sucesso",
+          type: "success",
+        });
         login(userNewPassword.nome, userNewPassword.senha);
       })
       .catch((err) => {

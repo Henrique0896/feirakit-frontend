@@ -16,7 +16,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
 import apiFeiraKit from "../services/ApiFeiraKit";
 import { LoadingProducts } from "../components/Loading";
-import { Image,TouchableOpacity, View } from "react-native";
+import { Image,TouchableOpacity, View,RefreshControl } from "react-native";
 
 export function Home() {
   const { colors } = useTheme();
@@ -26,6 +26,7 @@ export function Home() {
   const [headerText, setHeaderText] = useState("Todos os produtos");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigation = useNavigation();
   function handleOpenDescription(productId, product, isInfo) {
@@ -40,6 +41,7 @@ export function Home() {
       .get("/products")
       .then(({ data }) => {
         setProducts(data.reverse());
+        setRefreshing(false);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -66,6 +68,11 @@ export function Home() {
   };
 
   useFocusEffect(useCallback(getAllProducts, []));
+  const onRefresh = () => {
+    setRefreshing(true);
+    setProducts([])
+    getAllProducts();
+  }
 
   return (
     <VStack
@@ -185,6 +192,14 @@ export function Home() {
                 </Text>
               </Center>
             )}
+
+            refreshControl={
+              <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colors.blue[600]]}
+              />
+            }
           />
         </>
       )}

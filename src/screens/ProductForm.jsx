@@ -30,6 +30,7 @@ import { useSelector } from "react-redux";
 import apiFeiraKit from "../services/ApiFeiraKit";
 import { useForm, Controller} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { showMessage} from "react-native-flash-message";
 import * as yup from "yup";
 
 export function ProductForm() {
@@ -275,6 +276,10 @@ const removeImage = (uri) => {
       .post("/products", jsonProduct)
       .then((response) => {
         navigation.goBack();
+        showMessage({
+          message: "Produto adicionado com sucesso",
+          type: "success",
+        });
       })
       .catch((error) => {
         alert("Algo deu errado,tente novamente");
@@ -288,6 +293,10 @@ const removeImage = (uri) => {
     await apiFeiraKit
       .put("/products", jsonProduct)
       .then((response) => {
+        showMessage({
+          message: "Produto Atualizado com sucesso",
+          type: "success",
+        });
         navigation.goBack();
       })
       .catch((error) => {
