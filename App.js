@@ -21,7 +21,7 @@ export default function App() {
     Montserrat_500Medium,
     Montserrat_100Thin,
   }); 
- 
+   
   return (
     <Provider store={store}>
         <NativeBaseProvider theme={THEME}>
@@ -29,5 +29,5 @@ export default function App() {
           {fontsLoaded ? <Routes /> : <Loading />}
         </NativeBaseProvider>
     </Provider>
-  );
-}
+  );    
+}   

@@ -11,10 +11,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 
 export function WhatsappButton({Name,WhatsAppNumber, Quantity, ProductName }) {
-
   let Message = `Olá ${Name}, tudo bem? \n gostaria de comprar ${Quantity} unidade do produto "${ProductName}". Obrigado!`
-
-  
   return (
     <View style={styles.container}> 
   

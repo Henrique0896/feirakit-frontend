@@ -287,7 +287,7 @@ export function Description() {
               WhatsAppNumber={WhatsAppNumber}
               Quantity={amount}
               ProductName={`${product.nome}`}
-              Name={`${product.produtor}`}
+              Name={`${produtor}`}
             />
           </>
         )}
