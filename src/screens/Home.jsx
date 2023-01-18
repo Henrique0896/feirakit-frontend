@@ -1,61 +1,72 @@
-import { VStack, Heading, useTheme, FlatList, Center, Text } from "native-base";
-import { Header } from "../components/Header";
+import {
+  VStack,
+  HStack,
+  Input,
+  Icon,
+  Heading,
+  useTheme,
+  FlatList,
+  Center,
+  Text,
+} from "native-base";
 import { ProductCard } from "../components/ProductCard";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useState, useCallback } from "react";
+import apiFeiraKit from "../services/ApiFeiraKit";
+import { LoadingProducts } from "../components/Loading";
+import { Image,TouchableOpacity, View } from "react-native";
 
 export function Home() {
   const { colors } = useTheme();
-  
-  let products=[
-    {
-        id: 1,
-        imagem_url: [
-            "https://images.pexels.com/photos/96616/pexels-photo-96616.jpeg?auto=compress&cs=tinysrgb&w=1000&h=500&dpr=1",
-            "https://images.pexels.com/photos/3938343/pexels-photo-3938343.jpeg?auto=compress&cs=tinysrgb&w=1600",
-            "https://veja.abril.com.br/wp-content/uploads/2016/06/tomate-colesterol-genetica-tk-20121106-original.jpeg?quality=70&strip=info&resize=850,567"
-        ],
-        nome: "Tomate ",
-        descricao: `O tomate é o fruto do tomateiro.Da sua família, fazem também parte as berinjelas,as pimentas e os pimentões, além de algumas espécies não comestíveis.`,
-        preco: 4.5,
-        estoque: 12,
-        validade: "10/12/2023",
-        unidade: "kg",
-        categoria: "2",
-        produtor:"Manuel gomes",
-        bestbefore:false,
-        comentarios:[],
-        avaliacao:[]
-      },
-
-      {
-        id: 2,
-        imagem_url: [
-          "https://images.pexels.com/photos/2518893/pexels-photo-2518893.jpeg?auto=compress&cs=tinysrgb&w=1000&h=500&dpr=1",
-          "https://images.pexels.com/photos/257259/pexels-photo-257259.jpeg?auto=compress&cs=tinysrgb&w=1600",
-        ],
-        nome: "Repolho",
-        descricao: `O repolho, subespécie da Brassica oleracea, grupo Capitata, é uma variedade peculiar de couve, constituindo um dos vegetais mais utilizados na cozinha, em diversas aplicações (sopas, conservas, acompanhamentos, massas, etc). `,
-        preco: 2.0,
-        estoque: 7,
-        validade: "17/12/2025",
-        unidade: "kg",
-        categoria: "2",
-        produtor:"Manuel gomes",
-        bestbefore:true,
-        comentarios:[],
-        avaliacao:[]
-      },
-  ]
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [iconName, setIconName] = useState("storefront");
+  const [emptyText, setEmptyText] = useState("Não há Produtos para mostrar.");
+  const [headerText, setHeaderText] = useState("Todos os produtos");
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
 
   const navigation = useNavigation();
   function handleOpenDescription(productId, product, isInfo) {
     navigation.navigate("description", { productId, product, isInfo });
   }
 
+  const getAllProducts = () => {
+    setIsLoading(true);
+    setSearch("");
+    setHeaderText(`Todos os produtos`);
+    apiFeiraKit
+      .get("/products")
+      .then(({ data }) => {
+        setProducts(data.reverse());
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setProducts([]);
+        setIconName("sync-problem");
+        setEmptyText(":'(\n Ocorreu um erro,tente novamente");
+        console.log(error);
+        setIsLoading(false);
+      });
+  };
+
+  const getProductsByName = (name) => {
+    setIsLoading(true);
+    setHeaderText(`Resultado para: "${name}"`);
+    apiFeiraKit
+      .get(`/products/byname/${name}`)
+      .then(({ data }) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsLoading(false);
+  };
+
+  useFocusEffect(useCallback(getAllProducts, []));
+
   return (
-    
     <VStack
       flex={1}
       w="full"
@@ -66,47 +77,115 @@ export function Home() {
       px={4}
       pb={0}
     >
-      <Header />
-
-      <Heading
-        size="md"
-        mt={2}
-        color={colors.gray[500]}
-        justifyItems="left"
-        w="full"
-        mb={4}
-      >
-        Todos os produtos
-      </Heading>
-
-      <FlatList
-        data={products}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        numColumns="2"
-        w="100%"
-        keyExtractor={(product) => product.id}
-        renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onPress={() => handleOpenDescription(item.id, item, false)}
+      <VStack w="full" alignItems="center" pt={8}>
+        <Image
+          source={require("../assets/logo.png")}
+          style={{ width: 230, height: 70 }}
+          resizeMode="contain"
+        />
+        <HStack mt={-1} alignItems="center">
+          <Input
+            bgColor={colors.gray[300]}
+            h={10}
+            color={colors.blue[900]}
+            flex={1}
+            leftElement={
+              <Icon
+                color={colors.blue[700]}
+                as={<MaterialIcons name="search" />}
+                size={6}
+                ml={2}
+              />
+            }
+            placeholder="Pesquisar"
+            placeholderTextColor={colors.blue[700]}
+            fontSize={14}
+            borderRadius={8}
+            mr={4}
+            value={search}
+            onChangeText={setSearch}
+            onSubmitEditing={() => {
+              getProductsByName(search);
+            }}
+            style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
           />
-        )}
-        ListEmptyComponent={() => (
-          <Center flex={1} h={400}>
-            <MaterialIcons
-              name="storefront"
-              size={80}
-              color={colors.gray[300]}
-              mt
-            />
-            {"\n"}
-            <Text color={colors.gray[300]} fontSize="4xl" textAlign="center">
-              Não há Produtos para mostrar.
-            </Text>
-          </Center>
-        )}
-      />
+
+          <TouchableOpacity
+            onPress={() => {
+              navigation.openDrawer();
+            }}
+          >
+            <View>
+              <MaterialIcons name="menu" size={45} color={colors.blue[600]} />
+            </View>
+          </TouchableOpacity>
+        </HStack>
+      </VStack>
+
+      {isLoading ? (
+        <LoadingProducts />
+      ) : (
+        <>
+          <HStack w="full" alignItems="center">
+
+            {headerText !== 'Todos os produtos' &&
+            (
+            <>
+            <TouchableOpacity style={{justifyContent:'center',marginRight:5,marginTop:-7}}
+            onPress={()=>getAllProducts()}
+             >
+             <MaterialIcons name='clear' size={22}/>
+            </TouchableOpacity>
+            </>
+            )
+            }
+            <Heading
+              size="md"
+              mt={2}
+              color={colors.gray[500]}
+              justifyItems="left"
+              w="full"
+              mb={4}
+            >
+              {headerText}
+            </Heading> 
+          </HStack>
+          <FlatList
+            data={products}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 100 }}
+            numColumns="2"
+            w="100%"
+            keyExtractor={(product) => product.id}
+            renderItem={({ item }) => (
+              <ProductCard
+                product={item}
+                onPress={() => handleOpenDescription(item.id, item, false)}
+              />
+            )}
+            ListEmptyComponent={() => (
+              <Center flex={1} h={400}>
+                <TouchableOpacity onPress={() => getAllProducts()}>
+                  <MaterialIcons
+                    name={iconName}
+                    size={80}
+                    color={colors.gray[300]}
+                    mt
+                  />
+                </TouchableOpacity>
+                {"\n"}
+                <Text
+                  color={colors.gray[300]}
+                  fontSize="4xl"
+                  textAlign="center"
+                >
+                  {emptyText}
+                </Text>
+              </Center>
+            )}
+          />
+        </>
+      )}
     </VStack>
   );
 }

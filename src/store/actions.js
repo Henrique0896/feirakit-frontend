@@ -1,27 +1,27 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export const Init = () => {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem("token");
+    let user=JSON.parse(await AsyncStorage.getItem("user"));
     if (token !== null) {
       dispatch({
         type: "LOGIN",
-        payload: token,
+        payload: user,
       });
     }
   };
 };
 
-export const Login = (username, password) => {
+export const Login = (user) => {
   return async (dispatch) => {
-    let token = null;
-    //criar a validação se o usuário existe nop banco posteriormente
-    if (username && password) {
-      token = username + password;
-      await AsyncStorage.setItem("token", token);
-    }
+    let token = user.id;
+     
+    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("user",JSON.stringify(user));
     dispatch({
       type: "LOGIN",
-      payload: token,
+      payload: user,
     });
   };
 };

@@ -11,7 +11,7 @@ import {
 import { StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export function MyProductItems({ product, onPress }) {
+export function MyProductItem({ product, onPress }) {
   const { colors } = useTheme();
 
   return (

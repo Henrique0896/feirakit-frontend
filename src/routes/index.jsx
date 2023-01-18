@@ -19,6 +19,7 @@ export function Routes() {
     await dispatch(Init());
     setLoading(false);
   };
+  
   useEffect(() => {
     init();
   }, []);
