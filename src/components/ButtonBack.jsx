@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, HStack, useTheme, View, Image } from "native-base";
+import { VStack, HStack, useTheme, View, Image,StatusBar } from "native-base";
 import { TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -12,7 +12,8 @@ export function ButtonBack() {
     navigation.goBack();
   }
   return (
-    <VStack pb={-10} mt={10}>
+    <VStack pb={-10} mt={2} mb={2}>
+      <StatusBar/>
       <HStack alignItems='flex-start'>
         <TouchableOpacity onPress={handleGoBack}>
           <View

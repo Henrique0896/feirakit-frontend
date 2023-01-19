@@ -65,7 +65,7 @@ export function CustomDrawer(props) {
             paddingBottom: 10,
           }}
         >
-          {user.nome_completo}
+          {user.nome}
         </Text>
         <View style={{ backgroundColor: colors.gray[200], paddingTop: 10 }}>
           <DrawerItemList {...props} />

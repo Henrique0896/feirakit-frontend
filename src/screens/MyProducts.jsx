@@ -2,15 +2,13 @@ import React, { useState, useCallback } from "react";
 import {
   VStack,
   HStack,
-  Icon,
-  Input,
   useTheme,
   Heading,
   FlatList,
   Center,
   View,
 } from "native-base";
-import { TouchableOpacity } from "react-native";
+import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
@@ -20,8 +18,8 @@ import apiFeiraKit from "../services/ApiFeiraKit";
 
 export function MyProducts() {
   const { colors } = useTheme();
-  const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
+  const[ isLoading,setIsLoading ]= useState(true);
   const navigation = useNavigation();
   const user=useSelector((state) => state.AuthReducers.userData)
   function handleOpenAdd() {
@@ -32,71 +30,35 @@ export function MyProducts() {
     navigation.navigate("description", { productId, product, isInfo });
   }
 
-  const getProductsByNameUsuario = () => {
+  const getProductsByIdUsuario = () => {
+    setIsLoading(true)
     apiFeiraKit
-      .get(`/products/bynameUsuario/${user.nome_completo}`)
+      .get(`/products/by-id-usuario/${user.id}`)
       .then(({ data }) => {
         setProducts(data);
+        setIsLoading(false)
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false)
       });
+      
   };
 
-  const getProductsByName = (productName) => {
-    apiFeiraKit
-      .get(`/products/byname/${productName}`)
-      .then(({ data }) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  useFocusEffect(useCallback(getProductsByNameUsuario, []));
+  
+  useFocusEffect(useCallback(getProductsByIdUsuario, []));
 
   return (
     <VStack flex={1} w="full" px="2%">
       <ButtonBack />
-      <HStack alignItems="center" w="96%" alignSelf="center">
-        <Input
-        isDisabled
-          bgColor={colors.gray[300]}
-          borderWidth={2}
-          borderColor={colors.gray[400]}
-          h={10}
-          flex={1}
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[700]}
-              as={<MaterialIcons name="search" />}
-              size={6}
-              ml={2}
-            />
-          }
-          placeholder="Pesquisar"
-          placeholderTextColor={colors.blue[700]}
-          fontSize={14}
-          borderRadius={8}
-          mr={2}
-          onChangeText={setSearch}
-          onSubmitEditing={() => {
-            getProductsByName(search);
-          }}
-          style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
-        />
-
-        <TouchableOpacity onPress={() => handleOpenAdd()}>
+       <TouchableOpacity style={{alignSelf:'flex-end',marginTop:-60,marginRight:10}} onPress={() => handleOpenAdd()}>
           <View>
-            <MaterialIcons name="add" size={45} color={colors.blue[600]} />
+            <MaterialIcons name="add" size={50} color={colors.blue[600]}/>
           </View>
         </TouchableOpacity>
-      </HStack>
       <Heading
         size="md"
-        mt={2}
+        mt={4}
         color={colors.gray[500]}
         justifyItems="left"
         w="full"
@@ -105,7 +67,8 @@ export function MyProducts() {
       >
         Meus produtos
       </Heading>
-
+      {isLoading ?
+      <ActivityIndicator size="large"/> :
       <FlatList
         paddingX="2%"
         data={products}
@@ -153,7 +116,7 @@ export function MyProducts() {
               </VStack>
 
               <Center>
-                <TouchableOpacity onPress={() => getProductsByNameUsuario()}>
+                <TouchableOpacity onPress={() => getProductsByIdUsuario()}>
                   <MaterialIcons
                     color={colors.gray[300]}
                     name="refresh"
@@ -164,7 +127,7 @@ export function MyProducts() {
             </HStack>
           </View>
         )}
-      />
+      />}
     </VStack>
   );
 }

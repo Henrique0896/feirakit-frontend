@@ -4,270 +4,606 @@ import {
   Text,
   VStack,
   Icon,
+  Select,
   Input,
   useTheme,
-  Radio,
-  HStack,
+  HStack
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Image, TouchableOpacity, View, ScrollView } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import ViaCep from "../services/ViaCep";
+import apiFeiraKit from "../services/ApiFeiraKit";
+import { useNavigation } from "@react-navigation/native";
+import { Login as loginAction } from "../store/actions";
+import { TextInputMask } from "react-native-masked-text";
+
 export function Register() {
-  const [value, setValue] = useState("");
+  const [inputType, setInputType] = useState("password");
+  const [IsLoading, setIsLoading] = useState(false);
+  const cellRef = useRef(null);
   const { colors } = useTheme();
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const handleVisibilityPassword = () => {
+    if (inputType == "password") {
+      setInputType("text");
+    } else {
+      setInputType("password");
+    }
+  };
+  
+  const userSchema = yup.object({
+    nome: yup.string()
+    .required("informe o seu nome completo"),
+    email: yup
+      .string()
+      .required("Informe um email válido")
+      .email("Informe um email válido"),
+    telefone: yup.string().min(10).required("Informe um numero de whatsapp"),
+    senha: yup
+      .string()
+      .min(6, "a senha deve ter pelo menos 6 dígitos")
+      .required("informe uma senha"),
+    cep: yup.string().min(7, "CEP Inválido").required("Informe um CEP"),
+    rua: yup.string().required("informe o nome da rua"),
+    numero: yup.string().required("informe o numero da sua residência"),
+    complemento: yup.string(),
+    bairro: yup.string().required("informe o bairro"),
+    cidade: yup.string().required("informe o nome da cidade"),
+    estado: yup.string().required("selecione o estado"),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue
+  } = useForm({
+    resolver: yupResolver(userSchema),
+    
+  });
+
+  const handleCreateUser = (data) => {
+    setIsLoading(true);
+    let adress = `${data.rua}, ${data.numero}, ${data.bairro}, ${data.cidade} - ${data.estado},${data.cep}`
+    let objUser = {
+      email:data.email,
+      senha:data.senha,
+      nome:data.nome,
+      endereco: adress,
+      telefone: cellRef?.current.getRawValue(),
+    };
+    setIsLoading(false);
+    apiFeiraKit
+    .post("/users", JSON.stringify(objUser))
+    .then((response) => {
+         login(objUser.nome, objUser.senha);
+       })
+    .catch((err) => {
+         console.log(err);
+         setIsLoading(false);
+    });
+  };
+
+  const getAddressData = async (cep) => {
+    await ViaCep.get(`${cep}/json/`)
+      .then(({ data }) => {
+        setValue('estado',data.uf)
+        setValue('cidade',data.localidade);
+        setValue('bairro',data.bairro);
+        setValue('rua',data.logradouro);
+        setValue('complemento',data.complemento);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const login = (username) => {
+    apiFeiraKit
+      .get(`/users/byname/${username}`)
+      .then(({ data }) => {
+        dispatch(loginAction(data[0]));
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log(err);
+      });
+  };
+
   return (
     <VStack w="full" alignItems="center">
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ width:"100%",paddingBottom:100}}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ width: "100%", paddingBottom: 100 }}
+      >
         <ButtonBack />
-        <Text alignSelf="flex-start" mt={8} ml={4}>
+        <Text alignSelf="flex-start" mt={8} ml={4} fontSize="xl">
           Informações da Conta
         </Text>
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[900]}
-              as={<MaterialIcons name="email" />}
-              size={6}
-              ml={2}
+
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              keyboardType="email-address"
+              color={errors.email ? colors.purple[500] : colors.blue[900]}
+              leftElement={
+                <Icon
+                  color={errors.email ? colors.purple[500] : colors.blue[900]}
+                  as={<MaterialIcons name="email" />}
+                  size={6}
+                  ml={2}
+                />
+              }
+              placeholder="E-mail"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.email ? colors.purple[500] : colors.blue[900]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
             />
-          }
-          placeholder="E-mail"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
+          )}
         />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[900]}
-              as={<MaterialIcons name="lock" />}
-              size={6}
-              ml={2}
+        {errors.email && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.email.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="senha"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={errors.senha ? colors.purple[500] : colors.blue[900]}
+              leftElement={
+                <Icon
+                  color={errors.senha ? colors.purple[500] : colors.blue[900]}
+                  as={<MaterialIcons name="lock" />}
+                  size={6}
+                  ml={2}
+                />
+              }
+              rightElement={
+                <TouchableOpacity onPress={handleVisibilityPassword}>
+                  <Icon
+                    color={errors.senha ? colors.purple[500] : colors.blue[900]}
+                    as={
+                      <MaterialIcons
+                        name={
+                          inputType == "text" ? "visibility-off" : "visibility"
+                        }
+                      />
+                    }
+                    size={6}
+                    marginRight={2}
+                  />
+                </TouchableOpacity>
+              }
+              type={inputType}
+              placeholder="Senha"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.senha ? colors.purple[500] : colors.blue[900]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
             />
-          }
-          rightElement={
-            <Icon
-              color={colors.blue[900]}
-              as={<MaterialIcons name="visibility-off" />}
-              size={6}
-              marginRight={2}
-            />
-          }
-          placeholder="Senha"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
+          )}
         />
-        <Text alignSelf="flex-start" ml={4} mt={4}>
+        {errors.senha && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.senha.message}
+          </Text>
+        )}
+
+        <Text alignSelf="flex-start" ml={4} mt={4} fontSize="xl">
           Dados pessoais
         </Text>
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[900]}
-              as={<MaterialIcons name="person" />}
-              size={6}
-              ml={2}
+
+        <Controller
+          control={control}
+          name="nome"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={errors.nome ? colors.purple[500] : colors.blue[900]}
+              leftElement={
+                <Icon
+                  color={errors.nome ? colors.purple[500] : colors.blue[900]}
+                  as={<MaterialIcons name="person" />}
+                  size={6}
+                  ml={2}
+                />
+              }
+              placeholder="Nome Completo"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.nome ? colors.purple[500] : colors.blue[900]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
             />
-          }
-          placeholder="Nome"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
+          )}
         />
-        <Input
+        {errors.nome && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.nome.message}
+          </Text>
+        )}
+
+        <HStack
+          alignItems="center"
           mt={4}
-          width={334}
           height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          leftElement={<Icon color={colors.blue[900]} size={6} ml={2} />}
-          placeholder="Sobrenome"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
+          borderWidth={1}
           borderRadius={8}
+          borderColor={colors.gray[300]}
           mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
           bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[900]}
-              as={<MaterialIcons name="badge" />}
-              size={6}
-              ml={2}
-            />
-          }
-          placeholder="CPF"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          leftElement={
-            <Icon
-              color={colors.blue[900]}
-              as={<MaterialIcons name="call" />}
-              size={6}
-              ml={2}
-            />
-          }
-          placeholder="Telefone"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Text alignSelf="flex-start" ml={4} mt={4}>
+        >
+          <Icon
+            color={errors.telefone ? colors.purple[500] : colors.blue[900]}
+            as={<FontAwesome5 name="whatsapp" />}
+            size={5}
+            ml={3}
+          />
+          <Controller
+            control={control}
+            name="telefone"
+            render={({ field: { onChange, value } }) => (
+              <TextInputMask
+                type={"cel-phone"}
+                options={{
+                  maskType: "BRL",
+                  withDDD: true,
+                  dddMask: "(99) ",
+                }}
+                color={errors.telefone ? colors.purple[500] : colors.blue[900]}
+                placeholder="(xx) XXXXX-XXXX"
+                style={{
+                  fontFamily: "Montserrat_400Regular",
+                  fontSize: 14,
+                  marginLeft: 11,
+                }}
+                width="70%"
+                placeholderTextColor={
+                  errors.telefone ? colors.purple[500] : colors.blue[900]
+                }
+                value={value}
+                onChangeText={onChange}
+                ref={cellRef}
+              />
+            )}
+          />
+        </HStack>
+        {errors.telefone && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.telefone.message}
+          </Text>
+        )}
+
+        <Text alignSelf="flex-start" ml={4} mt={4} fontSize="xl">
           Endereço
         </Text>
-        <Input
+
+        <HStack
+          alignItems="center"
           mt={4}
-          width={334}
           height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* CEP"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
+          borderWidth={1}
           borderRadius={8}
+          borderColor={colors.gray[300]}
           mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
           bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* Rua"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* Numero"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* Complemento (opicional)"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* Bairro"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          placeholder="* Cidade"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
-        />
-        <Input
-          mt={4}
-          width={334}
-          height={54}
-          bgColor={colors.gray[100]}
-          w="90%"
-          color={colors.blue[900]}
-          rightElement={
-            <Icon
+        >
+          <Controller
+            control={control}
+            name="cep"
+            render={({ field: { onChange, value } }) => (
+              <TextInputMask
+                type={"custom"}
+                options={{
+                  mask: "99999-999",
+                }}
+                color={errors.cep ? colors.purple[500] : colors.blue[900]}
+                placeholder="*CEP"
+                style={{
+                  fontFamily: "Montserrat_400Regular",
+                  fontSize: 14,
+                  marginLeft: 11,
+                }}
+                width="70%"
+                placeholderTextColor={
+                  errors.cep ? colors.purple[500] : colors.blue[800]
+                }
+                value={value}
+                onChangeText={onChange}
+                onEndEditing={() => {
+                  getAddressData(value);
+                }}
+                keyboardType="numeric"
+              />
+            )}
+          />
+        </HStack>
+        {errors.cep && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.cep.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="rua"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
               color={colors.blue[900]}
-              as={<MaterialIcons name="arrow-drop-down" />}
-              size={6}
-              ml={2}
+              placeholder="* Rua"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.rua ? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
             />
-          }
-          placeholder="Estado"
-          fontFamily={"Montserrat_400Regular"}
-          placeholderTextColor={colors.blue[900]}
-          fontSize={14}
-          borderRadius={8}
-          mr={4}
+          )}
         />
+        {errors.rua && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.rua.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="numero"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="* Numero"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.numero? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              keyboardType="default"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
+        {errors.numero && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.numero.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="complemento"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="Complemento (opcional)"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={colors.blue[800]}
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="bairro"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="*Bairro"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.bairro ? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
+        {errors.bairro && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.bairro.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="cidade"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              value={value}
+              placeholder="* Cidade"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.cidade ? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              onChangeText={onChange}
+            />
+          )}
+        />
+        {errors.cidade && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.cidade.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="estado"
+          render={({ field: { onChange, value } }) => (
+            <Select
+              w="96%"
+              mt={4}
+              h={54}
+              borderRadius={8}
+              placeholderTextColor={
+                errors.estado ? colors.purple[500] : colors.blue[800]
+              }
+              color={colors.blue[900]}
+              selectedValue={value}
+              placeholder="Selecione o estado"
+              fontSize="md"
+              accessibilityLabel="Escolha a categoria do produto"
+              onValueChange={onChange}
+            >
+              <Select.Item label="Acre" value="AC" />
+              <Select.Item label="Alagoas" value="AL" />
+              <Select.Item label="Amapá" value="AP" />
+              <Select.Item label="Amazonas" value="AM" />
+              <Select.Item label="Bahia" value="BA" />
+              <Select.Item label="Ceará" value="CE" />
+              <Select.Item label="Distrito Federal" value="DF" />
+              <Select.Item label="Espírito Santo" value="ES" />
+              <Select.Item label="Goiás" value="GO" />
+              <Select.Item label="Maranhão" value="MA" />
+              <Select.Item label="Mato Grosso" value="MT" />
+              <Select.Item label="Mato Grosso do Sul" value="MS" />
+              <Select.Item label="Minas Gerais" value="MG" />
+              <Select.Item label="Pará" value="PA" />
+              <Select.Item label="Paraíba" value="PB" />
+              <Select.Item label="Paraná" value="PR" />
+              <Select.Item label="Pernambuco" value="PE" />
+              <Select.Item label="Piauí" value="PI" />
+              <Select.Item label="Rio de Janeiro" value="RJ" />
+              <Select.Item label="Rio Grande do Norte" value="RN" />
+              <Select.Item label="Rio Grande do Sul" value="RS" />
+              <Select.Item label="Rondônia" value="RO" />
+              <Select.Item label="Roraima" value="RR" />
+              <Select.Item label="Santa Catarina" value="SC" />
+              <Select.Item label="São Paulo" value="SP" />
+              <Select.Item label="Sergipe" value="SE" />
+              <Select.Item label="Tocantins" value="TO" />
+            </Select>
+          )}
+        />
+        {errors.estado && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.estado.message}
+          </Text>
+        )}
+
         <Button
           bgColor={colors.blue[600]}
           height={54}
@@ -276,9 +612,16 @@ export function Register() {
           borderRadius={15}
           alignSelf="center"
           alignContent="center"
+          onPress={handleSubmit(handleCreateUser)}
+          isLoading={IsLoading}
         >
           Cadastrar
         </Button>
+        {Object.values(errors).length > 0 && (
+          <Text alignSelf="center" color={colors.purple[500]} mt={4}>
+            Preencha todos os campos antes de continuar
+          </Text>
+        )}
       </ScrollView>
     </VStack>
   );

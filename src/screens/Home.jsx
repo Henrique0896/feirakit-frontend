@@ -8,6 +8,7 @@ import {
   FlatList,
   Center,
   Text,
+  StatusBar
 } from "native-base";
 import { ProductCard } from "../components/ProductCard";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -15,7 +16,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
 import apiFeiraKit from "../services/ApiFeiraKit";
 import { LoadingProducts } from "../components/Loading";
-import { Image,TouchableOpacity, View } from "react-native";
+import { Image,TouchableOpacity, View,RefreshControl } from "react-native";
 
 export function Home() {
   const { colors } = useTheme();
@@ -25,6 +26,7 @@ export function Home() {
   const [headerText, setHeaderText] = useState("Todos os produtos");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigation = useNavigation();
   function handleOpenDescription(productId, product, isInfo) {
@@ -39,6 +41,7 @@ export function Home() {
       .get("/products")
       .then(({ data }) => {
         setProducts(data.reverse());
+        setRefreshing(false);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -65,6 +68,11 @@ export function Home() {
   };
 
   useFocusEffect(useCallback(getAllProducts, []));
+  const onRefresh = () => {
+    setRefreshing(true);
+    setProducts([])
+    getAllProducts();
+  }
 
   return (
     <VStack
@@ -77,7 +85,8 @@ export function Home() {
       px={4}
       pb={0}
     >
-      <VStack w="full" alignItems="center" pt={8}>
+      <StatusBar/>
+      <VStack w="full" alignItems="center">
         <Image
           source={require("../assets/logo.png")}
           style={{ width: 230, height: 70 }}
@@ -183,6 +192,14 @@ export function Home() {
                 </Text>
               </Center>
             )}
+
+            refreshControl={
+              <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colors.blue[600]]}
+              />
+            }
           />
         </>
       )}
