@@ -98,6 +98,7 @@ export function AppRoutes() {
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="homeStack" component={HomeDrawer} />
       <Screen name="description" component={Description} />
+      <Screen name="myaccount" component={MyAccount} />
     </Navigator>
   );
 }

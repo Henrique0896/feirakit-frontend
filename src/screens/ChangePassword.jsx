@@ -91,7 +91,7 @@ export function ChangePassword() {
       >
         Alterar Senha
       </Text>
-
+      
       {incompatiblePassword && (
         <Text color={colors.purple[500]} alignSelf="center" fontSize={16}>
           As senhas são incompatíveis
@@ -177,7 +177,6 @@ export function ChangePassword() {
           {errors.confirmacao.message}
         </Text>
       )}
-
       <Button
         bgColor={colors.blue[600]}
         _pressed={{ bgColor: colors.blue[700] }}

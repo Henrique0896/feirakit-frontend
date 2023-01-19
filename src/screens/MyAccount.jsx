@@ -188,7 +188,6 @@ export function MyAccount() {
         console.log(err);
       });
   };
-
   return (
     <ScrollView>
       <VStack flex={1} w="full">
@@ -216,6 +215,7 @@ export function MyAccount() {
         >
           Alterar dados
         </Text>
+        
         <Controller
           control={control}
           name="nome"
@@ -350,7 +350,6 @@ export function MyAccount() {
             )}
           />
         </HStack>
-
         <Text
           style={styles.txt}
           alignSelf="flex-start"
@@ -360,7 +359,6 @@ export function MyAccount() {
         >
           Alterar endereço
         </Text>
-
         <HStack
           alignItems="center"
           mt={4}
@@ -613,7 +611,6 @@ export function MyAccount() {
             {errors.estado.message}
           </Text>
         )}
-
         <Button
           bgColor={colors.blue[600]}
           _pressed={{ bgColor: colors.blue[700] }}
