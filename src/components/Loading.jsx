@@ -1,7 +1,11 @@
 import React from "react";
-import { VStack, Skeleton, Center, HStack } from "native-base";
+import { VStack, Skeleton, Center, HStack, useTheme } from "native-base";
+import { ActivityIndicator } from "react-native";
+
 
 export function Loading() {
+  
+  
   return (
     <Center w="100%" pt={10}>
       <VStack
@@ -148,8 +152,6 @@ export function LoadingProducts() {
   );
 }
 
-
-
 export function LoadingImage() {
   return (
     <>
@@ -160,4 +162,13 @@ export function LoadingImage() {
         <Skeleton w={50} h={50} mr={2}/> 
     </>
   );
+}
+
+export function LoadingForm(){
+  const { colors } = useTheme();
+  return(
+  <Center mt={'60%'}>
+     <ActivityIndicator size={180} color={colors.blue[700]} />
+  </Center>
+  )
 }

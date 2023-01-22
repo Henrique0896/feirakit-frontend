@@ -73,13 +73,20 @@ export function Register() {
 
   const handleCreateUser = (data) => {
     setIsLoading(true);
-    let adress = `${data.rua}, ${data.numero}, ${data.bairro}, ${data.cidade} - ${data.estado},${data.cep}`
     let objUser = {
-      email:data.email,
-      senha:data.senha,
-      nome:data.nome,
-      endereco: adress,
-      telefone: cellRef?.current.getRawValue(),
+      email: data.email,
+      nome: data.nome,
+      senha: data.senha,
+      endereco: {
+        rua: data.rua,
+        numero: data.numero,
+        bairro: data.bairro,
+        cep: data.cep,
+        complemento: data.complemento,
+        cidade: data.cidade,
+        estado: data.estado,
+      },
+      telefone: cellRef?.current.getRawValue()
     };
     setIsLoading(false);
     apiFeiraKit

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   Heading,
   VStack,
@@ -23,14 +23,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { LoadingImage } from "../components/Loading";
+import { LoadingForm, LoadingImage } from "../components/Loading";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../components/CustomBottomSheet";
 import { useSelector } from "react-redux";
 import apiFeiraKit from "../services/ApiFeiraKit";
-import { useForm, Controller} from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { showMessage} from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import * as yup from "yup";
 
 export function ProductForm() {
@@ -48,7 +48,7 @@ export function ProductForm() {
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
   let monthDate =
-    ObjDate.getMonth() < 10 ?  ObjDate.getMonth() : ObjDate.getMonth();
+    ObjDate.getMonth() < 10 ? ObjDate.getMonth() : ObjDate.getMonth();
 
   const id = product ? product.id : null;
 
@@ -97,23 +97,27 @@ export function ProductForm() {
   const [images, setImages] = useState(product ? product.imagem_url : []);
   const [isLoadingImage, setIsLoadingImages] = useState(false);
   const [emptyImage, setEmptyImage] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [unities, setUnities] = useState([]);
+  const [formLoaded, setFormLoaded] = useState(false);
 
   const productSchema = yup.object({
     nome: yup.string().required("informe o nome do produto"),
     categoria: yup.string().required("selecione a categoria do produto"),
     descricao: yup.string().required("Adicione uma descrição para o produto"),
     unidade: yup.string().required("selecione o tipo de unidade"),
-    estoque: yup.string()
+    estoque: yup
+      .string()
       .required("informe a quantidade de produtos em estoque"),
     preco: yup.string().required("informe o preço do produto"),
-    imagem_url:yup.array().required("Adicione uma imagem"),
+    imagem_url: yup.array().required("Adicione uma imagem"),
   });
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
   } = useForm({
     defaultValues: {
       nome: product ? product.nome : "",
@@ -124,12 +128,12 @@ export function ProductForm() {
       unidade: product ? product.unidade : "",
       bestbefore: product ? product.bestbefore : false,
       produtor_id: producerId,
-      imagem_url:product&& product.imagem_url
+      imagem_url: product && product.imagem_url,
     },
     resolver: yupResolver(productSchema),
   });
-  
-  const handleNewProduct= (data) => {
+
+  const handleNewProduct = (data) => {
     setIsLoading(true);
     let objProduct = {
       ...data,
@@ -144,13 +148,12 @@ export function ProductForm() {
       return;
     }
     if (id === null) {
-       addProduct(JSON.stringify(objProduct));
+      addProduct(JSON.stringify(objProduct));
     } else {
       objProduct.id = id;
       updateProduct(JSON.stringify(objProduct));
     }
   };
-
 
   const pickImages = async () => {
     setIsLoadingImages(true);
@@ -189,11 +192,11 @@ export function ProductForm() {
         newImages.push(image.uri);
       });
       setImages(newImages);
-      setValue('imagem_url',newImages)
+      setValue("imagem_url", newImages);
       setEmptyImage(false);
     } else {
       setImages(images);
-      setValue('imagem_url',images)
+      setValue("imagem_url", images);
       setEmptyImage(false);
     }
     setIsLoadingImages(false);
@@ -231,16 +234,15 @@ export function ProductForm() {
       });
       newImages.push(capturedImage);
       setImages(newImages);
-      setValue('imagem_url',newImages)
-
+      setValue("imagem_url", newImages);
     } else {
       setImages(images);
-      setValue('imagem_url',images) 
+      setValue("imagem_url", images);
     }
     setIsLoadingImages(false);
   };
 
-const removeImage = (uri) => {
+  const removeImage = (uri) => {
     setIsLoadingImages(true);
     Alert.alert(textsRemoveImage.title, textsRemoveImage.description, [
       {
@@ -261,7 +263,7 @@ const removeImage = (uri) => {
           });
           setIsLoadingImages(false);
           setImages(newImages);
-          setValue('imagem_url',newImages)
+          setValue("imagem_url", newImages);
           if (newImages.length === 0) {
             setEmptyImage(true);
           }
@@ -269,7 +271,7 @@ const removeImage = (uri) => {
       },
     ]);
   };
-  
+
   const addProduct = async (objProduct) => {
     let jsonProduct = objProduct;
     await apiFeiraKit
@@ -306,271 +308,165 @@ const removeImage = (uri) => {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    apiFeiraKit
+      .get(`/products/units`)
+      .then(({ data }) => {
+        setCategories(data.categorias);
+        setUnities(data.unidades);
+        setFormLoaded(true);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
   return (
     <VStack>
       <ButtonBack />
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={8}
-        px={4}
-      >
-        <ScrollView
-          style={{ height: "100%", width: "100%" }}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 280 }}
+      {!formLoaded ? (
+        <LoadingForm />
+      ) : (
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={8}
+          px={4}
         >
-          <Heading
-            color={colors.gray[500]}
-            borderBottomColor={colors.gray[400]}
-            borderBottomWidth={1}
+          <ScrollView
+            style={{ height: "100%", width: "100%" }}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 280 }}
           >
-            {HeaderText}
-          </Heading>
-          <Heading
-            mt={"2"}
-            size="md"
-            color={colors.blue[700]}
-            fontFamily="body"
-            fontWeight="semibold"
-          >
-            Nome do Produto:
-          </Heading>
+            <Heading
+              color={colors.gray[500]}
+              borderBottomColor={colors.gray[400]}
+              borderBottomWidth={1}
+            >
+              {HeaderText}
+            </Heading>
+            <Heading
+              mt={"2"}
+              size="md"
+              color={colors.blue[700]}
+              fontFamily="body"
+              fontWeight="semibold"
+            >
+              Nome do Produto:
+            </Heading>
 
-          <Controller
-            control={control}
-            name="nome"
-            render={({ field: { onChange, value }}) => (
-              <Input
-                borderColor={
-                  errors.nome ? colors.purple[500] : colors.blue[600]
-                }
-                placeholderTextColor={
-                  errors.nome ? colors.purple[500] : colors.blue[500]
-                }
-                placeholder="Nome do Produto"
-                fontSize="md"
-                fontWeight="thin"
-                fontFamily="body"
-                value={value}
-                onChangeText={onChange}
-                color={colors.blue[700]}
-                _focus={{
-                  backgroundColor: colors.gray[200],
-                  borderWidth: 2,
-                }}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="nome"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  borderColor={
+                    errors.nome ? colors.purple[500] : colors.blue[600]
+                  }
+                  placeholderTextColor={
+                    errors.nome ? colors.purple[500] : colors.blue[500]
+                  }
+                  placeholder="Nome do Produto"
+                  fontSize="md"
+                  fontWeight="thin"
+                  fontFamily="body"
+                  value={value}
+                  onChangeText={onChange}
+                  color={colors.blue[700]}
+                  _focus={{
+                    backgroundColor: colors.gray[200],
+                    borderWidth: 2,
+                  }}
+                />
+              )}
+            />
 
-          <Heading
-            mt={"2"}
-            size="md"
-            color={colors.blue[700]}
-            fontFamily="body"
-            fontWeight="semibold"
-          >
-            Categoria:
-          </Heading>
+            <Heading
+              mt={"2"}
+              size="md"
+              color={colors.blue[700]}
+              fontFamily="body"
+              fontWeight="semibold"
+            >
+              Categoria:
+            </Heading>
 
-          <Controller
-            control={control}
-            name="categoria"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholderTextColor={
-                  errors.categoria ? colors.purple[500] : colors.blue[600]
-                }
-                color={ colors.blue[600]}
-                borderColor={
-                  errors.categoria ? colors.purple[500] : colors.blue[500]
-                }
-                selectedValue={value}
-                placeholder="Selecione a categoria do produto"
-                fontSize="md"
-                accessibilityLabel="Escolha a categoria do produto"
-                onValueChange={onChange}
-              >
-                <Select.Item label="Legume" value="legume" />
-                <Select.Item label="Fruta" value="fruta" />
-                <Select.Item label="Hortaliça" value="hortalicas" />
-                <Select.Item label="Verdura" value="verdura" />
-              </Select>
-            )}
-          />
+            <Controller
+              control={control}
+              name="categoria"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholderTextColor={
+                    errors.categoria ? colors.purple[500] : colors.blue[600]
+                  }
+                  color={colors.blue[600]}
+                  borderColor={
+                    errors.categoria ? colors.purple[500] : colors.blue[500]
+                  }
+                  selectedValue={value}
+                  placeholder="Selecione a categoria do produto"
+                  fontSize="md"
+                  accessibilityLabel="Escolha a categoria do produto"
+                  onValueChange={onChange}
+                >
+                  {categories.map((categories) => (
+                    <Select.Item label={categories} value={categories} />
+                  ))}
+                </Select>
+              )}
+            />
 
-          <Heading
-            mt={"2"}
-            size="md"
-            color={colors.blue[700]}
-            fontFamily="body"
-            fontWeight="semibold"
-          >
-            Descrição:
-          </Heading>
+            <Heading
+              mt={"2"}
+              size="md"
+              color={colors.blue[700]}
+              fontFamily="body"
+              fontWeight="semibold"
+            >
+              Descrição:
+            </Heading>
 
-          <Controller
-            control={control}
-            name="descricao"
-            render={({ field: { onChange, value } }) => (
-              <TextArea
-                borderColor={
-                  errors.descricao ? colors.purple[500] : colors.blue[600]
-                }
-                placeholderTextColor={
-                  errors.descricao ? colors.purple[500] : colors.blue[500]
-                }
-                placeholder="descrição do produto"
-                flexWrap="wrap"
-                fontSize="md"
-                value={value}
-                onChangeText={onChange}
-                fontWeight="thin"
-                fontFamily="body"
-                color={colors.blue[700]}
-                _focus={{
-                  backgroundColor: colors.gray[200],
-                  borderWidth: 2,
-                }}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="descricao"
+              render={({ field: { onChange, value } }) => (
+                <TextArea
+                  borderColor={
+                    errors.descricao ? colors.purple[500] : colors.blue[600]
+                  }
+                  placeholderTextColor={
+                    errors.descricao ? colors.purple[500] : colors.blue[500]
+                  }
+                  placeholder="descrição do produto"
+                  flexWrap="wrap"
+                  fontSize="md"
+                  value={value}
+                  onChangeText={onChange}
+                  fontWeight="thin"
+                  fontFamily="body"
+                  color={colors.blue[700]}
+                  _focus={{
+                    backgroundColor: colors.gray[200],
+                    borderWidth: 2,
+                  }}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="bestbefore"
-            render={({ field: { onChange, value } }) => (
-              <Checkbox
-                isChecked={value}
-                mt={4}
-                _text={{ color: colors.blue[700] }}
-                onChange={onChange}
-              >
-                O produto será colhido após a compra{" "}
-              </Checkbox>
-            )}
-          />
+            <Controller
+              control={control}
+              name="bestbefore"
+              render={({ field: { onChange, value } }) => (
+                <Checkbox
+                  isChecked={value}
+                  mt={4}
+                  _text={{ color: colors.blue[700] }}
+                  onChange={onChange}
+                >
+                  O produto será colhido após a compra{" "}
+                </Checkbox>
+              )}
+            />
 
-          <HStack justifyContent="space-between" mt={2}>
-            <View w="1/3">
-              <Heading
-                mt={"2"}
-                size="md"
-                color={colors.blue[700]}
-                fontFamily="body"
-                fontWeight="semibold"
-              >
-                Preço:
-              </Heading>
-
-              <Controller
-                control={control}
-                name="preco"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    borderColor={
-                      errors.preco ? colors.purple[500] : colors.blue[600]
-                    }
-                    placeholder="0,00"
-                    placeholderTextColor={
-                      errors.preco ? colors.purple[500] : colors.blue[500]
-                    }
-                    type="text"
-                    fontSize="md"
-                    value={value}
-                    onChangeText={onChange}
-                    color={colors.blue[700]}
-                    keyboardType="decimal-pad"
-                    _focus={{
-                      backgroundColor: colors.gray[200],
-                      borderWidth: 2,
-                    }}
-                  />
-                )}
-              />
-            </View>
-
-            <View w="2/3" pl={4}>
-              <Heading
-                mt={"2"}
-                size="md"
-                color={colors.blue[700]}
-                fontFamily="body"
-                fontWeight="semibold"
-              >
-                Unidade
-              </Heading>
-
-              <Controller
-                control={control}
-                name="unidade"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    placeholderTextColor={
-                      errors.unidade ? colors.purple[500] : colors.blue[500]
-                    }
-                    color={colors.blue[700]}
-                    borderColor={
-                      errors.unidade ? colors.purple[500] : colors.blue[600]
-                    }
-                    selectedValue={value}
-                    placeholder="tipo de unidade"
-                    fontSize="md"
-                    accessibilityLabel="Escolha o tipo de unidade"
-                    onValueChange={onChange}
-                  >
-                    <Select.Item label="Kilograma" value="kilograma" />
-                    <Select.Item label="Dúzia" value="duzia" />
-                    <Select.Item label="Grama" value="grama" />
-                    <Select.Item label="Uma unidade" value="unidade" />
-                    <Select.Item label="Cartela" value="cartela" />
-                    <Select.Item label="Dezena" value="dezena" />
-                  </Select>
-                )}
-              />
-            </View>
-          </HStack>
-
-          <HStack justifyContent="space-between" mt={2}>
-            <View w="1/3">
-              <Heading
-                mt={"2"}
-                size="md"
-                color={colors.blue[700]}
-                fontFamily="body"
-                fontWeight="semibold"
-              >
-                Estoque
-              </Heading>
-
-              <Controller
-                control={control}
-                name="estoque"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    borderColor={
-                      errors.estoque ? colors.purple[500] : colors.blue[600]
-                    }
-                    placeholder="0"
-                    placeholderTextColor={
-                      errors.estoque ? colors.purple[500] : colors.blue[500]
-                    }
-                    type="text"
-                    fontSize="md"
-                    color={colors.blue[700]}
-                    keyboardType="numeric"
-                    onChangeText={onChange}
-                    value={value}
-                    _focus={{
-                      backgroundColor: colors.gray[200],
-                      borderWidth: 2,
-                    }}
-                  />
-                )}
-              />
-            </View>
-
-            <View w="2/3" pl={4} justifyContent="center">
-              <TouchableOpacity onPress={() => showDatePicker()}>
+            <HStack justifyContent="space-between" mt={2}>
+              <View w="1/3">
                 <Heading
                   mt={"2"}
                   size="md"
@@ -578,129 +474,257 @@ const removeImage = (uri) => {
                   fontFamily="body"
                   fontWeight="semibold"
                 >
-                  Validade
+                  Preço:
                 </Heading>
-                <Input
-                  isDisabled
-                  _disabled={{
-                    opacity: 1,
-                  }}
-                  fontSize="md"
-                  color={colors.blue[700]}
-                  rightElement={
-                    <Icon
-                      color={colors.blue[700]}
-                      as={<MaterialIcons name="date-range" />}
-                      size={6}
-                      mr={2}
-                    />
-                  }
-                  value={dateText}
-                />
-              </TouchableOpacity>
 
-              {showDate && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  is24Hour={true}
-                  style={{ width: "90%" }}
-                  onChange={onDateChange}
-                />
-              )}
-            </View>
-          </HStack>
-        
-
-         <Controller
-          control={control}
-          name='imagem_url'
-          render={()=>(
-          <HStack mt={4}>
-            <HStack w="80%" alignItems="center">
-              {isLoadingImage ? (
-                <LoadingImage />
-              ) : (
-                <FlatList
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  data={images}
-                  keyExtractor={(item) => item}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity onLongPress={() => removeImage(item)}>
-                      <MaterialIcons
-                        name="remove-circle"
-                        color="#FF0000"
-                        style={{
-                          alignSelf: "flex-end",
-                          position: "absolute",
-                          zIndex: 1000,
-                        }}
-                      ></MaterialIcons>
-                      <Image
-                        source={{ uri: item }}
-                        style={{ width: 50, height: 50, borderRadius: 4 }}
-                        ml={2}
-                        alt="Imagem do produto,selecionada da galeria"
-                      />
-                    </TouchableOpacity>
-                  )}
-                  ListEmptyComponent={() => (
-                    <Text
-                      color={errors.imagem_url ? colors.purple[500] : colors.gray[400]}
+                <Controller
+                  control={control}
+                  name="preco"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      borderColor={
+                        errors.preco ? colors.purple[500] : colors.blue[600]
+                      }
+                      placeholder="0,00"
+                      placeholderTextColor={
+                        errors.preco ? colors.purple[500] : colors.blue[500]
+                      }
+                      type="text"
                       fontSize="md"
-                    >
-                      {emptyImage
-                        ? "Adicione uma imagem"
-                        : "Nenhuma imagem selecionada"}
-                    </Text>
+                      value={value}
+                      onChangeText={onChange}
+                      color={colors.blue[700]}
+                      keyboardType="decimal-pad"
+                      _focus={{
+                        backgroundColor: colors.gray[200],
+                        borderWidth: 2,
+                      }}
+                    />
                   )}
                 />
-              )}
-            </HStack>
-            <TouchableOpacity onPress={() => openActionsSheet(0)} ml={4}>
-              <MaterialIcons
-                name="add-a-photo"
-                size={50}
-                color={errors.imagem_url? colors.purple[500] : colors.blue[700]}
-              />
-            </TouchableOpacity>
-          </HStack>)} 
-          />
-         
-          {images.length !== 0 && (
-            <Heading
-              size="xs"
-              fontFamily="body"
-              fontWeight="light"
-              color="#4a4a4a"
-            >
-              pressione e segure uma imagem para removê-la
-            </Heading>
-          )}
+              </View>
 
-          <Center mt={8}>
-            <Button
-              isLoading={isLoading}
-              disabled={isLoading}
-              rounded={8}
-              px={8}
-              py={2}
-              fontSize={22}
-              onPress={handleSubmit(handleNewProduct)}
-            >
+              <View w="2/3" pl={4}>
+                <Heading
+                  mt={"2"}
+                  size="md"
+                  color={colors.blue[700]}
+                  fontFamily="body"
+                  fontWeight="semibold"
+                >
+                  Unidade
+                </Heading>
+
+                <Controller
+                  control={control}
+                  name="unidade"
+                  render={({ field: { onChange, value } }) => (
+                    <Select
+                      placeholderTextColor={
+                        errors.unidade ? colors.purple[500] : colors.blue[500]
+                      }
+                      color={colors.blue[700]}
+                      borderColor={
+                        errors.unidade ? colors.purple[500] : colors.blue[600]
+                      }
+                      selectedValue={value}
+                      placeholder="tipo de unidade"
+                      fontSize="md"
+                      accessibilityLabel="Escolha o tipo de unidade"
+                      onValueChange={onChange}
+                    >
+                      {unities.map((unit) => (
+                        <Select.Item label={unit} value={unit} />
+                      ))}
+                    </Select>
+                  )}
+                />
+              </View>
+            </HStack>
+
+            <HStack justifyContent="space-between" mt={2}>
+              <View w="1/3">
+                <Heading
+                  mt={"2"}
+                  size="md"
+                  color={colors.blue[700]}
+                  fontFamily="body"
+                  fontWeight="semibold"
+                >
+                  Estoque
+                </Heading>
+
+                <Controller
+                  control={control}
+                  name="estoque"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      borderColor={
+                        errors.estoque ? colors.purple[500] : colors.blue[600]
+                      }
+                      placeholder="0"
+                      placeholderTextColor={
+                        errors.estoque ? colors.purple[500] : colors.blue[500]
+                      }
+                      type="text"
+                      fontSize="md"
+                      color={colors.blue[700]}
+                      keyboardType="numeric"
+                      onChangeText={onChange}
+                      value={value}
+                      _focus={{
+                        backgroundColor: colors.gray[200],
+                        borderWidth: 2,
+                      }}
+                    />
+                  )}
+                />
+              </View>
+
+              <View w="2/3" pl={4} justifyContent="center">
+                <TouchableOpacity onPress={() => showDatePicker()}>
+                  <Heading
+                    mt={"2"}
+                    size="md"
+                    color={colors.blue[700]}
+                    fontFamily="body"
+                    fontWeight="semibold"
+                  >
+                    Validade
+                  </Heading>
+                  <Input
+                    isDisabled
+                    _disabled={{
+                      opacity: 1,
+                    }}
+                    fontSize="md"
+                    color={colors.blue[700]}
+                    rightElement={
+                      <Icon
+                        color={colors.blue[700]}
+                        as={<MaterialIcons name="date-range" />}
+                        size={6}
+                        mr={2}
+                      />
+                    }
+                    value={dateText}
+                  />
+                </TouchableOpacity>
+
+                {showDate && (
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display="default"
+                    is24Hour={true}
+                    style={{ width: "90%" }}
+                    onChange={onDateChange}
+                  />
+                )}
+              </View>
+            </HStack>
+
+            <Controller
+              control={control}
+              name="imagem_url"
+              render={() => (
+                <HStack mt={4}>
+                  <HStack w="80%" alignItems="center">
+                    {isLoadingImage ? (
+                      <LoadingImage />
+                    ) : (
+                      <FlatList
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        data={images}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            onLongPress={() => removeImage(item)}
+                          >
+                            <MaterialIcons
+                              name="remove-circle"
+                              color="#FF0000"
+                              style={{
+                                alignSelf: "flex-end",
+                                position: "absolute",
+                                zIndex: 1000,
+                              }}
+                            ></MaterialIcons>
+                            <Image
+                              source={{ uri: item }}
+                              style={{ width: 50, height: 50, borderRadius: 4 }}
+                              ml={2}
+                              alt="Imagem do produto,selecionada da galeria"
+                            />
+                          </TouchableOpacity>
+                        )}
+                        ListEmptyComponent={() => (
+                          <Text
+                            color={
+                              errors.imagem_url
+                                ? colors.purple[500]
+                                : colors.gray[400]
+                            }
+                            fontSize="md"
+                          >
+                            {emptyImage
+                              ? "Adicione uma imagem"
+                              : "Nenhuma imagem selecionada"}
+                          </Text>
+                        )}
+                      />
+                    )}
+                  </HStack>
+                  <TouchableOpacity onPress={() => openActionsSheet(0)} ml={4}>
+                    <MaterialIcons
+                      name="add-a-photo"
+                      size={50}
+                      color={
+                        errors.imagem_url
+                          ? colors.purple[500]
+                          : colors.blue[700]
+                      }
+                    />
+                  </TouchableOpacity>
+                </HStack>
+              )}
+            />
+
+            {images.length !== 0 && (
               <Heading
-                color={colors.gray[200]}
+                size="xs"
                 fontFamily="body"
-                fontWeight="semibold"
+                fontWeight="light"
+                color="#4a4a4a"
               >
-                {ButtonText}
+                pressione e segure uma imagem para removê-la
               </Heading>
-            </Button>
-          </Center>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            )}
+
+            <Center mt={8}>
+              <Button
+                isLoading={isLoading}
+                disabled={isLoading}
+                rounded={8}
+                px={8}
+                py={2}
+                fontSize={22}
+                onPress={handleSubmit(handleNewProduct)}
+              >
+                <Heading
+                  color={colors.gray[200]}
+                  fontFamily="body"
+                  fontWeight="semibold"
+                >
+                  {ButtonText}
+                </Heading>
+              </Button>
+            </Center>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      )}
+
       <BottomSheet
         backgroundStyle={{ backgroundColor: colors.blue[100] }}
         handleIndicatorStyle={{ backgroundColor: colors.blue[800] }}

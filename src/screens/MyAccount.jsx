@@ -19,14 +19,14 @@ import {
 import { ButtonBack } from "../components/ButtonBack";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form";
 import ViaCep from "../services/ViaCep";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Login as loginAction } from "../store/actions";
 import { Logout } from "../store/actions";
 import apiFeiraKit from "../services/ApiFeiraKit";
-import { showMessage} from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextInputMask } from "react-native-masked-text";
 import * as yup from "yup";
@@ -34,7 +34,6 @@ import * as yup from "yup";
 export function MyAccount() {
   const navigation = useNavigation();
   const user = useSelector((state) => state.AuthReducers.userData);
-  const AdressDetails = user.endereco.split(",");
   const cellRef = useRef(null);
   const [IsLoading, setIsLoading] = useState(false);
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
@@ -51,7 +50,7 @@ export function MyAccount() {
     cep: yup.string().min(7, "CEP Inválido").required("Informe um CEP"),
     rua: yup.string().required("informe o nome da rua"),
     numero: yup.string().required("informe o numero da sua residência"),
-    // complemento: yup.string().required("adicione um complemento"),
+    complemento: yup.string().required("adicione um complemento"),
     bairro: yup.string().required("informe o bairro"),
     cidade: yup.string().required("informe o nome da cidade"),
     estado: yup.string().required("selecione o estado"),
@@ -68,30 +67,30 @@ export function MyAccount() {
       nome: user.nome,
       email: user.email,
       telefone: user.telefone,
-      cep: AdressDetails[4],
-      rua: AdressDetails[0],
-      numero: AdressDetails[1],
-      // complemento:null,
-      bairro: AdressDetails[2],
-      cidade: AdressDetails[3].split("-")[0],
-      estado: AdressDetails[3].split("-")[1].slice(1, 3),
+      cep: user.endereco.cep,
+      rua: user.endereco.rua,
+      numero: user.endereco.numero,
+      complemento: user.endereco.complemento,
+      bairro: user.endereco.bairro,
+      cidade: user.endereco.cidade,
+      estado: user.endereco.estado,
     },
-  }); 
+  });
 
-  const editTexts={
-     title:"Atualizar",
-     description:"Deseja realmente atualizar os seus dados?",
-     optionNo:'Não',
-     optionYes:'Sim'
-  }
+  const editTexts = {
+    title: "Atualizar",
+    description: "Deseja realmente atualizar os seus dados?",
+    optionNo: "Não",
+    optionYes: "Sim",
+  };
 
   const handleEditUser = (data) => {
-    setIsLoading(true)
+    setIsLoading(true);
     Alert.alert(editTexts.title, editTexts.description, [
       {
         text: editTexts.optionNo,
         onPress: () => {
-          setIsLoading(false)
+          setIsLoading(false);
           return;
         },
       },
@@ -99,12 +98,19 @@ export function MyAccount() {
         text: editTexts.optionYes,
         onPress: () => {
           setIsLoading(true);
-          let adress = `${data.rua}, ${data.numero}, ${data.bairro}, ${data.cidade} -${data.estado},${data.cep}`;
           let objUser = {
             email: data.email,
             nome: data.nome,
             senha: user.senha,
-            endereco: adress,
+            endereco: {
+              rua: data.rua,
+              numero: data.numero,
+              bairro: data.bairro,
+              cep: data.cep,
+              complemento: data.complemento,
+              cidade: data.cidade,
+              estado: data.estado,
+            },
             telefone: cellRef?.current.getRawValue(),
             id: user.id,
           };
@@ -139,42 +145,40 @@ export function MyAccount() {
       .catch((err) => console.log(err));
   };
 
-
-  const deletTexts={
-    title:"Excluir",
-    description:"Deseja realmente excluir a sua conta?",
-    optionNo:'Não',
-    optionYes:'Sim'
- }
-  const deleteUser=()=>{
-    setDeleteIsLoading(true)
+  const deletTexts = {
+    title: "Excluir",
+    description: "Deseja realmente excluir a sua conta?",
+    optionNo: "Não",
+    optionYes: "Sim",
+  };
+  const deleteUser = () => {
+    setDeleteIsLoading(true);
     Alert.alert(deletTexts.title, deletTexts.description, [
       {
         text: deletTexts.optionNo,
         onPress: () => {
-          setDeleteIsLoading(false)
+          setDeleteIsLoading(false);
           return;
         },
       },
-        {
-          text: deletTexts.optionYes,
-          onPress: () => {
-           let objUserId={id:user.id}
-           
-            apiFeiraKit
-              .delete("/users", {data:objUserId})
-              .then((response) => {
-                dispatch(Logout());
-              })
-              .catch((err) => {
-                console.log(err);
-                setDeleteIsLoading(false);
-              });
-          },
-        },
-    ])
+      {
+        text: deletTexts.optionYes,
+        onPress: () => {
+          let objUserId = { id: user.id };
 
-  }
+          apiFeiraKit
+            .delete("/users", { data: objUserId })
+            .then((response) => {
+              dispatch(Logout());
+            })
+            .catch((err) => {
+              console.log(err);
+              setDeleteIsLoading(false);
+            });
+        },
+      },
+    ]);
+  };
 
   const login = (username) => {
     apiFeiraKit
@@ -215,7 +219,7 @@ export function MyAccount() {
         >
           Alterar dados
         </Text>
-        
+
         <Controller
           control={control}
           name="nome"
@@ -481,6 +485,33 @@ export function MyAccount() {
             {errors.numero.message}
           </Text>
         )}
+
+        <Controller
+          control={control}
+          name="complemento"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={4}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={colors.blue[900]}
+              placeholder="* Complemento"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.numero ? colors.purple[500] : colors.blue[800]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+              keyboardType="default"
+              value={value}
+              alignSelf="center"
+              onChangeText={onChange}
+            />
+          )}
+        />
 
         <Controller
           control={control}
