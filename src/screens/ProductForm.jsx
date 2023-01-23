@@ -32,6 +32,7 @@ import { useForm, Controller} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { showMessage} from "react-native-flash-message";
 import * as yup from "yup";
+import { LogoFeira } from "../components/LogoFeira";
 
 export function ProductForm() {
   const route = useRoute();
@@ -309,6 +310,7 @@ const removeImage = (uri) => {
   return (
     <VStack>
       <ButtonBack />
+      <LogoFeira />
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         keyboardVerticalOffset={8}

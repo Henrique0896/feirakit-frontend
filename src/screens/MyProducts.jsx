@@ -10,6 +10,7 @@ import {
 } from "native-base";
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
+import { LogoFeira } from "../components/LogoFeira";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -51,6 +52,7 @@ export function MyProducts() {
   return (
     <VStack flex={1} w="full" px="2%">
       <ButtonBack />
+      <LogoFeira />
        <TouchableOpacity style={{alignSelf:'flex-end',marginTop:-60,marginRight:10}} onPress={() => handleOpenAdd()}>
           <View>
             <MaterialIcons name="add" size={50} color={colors.blue[600]}/>
