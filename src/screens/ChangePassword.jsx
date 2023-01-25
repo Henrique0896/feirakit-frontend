@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { VStack, Text, Input, useTheme, Icon, Button } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
+import { LogoFeira } from "../components/LogoFeira"
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native"; 
 import { useDispatch, useSelector } from "react-redux";
@@ -81,6 +82,7 @@ export function ChangePassword() {
   return (
     <VStack flex={1} w="full">
       <ButtonBack />
+      <LogoFeira />
       <Text
         fontFamily={"Montserrat_400Regular"}
         alignSelf="flex-start"

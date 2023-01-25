@@ -17,6 +17,7 @@ import {
   ScrollView,
 } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
+import { LogoFeira } from "../components/LogoFeira"
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -196,6 +197,7 @@ export function MyAccount() {
     <ScrollView>
       <VStack flex={1} w="full">
         <ButtonBack />
+        <LogoFeira />
         <TouchableOpacity>
           <Image
             style={styles.userImage}

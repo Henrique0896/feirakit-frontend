@@ -1,8 +1,7 @@
 import React from "react";
 import { VStack, Text, Center, useTheme } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Alert, TouchableOpacity } from "react-native";
+import { LogoFeira } from "../components/LogoFeira";
 
 export function Sobre() {
     const { colors } = useTheme();
@@ -10,6 +9,7 @@ export function Sobre() {
   return (
     <VStack flex={1} w="full">
       <ButtonBack />
+      <LogoFeira />
       <VStack borderBottomWidth={1} borderBottomColor={colors.gray[400]}pb={1}>
           <Text fontSize={20} mt={4} ml={4} color={colors.gray[500]}>
             Versão

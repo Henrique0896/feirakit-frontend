@@ -33,6 +33,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { showMessage } from "react-native-flash-message";
 import { storage } from "../../firebaseConfig.js";
 import * as yup from "yup";
+import { LogoFeira } from "../components/LogoFeira";
 
 export function ProductForm() {
   const route = useRoute();
@@ -372,6 +373,7 @@ export function ProductForm() {
   return (
     <VStack>
       <ButtonBack />
+<<<<<<< HEAD
       {!formLoaded ? (
         <LoadingForm />
       ) : (
@@ -379,6 +381,18 @@ export function ProductForm() {
           behavior={Platform.OS == "ios" ? "padding" : "height"}
           keyboardVerticalOffset={8}
           px={4}
+=======
+      <LogoFeira />
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={8}
+        px={4}
+      >
+        <ScrollView
+          style={{ height: "100%", width: "100%" }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 280 }}
+>>>>>>> origin/features/Geraldo
         >
           <ScrollView
             style={{ height: "100%", width: "100%" }}

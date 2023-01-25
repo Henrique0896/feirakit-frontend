@@ -23,6 +23,7 @@ import apiFeiraKit from "../services/ApiFeiraKit";
 import { useNavigation } from "@react-navigation/native";
 import { Login as loginAction } from "../store/actions";
 import { TextInputMask } from "react-native-masked-text";
+import { LogoFeira } from "../components/LogoFeira";
 
 export function Register() {
   const [inputType, setInputType] = useState("password");
@@ -131,6 +132,7 @@ export function Register() {
         contentContainerStyle={{ width: "100%", paddingBottom: 100 }}
       >
         <ButtonBack />
+        <LogoFeira />
         <Text alignSelf="flex-start" mt={8} ml={4} fontSize="xl">
           Informações da Conta
         </Text>
