@@ -373,27 +373,15 @@ export function ProductForm() {
   return (
     <VStack>
       <ButtonBack />
-<<<<<<< HEAD
+      <LogoFeira />
       {!formLoaded ? (
         <LoadingForm />
       ) : (
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={8}
-          px={4}
-=======
-      <LogoFeira />
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         keyboardVerticalOffset={8}
         px={4}
       >
-        <ScrollView
-          style={{ height: "100%", width: "100%" }}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 280 }}
->>>>>>> origin/features/Geraldo
-        >
           <ScrollView
             style={{ height: "100%", width: "100%" }}
             showsVerticalScrollIndicator={false}
