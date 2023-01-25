@@ -98,15 +98,6 @@ function HomeDrawer() {
           ),
         }}
       />
-      <Drawer.Screen
-        name="Teste"
-        component={TesteRoutes}
-        options={{
-          drawerIcon: ({ color }) => (
-            <Ionicons name="basket-outline" size={22} color={color} />
-          ),
-        }}
-      />
     </Drawer.Navigator>
   );
 }
