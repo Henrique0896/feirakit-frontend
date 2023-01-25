@@ -31,6 +31,7 @@ import apiFeiraKit from "../services/ApiFeiraKit";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { showMessage } from "react-native-flash-message";
+import { storage } from "../../firebaseConfig.js";
 import * as yup from "yup";
 
 export function ProductForm() {
@@ -95,6 +96,9 @@ export function ProductForm() {
   };
 
   const [images, setImages] = useState(product ? product.imagem_url : []);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [dataProduct,setDataProduct]=useState({})
+  const filenames =[]
   const [isLoadingImage, setIsLoadingImages] = useState(false);
   const [emptyImage, setEmptyImage] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -134,19 +138,16 @@ export function ProductForm() {
   });
 
   const handleNewProduct = (data) => {
-    setIsLoading(true);
     let objProduct = {
       ...data,
-      imagem_url: images,
+      imagem_url: uploadedImages,
       validade: dateText.split("/", 3).reverse().join("-"),
       preco: parseFloat(data.preco),
       estoque: parseInt(data.estoque),
     };
-    if (objProduct.imagem_url.length === 0) {
-      setEmptyImage(true);
-      setIsLoading(false);
-      return;
-    }
+
+  
+
     if (id === null) {
       addProduct(JSON.stringify(objProduct));
     } else {
@@ -271,25 +272,66 @@ export function ProductForm() {
       },
     ]);
   };
-
-  const addProduct = async (objProduct) => {
-    let jsonProduct = objProduct;
-    await apiFeiraKit
-      .post("/products", jsonProduct)
-      .then((response) => {
-        navigation.goBack();
-        showMessage({
-          message: "Produto adicionado com sucesso",
-          type: "success",
-        });
-      })
-      .catch((error) => {
-        alert("Algo deu errado,tente novamente");
-        console.log(" ====>um erro ocorreu: " + error);
+  const uploadImages =(data) => {
+    setDataProduct(data)
+    setIsLoading(true);
+    const promises = [];
+    images.map(async(image) => {
+      const response =await fetch(image);
+      const blob =await response.blob();
+      const fileName = image.substring(image.lastIndexOf("/") + 1);
+      const uploadTask = storage.ref(`images/${fileName}`).put(blob);
+      promises.push(uploadTask);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+        },
+        (error) => {
+          console.log(error);
+        }
+         ,
+         async () => {
+           await storage
+              .ref("images")
+               .child(fileName)
+               .getDownloadURL()
+               .then((urls) => {
+                 setUploadedImages((prevState) => [...prevState, urls]);
+             });
+             
+         }
+       
+      );
+    });
+    
+   Promise.all(promises)
+      .then()
+      .catch((e) => {
+        console.log(e);
       });
-    setIsLoading(false);
+    
   };
 
+  const addProduct=async(objProduct) => {
+    let jsonProduct = objProduct;
+     await apiFeiraKit
+       .post("/products", jsonProduct)
+       .then((response) => {
+         navigation.goBack();
+         showMessage({
+           message: "Produto adicionado com sucesso",
+           type: "success",
+         });
+       })
+       .catch((error) => {
+         alert("Algo deu errado,tente novamente");
+         console.log(" ====>um erro ocorreu: " + error);
+       });
+    setIsLoading(false);
+  }
   const updateProduct = async (objProduct) => {
     let jsonProduct = objProduct;
     await apiFeiraKit
@@ -307,6 +349,14 @@ export function ProductForm() {
       });
     setIsLoading(false);
   };
+  
+
+  useEffect(() => {
+    if(uploadedImages.length===images.length && uploadedImages.length >=1 ){
+      handleNewProduct(dataProduct)
+    }
+  }, [uploadedImages]);
+
 
   useEffect(() => {
     apiFeiraKit
@@ -318,7 +368,7 @@ export function ProductForm() {
       })
       .catch((error) => console.log(error));
   }, []);
-
+  
   return (
     <VStack>
       <ButtonBack />
@@ -407,7 +457,11 @@ export function ProductForm() {
                   onValueChange={onChange}
                 >
                   {categories.map((categories) => (
-                    <Select.Item label={categories} value={categories} />
+                    <Select.Item
+                      key={categories}
+                      label={categories}
+                      value={categories}
+                    />
                   ))}
                 </Select>
               )}
@@ -534,7 +588,7 @@ export function ProductForm() {
                       onValueChange={onChange}
                     >
                       {unities.map((unit) => (
-                        <Select.Item label={unit} value={unit} />
+                        <Select.Item key={unit} label={unit} value={unit} />
                       ))}
                     </Select>
                   )}
@@ -710,7 +764,7 @@ export function ProductForm() {
                 px={8}
                 py={2}
                 fontSize={22}
-                onPress={handleSubmit(handleNewProduct)}
+                onPress={handleSubmit(uploadImages)}
               >
                 <Heading
                   color={colors.gray[200]}

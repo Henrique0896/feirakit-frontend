@@ -78,7 +78,6 @@ export function Description() {
     apiFeiraKit
       .get(`/users/${product.produtor_id}`)
       .then(({ data }) => {
-        console.log(data)
         setEndereco(data.endereco.cidade+"-"+data.endereco.estado);
         setProdutor(data.nome);
         setWhatsAppNumber(data.telefone);
