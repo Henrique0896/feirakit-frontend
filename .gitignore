@@ -10,5 +10,6 @@ npm-debug.*
 *.orig.*
 web-build/
 products.txt
+.env
 # macOS
 .DS_Store

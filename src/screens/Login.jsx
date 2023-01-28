@@ -5,13 +5,14 @@ import { Image, Alert, TouchableOpacity, Linking } from "react-native";
 import { useDispatch } from "react-redux";
 import { Login as loginAction } from "../store/actions";
 import { useNavigation } from "@react-navigation/native";
-
+import ApiFeiraKit from '../services/ApiFeiraKit'
 export function Login() {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [inputType, setInputType] = useState("password");
+  const[isLoading,setIsLoading]=useState(false)
   const dispatch = useDispatch();
 
   const alert = {
@@ -43,10 +44,26 @@ export function Login() {
   };
 
   const submit = () => {
+    setIsLoading(true)
     if (username === "" || password === "") {
+      setIsLoading(false)
       return Alert.alert("Erro", "Usuário ou senha inválidos");
     }
-    dispatch(loginAction(username, password));
+    
+    ApiFeiraKit.get(`/users/byname/${username}`)
+    .then(({data})=>{
+      if (data.length === 0 ||data[0].senha !== password  ){
+        setIsLoading(false)
+        return Alert.alert("Erro", "Usuário ou senha inválidos")
+      }
+      dispatch(loginAction(data[0]));
+    })
+    .catch(()=>{
+      setIsLoading(false)
+      return Alert.alert("Erro", "Um Erro inesperado ocorreu,tente novamente")
+     }
+    )
+    
   };
 
   function handleVisibilityPassword() {
@@ -64,7 +81,7 @@ export function Login() {
         style={{ width: 187, height: 170 }}
         resizeMode="contain"
       />
-      <Text alignSelf="flex-start" color={colors.blue[600]} ml={4}>
+      <Text alignSelf="flex-start" color={colors.blue[600]} ml={4} fontFamily='heading'>
         Fazer Login
       </Text>
       <Input
@@ -82,8 +99,9 @@ export function Login() {
             size={6}
             ml={2}
           />
+          
         }
-        placeholder="Digite seu e-mail ou CPF"
+        placeholder="Digite seu nome de usuário"
         fontFamily={"Montserrat_500Medium"}
         placeholderTextColor={colors.blue[700]}
         fontSize={14}
@@ -137,6 +155,7 @@ export function Login() {
         mt={4}
         w="90%"
         borderRadius={15}
+        isLoading={isLoading}
       >
         Entrar
       </Button>

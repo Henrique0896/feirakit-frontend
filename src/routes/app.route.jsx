@@ -12,10 +12,25 @@ import { Sobre } from "../screens/Sobre";
 import { Ionicons } from "@expo/vector-icons";
 //hooks
 import { useTheme } from "native-base";
+import { ProductForm } from "../screens/ProductForm";
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
 const Drawer = createDrawerNavigator();
+
+
+function ProductRoutes(){
+  const { colors } = useTheme();
+  return (
+    <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="MyProducts" component={MyProducts} />
+      <Screen name="ProductForm" component={ProductForm} />
+    </Navigator>
+  );
+
+
+}
+
 
 function HomeDrawer() {
   const { colors } = useTheme();
@@ -54,7 +69,7 @@ function HomeDrawer() {
       />
       <Drawer.Screen
         name="Meus Produtos"
-        component={MyProducts}
+        component={ProductRoutes}
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name="basket-outline" size={22} color={color} />
