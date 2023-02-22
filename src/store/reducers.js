@@ -9,13 +9,14 @@ export default (state = initialState, action) => {
     case "LOGIN":
       return {
         ...state,
-        authToken: action.payload.id,
+        authToken: action.payload.email,//alterar para Id assim que a api for alterada
         userData:action.payload
       };
     case "LOGOUT":
       return {
         ...state,
         authToken: null,
+        userData: {},
       };
     default:
       return state;

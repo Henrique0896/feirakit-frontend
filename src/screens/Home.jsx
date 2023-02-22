@@ -14,11 +14,12 @@ import { ProductCard } from "../components/ProductCard";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
-import apiFeiraKit from "../services/ApiFeiraKit";
 import { LoadingProducts } from "../components/Loading";
 import { Image,TouchableOpacity, View,RefreshControl } from "react-native";
+import { Product } from "../services/product";
 
 export function Home() {
+  const product=new Product
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [iconName, setIconName] = useState("storefront");
@@ -27,7 +28,9 @@ export function Home() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  
 
+  
   const navigation = useNavigation();
   function handleOpenDescription(productId, product, isInfo) {
     navigation.navigate("description", { productId, product, isInfo });
@@ -37,8 +40,7 @@ export function Home() {
     setIsLoading(true);
     setSearch("");
     setHeaderText(`Todos os produtos`);
-    apiFeiraKit
-      .get("/products")
+    product.getAllProducts()
       .then(({ data }) => {
         setProducts(data.reverse());
         setRefreshing(false);
@@ -56,14 +58,13 @@ export function Home() {
   const getProductsByName = (name) => {
     setIsLoading(true);
     setHeaderText(`Resultado para: "${name}"`);
-    apiFeiraKit
-      .get(`/products/byname/${name}`)
-      .then(({ data }) => {
+    product.getProductsByName(name)
+    .then(({ data }) => {
         setProducts(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
     setIsLoading(false);
   };
 

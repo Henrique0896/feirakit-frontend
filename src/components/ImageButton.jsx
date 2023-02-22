@@ -1,20 +1,28 @@
-import React from "react";
+import React,{useState} from "react";
 import {
   View,
   StyleSheet,
+  ActivityIndicator,
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
+import { useTheme } from "native-base";
 
 export default function ImageButton({urlImage, onPress}) {
+  const [isLoadingImage,setIsloadingImage]=useState(true)
+  const {colors}=useTheme()
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={style.container}>
+        {isLoadingImage &&
+        <ActivityIndicator size={40} color={colors.gray[400]} style={{alignSelf:'center',position:'absolute',zIndex:1000}}/>
+        }
         <ImageBackground
           borderRadius={12}
           source={{uri:urlImage}}
           resizeMode="cover"
           style={style.image}
+          onLoad={()=>setIsloadingImage(false)}
         ></ImageBackground>
       </View>
     </TouchableOpacity>

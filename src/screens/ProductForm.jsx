@@ -23,19 +23,24 @@ import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { LoadingForm, LoadingImage } from "../components/Loading";
+import {
+  LoadingForm,
+  LoadingImage,
+  LoadingUploadImages,
+} from "../components/Loading";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../components/CustomBottomSheet";
 import { useSelector } from "react-redux";
-import apiFeiraKit from "../services/ApiFeiraKit";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { showMessage } from "react-native-flash-message";
 import { storage } from "../../firebaseConfig.js";
 import * as yup from "yup";
 import { LogoFeira } from "../components/LogoFeira";
+import { Product } from "../services/product";
 
 export function ProductForm() {
+  const productInstance = new Product();
   const route = useRoute();
   const navigation = useNavigation();
   const { product } = route.params;
@@ -98,8 +103,8 @@ export function ProductForm() {
 
   const [images, setImages] = useState(product ? product.imagem_url : []);
   const [uploadedImages, setUploadedImages] = useState([]);
-  const [dataProduct,setDataProduct]=useState({})
-  const filenames =[]
+  const [dataProduct, setDataProduct] = useState({});
+  const [uploadImagesTotalProgress, setUploadImagesTotalProgress] = useState(0);
   const [isLoadingImage, setIsLoadingImages] = useState(false);
   const [emptyImage, setEmptyImage] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -132,7 +137,9 @@ export function ProductForm() {
       estoque: product ? product.estoque.toString() : "",
       unidade: product ? product.unidade : "",
       bestbefore: product ? product.bestbefore : false,
-      produtor_id: producerId,
+      produtor_id: producerId
+        ? producerId
+        : "ID do produtor que a api tem que retornar",
       imagem_url: product && product.imagem_url,
     },
     resolver: yupResolver(productSchema),
@@ -146,8 +153,6 @@ export function ProductForm() {
       preco: parseFloat(data.preco),
       estoque: parseInt(data.estoque),
     };
-
-  
 
     if (id === null) {
       addProduct(JSON.stringify(objProduct));
@@ -273,14 +278,19 @@ export function ProductForm() {
       },
     ]);
   };
-  const uploadImages =(data) => {
-    setDataProduct(data)
+  const uploadImages = (data) => {
     setIsLoading(true);
+    setDataProduct(data);
     const promises = [];
-    images.map(async(image) => {
-      const response =await fetch(image);
-      const blob =await response.blob();
-      const fileName = image.substring(image.lastIndexOf("/") + 1);
+    images.map(async (image) => {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      let fileName = null;
+      if (image[0] == "f") {
+        fileName = image.substring(image.lastIndexOf("/") + 1);
+      } else {
+        fileName = image.substring(82, image.lastIndexOf("?"));
+      }
       const uploadTask = storage.ref(`images/${fileName}`).put(blob);
       promises.push(uploadTask);
       uploadTask.on(
@@ -292,51 +302,47 @@ export function ProductForm() {
         },
         (error) => {
           console.log(error);
+        },
+        async () => {
+          await storage
+            .ref("images")
+            .child(fileName)
+            .getDownloadURL()
+            .then((urls) => {
+              setUploadedImages((prevState) => [...prevState, urls]);
+            });
         }
-         ,
-         async () => {
-           await storage
-              .ref("images")
-               .child(fileName)
-               .getDownloadURL()
-               .then((urls) => {
-                 setUploadedImages((prevState) => [...prevState, urls]);
-             });
-             
-         }
-       
       );
     });
-    
-   Promise.all(promises)
+
+    Promise.all(promises)
       .then()
       .catch((e) => {
         console.log(e);
       });
-    
   };
 
-  const addProduct=async(objProduct) => {
+  const addProduct = (objProduct) => {
     let jsonProduct = objProduct;
-     await apiFeiraKit
-       .post("/products", jsonProduct)
-       .then((response) => {
-         navigation.goBack();
-         showMessage({
-           message: "Produto adicionado com sucesso",
-           type: "success",
-         });
-       })
-       .catch((error) => {
-         alert("Algo deu errado,tente novamente");
-         console.log(" ====>um erro ocorreu: " + error);
-       });
+    productInstance
+      .createProduct(jsonProduct)
+      .then((response) => {
+        navigation.goBack();
+        showMessage({
+          message: "Produto adicionado com sucesso",
+          type: "success",
+        });
+      })
+      .catch((error) => {
+        alert("Algo deu errado,tente novamente");
+        console.log("====>um erro ocorreu: " + error);
+      });
     setIsLoading(false);
-  }
-  const updateProduct = async (objProduct) => {
+  };
+  const updateProduct = (objProduct) => {
     let jsonProduct = objProduct;
-    await apiFeiraKit
-      .put("/products", jsonProduct)
+    productInstance
+      .updateProduct(jsonProduct)
       .then((response) => {
         showMessage({
           message: "Produto Atualizado com sucesso",
@@ -350,38 +356,45 @@ export function ProductForm() {
       });
     setIsLoading(false);
   };
-  
 
   useEffect(() => {
-    if(uploadedImages.length===images.length && uploadedImages.length >=1 ){
-      handleNewProduct(dataProduct)
+    let totalProgress = Math.ceil(
+      (uploadedImages.length * 100) / images.length
+    );
+    setUploadImagesTotalProgress(isNaN(totalProgress) ? 0 : totalProgress);
+
+    if (uploadedImages.length === images.length && uploadedImages.length >= 1) {
+      handleNewProduct(dataProduct);
     }
   }, [uploadedImages]);
 
-
   useEffect(() => {
-    apiFeiraKit
-      .get(`/products/units`)
-      .then(({ data }) => {
+     productInstance.getUnites()
+     .then(({ data }) => {
         setCategories(data.categorias);
         setUnities(data.unidades);
         setFormLoaded(true);
       })
       .catch((error) => console.log(error));
   }, []);
-  
+
   return (
     <VStack>
       <ButtonBack />
       <LogoFeira />
+      {isLoading && (
+        <>
+          <LoadingUploadImages percent={uploadImagesTotalProgress} />
+        </>
+      )}
       {!formLoaded ? (
         <LoadingForm />
       ) : (
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={8}
-        px={4}
-      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={8}
+          px={4}
+        >
           <ScrollView
             style={{ height: "100%", width: "100%" }}
             showsVerticalScrollIndicator={false}

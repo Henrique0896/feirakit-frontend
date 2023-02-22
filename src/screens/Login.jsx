@@ -2,19 +2,17 @@ import React, { useState } from "react";
 import { Button, Text, VStack, Icon, Input, useTheme } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image, Alert, TouchableOpacity, Linking } from "react-native";
-import { useDispatch } from "react-redux";
-import { Login as loginAction } from "../store/actions";
+import {User} from '../services/user'
 import { useNavigation } from "@react-navigation/native";
-import ApiFeiraKit from '../services/ApiFeiraKit'
 export function Login() {
   const navigation = useNavigation();
+  const user = new User;
   const { colors } = useTheme();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [inputType, setInputType] = useState("password");
   const[isLoading,setIsLoading]=useState(false)
-  const dispatch = useDispatch();
-
+ 
   const alert = {
     title: "Esqueceu sua senha?",
     text: "Entre em contato via WhatsApp.",
@@ -45,26 +43,25 @@ export function Login() {
     ]);
   };
 
-  const submit = () => {
+  const submit = async() => {
     setIsLoading(true)
-    if (username === "" || password === "") {
+    if (email === "" || password === "") {
       setIsLoading(false)
-      return Alert.alert("Erro", "Usuário ou senha inválidos");
+      return Alert.alert("Erro", "por favor preencha todos os campos");
     }
     
-    ApiFeiraKit.get(`/users/byname/${username}`)
+    await user.checkPassword(email,password)
     .then(({data})=>{
-      if (data.length === 0 ||data[0].senha !== password  ){
+      if(!data.resultado){
         setIsLoading(false)
-        return Alert.alert("Erro", "Usuário ou senha inválidos")
+        return Alert.alert("Erro", "Usuário ou senha inválidos");
       }
-      dispatch(loginAction(data[0]));
+      user.getUserByEmail(email)
     })
-    .catch(()=>{
+    .catch((err)=>{
       setIsLoading(false)
-      return Alert.alert("Erro", "Um Erro inesperado ocorreu,tente novamente")
-     }
-    )
+      return Alert.alert("Erro", "Usuário ou senha inválidos");
+    })
     
   };
 
@@ -92,7 +89,7 @@ export function Login() {
         Fazer Login
       </Text>
       <Input
-        onChangeText={setUsername}
+        onChangeText={setEmail}
         mt={4}
         width={334}
         height={54}
@@ -108,7 +105,7 @@ export function Login() {
           />
           
         }
-        placeholder="Digite seu nome de usuário"
+        placeholder="Digite o seu email"
         fontFamily={"Montserrat_500Medium"}
         placeholderTextColor={colors.blue[700]}
         fontSize={14}

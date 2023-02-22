@@ -5,7 +5,6 @@ import { Description } from "../screens/Description";
 import { CustomDrawer } from "../components/CustomDrawer";
 import { MyProducts } from "../screens/MyProducts";
 import { MyAccount } from "../screens/MyAccount";
-import { Teste } from "../screens/Teste"
 import { Sobre } from "../screens/Sobre";
 import { ChangePassword } from "../screens/ChangePassword";
 import { Ionicons } from "@expo/vector-icons";
