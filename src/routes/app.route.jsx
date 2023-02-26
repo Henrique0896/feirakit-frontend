@@ -5,7 +5,6 @@ import { Description } from "../screens/Description";
 import { CustomDrawer } from "../components/CustomDrawer";
 import { MyProducts } from "../screens/MyProducts";
 import { MyAccount } from "../screens/MyAccount";
-import { Teste } from "../screens/Teste"
 import { Sobre } from "../screens/Sobre";
 import { ChangePassword } from "../screens/ChangePassword";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,15 +33,6 @@ function MyAccountRoutes() {
     </Navigator>
   );
 }
-function TesteRoutes(){
-  const { colors } = useTheme();
-  return(
-    <Navigator screenOptions={{ headerShown: false }}>
-      <Screen name="Teste" component={Teste} />
-    </Navigator>
-  )
-}
-
 function HomeDrawer() {
   const { colors } = useTheme();
   return (
@@ -95,15 +85,6 @@ function HomeDrawer() {
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name="help-circle-outline" size={25} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Teste"
-        component={TesteRoutes}
-        options={{
-          drawerIcon: ({ color }) => (
-            <Ionicons name="basket-outline" size={22} color={color} />
           ),
         }}
       />
