@@ -31,7 +31,7 @@ export function Sobre() {
             Descrição do projeto
             </Text>
             <Text fontSize={17} ml={4} color={colors.gray[400]}mb={2}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores laborum animi, repellendus quidem doloremque nisi fugiat qui, totam tenetur deleniti assumenda vero nulla necessitatibus, expedita enim quam odio officiis ullam.
+            FeiraKit é um aplicativo destinado a vendas de produtos de feira, com intenção de facilitar a vida dos produtores e clientes que venham a desfrutar do aplicativo. No nosso aplicativo você  poderá vender produtos como verduras, frutas, legumes entre outros produtos que são comercializados nas tradicionais feiras do país, e também vai poder comprar esses produtos dentro do aplicativo, onde irá negociar a forma de pagamento e de entrega direto com o próprio vendedor.
             </Text>
       </VStack>
     </VStack>
