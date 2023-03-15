@@ -130,8 +130,10 @@ export function Description() {
             <ImageButton
               urlImage={product.imagem_url[index]}
               onPress={() => {
-                setIsloadingImage(true);
-                setUrlImage(product.imagem_url[index]);
+                if(urlImage !== product.imagem_url[index] ){
+                  setIsloadingImage(true);
+                  setUrlImage(product.imagem_url[index]);
+                }
               }}
             />
           )}

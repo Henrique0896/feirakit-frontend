@@ -55,18 +55,15 @@ export function ProductForm() {
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
   let monthDate =
-    ObjDate.getMonth() < 10 ? ObjDate.getMonth() : ObjDate.getMonth();
-
+    ObjDate.getMonth() < 10 ? "0" +  (ObjDate.getMonth()+1) : ObjDate.getMonth()+1;
   const id = product ? product.id : null;
-
   const [isLoading, setIsLoading] = useState(false);
-
   const [date, setDate] = useState(ObjDate);
   const [showDate, setShow] = useState(false);
   const [dateText, setDateText] = useState(
     product
       ? product.validade.split("-", 3).reverse().join("/")
-      : dayDate + "/" + monthDate + 1 + "/" + ObjDate.getFullYear()
+      : dayDate + "/" + monthDate  + "/" + ObjDate.getFullYear()
   );
 
   const onDateChange = (event, selectedDate) => {
@@ -348,6 +345,7 @@ export function ProductForm() {
           message: "Produto Atualizado com sucesso",
           type: "success",
         });
+        setIsLoading(false);
         navigation.goBack();
       })
       .catch((error) => {
