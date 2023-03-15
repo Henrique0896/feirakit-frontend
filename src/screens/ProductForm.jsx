@@ -345,7 +345,6 @@ export function ProductForm() {
           message: "Produto Atualizado com sucesso",
           type: "success",
         });
-        setIsLoading(false);
         navigation.goBack();
       })
       .catch((error) => {

@@ -42,7 +42,9 @@ export function Description() {
   const [produtor, setProdutor] = useState();
   const [isLoadingImage, setIsloadingImage] = useState(true);
 
-  let btnDisabled = amount === 1 ? true : false;
+  let btnLessDisabled = amount === 1 ? true : false;
+  let btnPlusDisabled = amount >= product.estoque ? true : false;
+
 
   function handleOpenEdit(product) {
     navigation.navigate("ProductForm", { product });
@@ -292,7 +294,7 @@ export function Description() {
               borderColor={colors.blue[700]}
             >
               <TouchableOpacity
-                disabled={btnDisabled}
+                disabled={btnLessDisabled}
                 onPress={() => setAmount(amount - 1)}
                 style={styles.qtdButton}
               >
@@ -302,6 +304,7 @@ export function Description() {
                 <Text style={{ fontSize: 20 }}>{amount}</Text>
               </View>
               <TouchableOpacity
+                disabled={btnPlusDisabled}
                 onPress={() => setAmount(amount + 1)}
                 style={styles.qtdButton}
               >

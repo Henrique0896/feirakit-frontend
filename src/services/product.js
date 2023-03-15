@@ -1,10 +1,10 @@
 import apiFeiraKit from './ApiFeiraKit';
 
 export class Product {
-   async getAllProducts (){
+   async getAllProducts (page,limit,sort){
         return(
            await apiFeiraKit
-           .get("/products?sort=-1")
+           .get(`products?page=${page}&limit=${limit}&sort=${sort}`)
         )
     }
 

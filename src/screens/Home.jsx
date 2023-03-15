@@ -27,10 +27,10 @@ export function Home() {
   const [headerText, setHeaderText] = useState("Todos os produtos");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [limit,setLimit] = useState(12);
+  const [page,setPage] = useState(1);
+  const [sort,setSort]=useState(-1)
   const [refreshing, setRefreshing] = useState(false);
-  
-
-  
   const navigation = useNavigation();
   function handleOpenDescription(productId, product, isInfo) {
     navigation.navigate("description", { productId, product, isInfo });
@@ -40,7 +40,7 @@ export function Home() {
     setIsLoading(true);
     setSearch("");
     setHeaderText(`Todos os produtos`);
-    product.getAllProducts()
+    product.getAllProducts(page,limit,sort)
       .then(({ data }) => {
         setProducts(data);
         setRefreshing(false);
