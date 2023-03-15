@@ -129,6 +129,7 @@ export function Description() {
           renderItem={({ index }) => (
             <ImageButton
               urlImage={product.imagem_url[index]}
+              active={urlImage == product.imagem_url[index] ? true : false}
               onPress={() => {
                 if(urlImage !== product.imagem_url[index] ){
                   setIsloadingImage(true);
@@ -308,7 +309,8 @@ export function Description() {
               </TouchableOpacity>
             </HStack>
             <Heading alignSelf={"center"} color={colors.blue[700]} size="md">
-              {product.unidade}
+              {amount ==1 ? product.unidade : product.unidade + 's' }
+              
             </Heading>
             <WhatsappButton
               WhatsAppNumber={WhatsAppNumber}

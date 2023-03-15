@@ -42,7 +42,7 @@ export function Home() {
     setHeaderText(`Todos os produtos`);
     product.getAllProducts()
       .then(({ data }) => {
-        setProducts(data.reverse());
+        setProducts(data);
         setRefreshing(false);
         setIsLoading(false);
       })
@@ -193,7 +193,6 @@ export function Home() {
                 </Text>
               </Center>
             )}
-
             refreshControl={
               <RefreshControl
               refreshing={refreshing}

@@ -4,7 +4,7 @@ export class Product {
    async getAllProducts (){
         return(
            await apiFeiraKit
-           .get("/products")
+           .get("/products?sort=-1")
         )
     }
 
