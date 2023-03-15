@@ -83,6 +83,7 @@ export function Description() {
     userInstance
       .getUserById(product.produtor_id)
       .then(({ data }) => {
+        //tem um erro neste retorno data
         console.log(data)
         setEndereco(data.endereco.cidade + "-" + data.endereco.estado);
         setProdutor(data.nome);
