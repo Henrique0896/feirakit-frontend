@@ -1,9 +1,11 @@
-import React from "react";
+import React,{ useState }from "react";
 import { Heading, Image, Pressable, useTheme } from "native-base";
 import { Text } from "react-native";
 
+
 export function ProductCard({ product, onPress }) {
   const { colors } = useTheme();
+  const [isLoadingImage,setIsloadingImage]=useState(true)
   const description = product.descricao.slice(0, 25) + "...";
   return (
     <Pressable
@@ -18,7 +20,25 @@ export function ProductCard({ product, onPress }) {
       borderWidth={1}
       borderColor={colors.blue[500]}
       style={{shadowColor:colors.blue[500],elevation:5}}
-    >
+    >  
+
+    {isLoadingImage && 
+       <Image
+        source={require("../assets/loading.gif")}
+        style={{
+          width: "100%",
+          height: 90,
+          alignSelf: "center",
+          marginBottom: 4,
+          marginTop:16,
+          position:'absolute',
+          zIndex:1000
+        }}
+        resizeMode="cover"
+        alt={product.descricao}
+      />
+  }
+      
       <Image
         source={{uri:product.imagem_url[0]}}
         style={{
@@ -28,6 +48,7 @@ export function ProductCard({ product, onPress }) {
           marginBottom: 4,
         }}
         resizeMode="cover"
+        onLoad={()=>setIsloadingImage(false)}
         alt={product.descricao}
       />
 

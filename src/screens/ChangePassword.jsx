@@ -1,30 +1,41 @@
 import React, { useState } from "react";
 import { VStack, Text, Input, useTheme, Icon, Button } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
-import { LogoFeira } from "../components/LogoFeira"
+import { LogoFeira } from "../components/LogoFeira";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { Login as loginAction } from "../store/actions";
 import apiFeiraKit from "../services/ApiFeiraKit";
-import { showMessage} from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { User } from "../services/user";
 import * as yup from "yup";
 
 export function ChangePassword() {
+  const user = new User();
   const navigation = useNavigation();
   const { colors } = useTheme();
-  const user = useSelector((state) => state.AuthReducers.userData);
+  const curentUser = useSelector((state) => state.AuthReducers.userData);
   const dispatch = useDispatch();
   const [incompatiblePassword, setIncompatiblePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const userSchema = yup.object({
+    email: yup
+      .string()
+      .required("Informe um email válido")
+      .email("Informe um email válido"),
+
     senha: yup
       .string()
       .min(6, "a senha deve ter pelo menos 6 dígitos")
-      .required("informe uma senha"),
+      .required("informe a sua senha atual"),
+    novaSenha: yup
+      .string()
+      .min(6, "a senha deve ter pelo menos 6 dígitos")
+      .required("informe uma nova senha"),
     confirmacao: yup
       .string()
       .min(6, "a senha deve ter pelo menos 6 dígitos")
@@ -35,48 +46,41 @@ export function ChangePassword() {
     control,
     handleSubmit,
     formState: { errors },
+    setError
   } = useForm({
     resolver: yupResolver(userSchema),
   });
 
-  const handlePassword = (data) => {
+  const handlePassword = async (data) => {
     setIsLoading(true);
-    if (data.senha !== data.confirmacao) {
+    const imputData = {
+      email: data.email,
+      senha: data.senha,
+      nova_senha: data.novaSenha,
+    };
+    if (data.novaSenha !== data.confirmacao) {
       setIncompatiblePassword(true);
       setIsLoading(false);
       return;
     }
-    let userNewPassword = {
-      ...user,
-      senha: data.senha,
-    };
+    await user.checkPassword(data.email, data.senha).then(({ data }) => {
+      if (data.resultado) {
+        user.changePassword(JSON.stringify(imputData)).then(
+          user.getUserByEmail(imputData.email).then(() => {
+            showMessage({
+              message: "Senha alterada com sucesso",
+              type: "success",
+            });
+            navigation.goBack();
+          })
+        );
+      }else{
+        setError('senha',{type:'custom',message:'senha inválida'})
+        console.log(data)
+      }
+    });
 
-    apiFeiraKit
-      .put("/users", JSON.stringify(userNewPassword))
-      .then((response) => {
-        showMessage({
-          message: "Senha alterada com sucesso",
-          type: "success",
-        });
-        login(userNewPassword.nome, userNewPassword.senha);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  };
-
-  const login = (username) => {
-    apiFeiraKit
-      .get(`/users/byname/${username}`)
-      .then(({ data }) => {
-        dispatch(loginAction(data[0]));
-        navigation.goBack();
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-      });
+    setIsLoading(false);
   };
 
   return (
@@ -91,12 +95,46 @@ export function ChangePassword() {
         fontSize={20}
         mt={10}
       >
-        Alterar Senha
+        Autenticação
       </Text>
-      
-      {incompatiblePassword && (
-        <Text color={colors.purple[500]} alignSelf="center" fontSize={16}>
-          As senhas são incompatíveis
+
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, value } }) => (
+          <Input
+            mt={4}
+            width={334}
+            height={54}
+            bgColor={colors.gray[100]}
+            w="90%"
+            alignSelf="center"
+            keyboardType="email-address"
+            color={errors.email ? colors.purple[500] : colors.blue[900]}
+            leftElement={
+              <Icon
+                color={errors.email ? colors.purple[500] : colors.blue[900]}
+                as={<MaterialIcons name="email" />}
+                size={6}
+                ml={2}
+              />
+            }
+            placeholder="E-mail"
+            fontFamily={"Montserrat_400Regular"}
+            placeholderTextColor={
+              errors.email ? colors.purple[500] : colors.blue[900]
+            }
+            fontSize={14}
+            borderRadius={8}
+            mr={4}
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
+      />
+      {errors.email && (
+        <Text alignSelf="flex-start" marginLeft={8} color={colors.purple[500]}>
+          {errors.email.message}
         </Text>
       )}
 
@@ -122,7 +160,7 @@ export function ChangePassword() {
                 ml={2}
               />
             }
-            placeholder="nova Senha"
+            placeholder="Senha"
             fontFamily={"Montserrat_400Regular"}
             placeholderTextColor={
               errors.senha ? colors.purple[500] : colors.blue[900]
@@ -139,68 +177,137 @@ export function ChangePassword() {
         </Text>
       )}
 
-      <Controller
-        control={control}
-        name="confirmacao"
-        render={({ field: { onChange, value } }) => (
-          <Input
-            mt={5}
-            width={334}
-            height={54}
-            bgColor={colors.gray[100]}
-            w="90%"
-            color={errors.confirmacao ? colors.purple[500] : colors.blue[900]}
-            alignSelf="center"
-            value={value}
-            onChangeText={onChange}
-            leftElement={
-              <Icon
-                color={
-                  errors.confirmacao ? colors.purple[500] : colors.blue[900]
-                }
-                as={<MaterialIcons name="lock" />}
-                size={6}
-                ml={2}
-              />
-            }
-            placeholder="Confirmar Nova Senha"
-            fontFamily={"Montserrat_400Regular"}
-            placeholderTextColor={
-              errors.confirmacao ? colors.purple[500] : colors.blue[900]
-            }
-            fontSize={14}
-            borderRadius={8}
-            mr={4}
-          />
-        )}
-      />
-      {errors.confirmacao && (
-        <Text alignSelf="flex-start" marginLeft={8} color={colors.purple[500]}>
-          {errors.confirmacao.message}
-        </Text>
-      )}
-      <Button
-        bgColor={colors.blue[600]}
-        _pressed={{ bgColor: colors.blue[700] }}
-        width={334}
-        height={54}
-        onPress={handleSubmit(handlePassword)}
-        mt={10}
-        w="90%"
-        borderRadius={15}
-        isLoading={isLoading}
-        alignSelf="center"
-        alignContent="center"
-        alignItems="center"
-      >
+      <VStack>
         <Text
-          color={colors.gray[200]}
           fontFamily={"Montserrat_400Regular"}
-          fontSize={15}
+          alignSelf="flex-start"
+          ml={4}
+          color={colors.gray[900]}
+          fontSize={20}
+          mt={10}
         >
-          Confirmar
+          Alterar Senha
         </Text>
-      </Button>
+
+        {incompatiblePassword && (
+          <Text color={colors.purple[500]} alignSelf="center" fontSize={16}>
+            As senhas são incompatíveis
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="novaSenha"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={5}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={errors.novaSenha ? colors.purple[500] : colors.blue[900]}
+              alignSelf="center"
+              value={value}
+              onChangeText={onChange}
+              leftElement={
+                <Icon
+                  color={
+                    errors.novaSenha ? colors.purple[500] : colors.blue[900]
+                  }
+                  as={<MaterialIcons name="lock" />}
+                  size={6}
+                  ml={2}
+                />
+              }
+              placeholder="nova Senha"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.novaSenha ? colors.purple[500] : colors.blue[900]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+            />
+          )}
+        />
+        {errors.novaSenha && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.novaSenha.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="confirmacao"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              mt={5}
+              width={334}
+              height={54}
+              bgColor={colors.gray[100]}
+              w="90%"
+              color={errors.confirmacao ? colors.purple[500] : colors.blue[900]}
+              alignSelf="center"
+              value={value}
+              onChangeText={onChange}
+              leftElement={
+                <Icon
+                  color={
+                    errors.confirmacao ? colors.purple[500] : colors.blue[900]
+                  }
+                  as={<MaterialIcons name="lock" />}
+                  size={6}
+                  ml={2}
+                />
+              }
+              placeholder="Confirmar Nova Senha"
+              fontFamily={"Montserrat_400Regular"}
+              placeholderTextColor={
+                errors.confirmacao ? colors.purple[500] : colors.blue[900]
+              }
+              fontSize={14}
+              borderRadius={8}
+              mr={4}
+            />
+          )}
+        />
+        {errors.confirmacao && (
+          <Text
+            alignSelf="flex-start"
+            marginLeft={8}
+            color={colors.purple[500]}
+          >
+            {errors.confirmacao.message}
+          </Text>
+        )}
+
+        <Button
+          bgColor={colors.blue[600]}
+          _pressed={{ bgColor: colors.blue[700] }}
+          width={334}
+          height={54}
+          onPress={handleSubmit(handlePassword)}
+          mt={10}
+          w="90%"
+          borderRadius={15}
+          isLoading={isLoading}
+          alignSelf="center"
+          alignContent="center"
+          alignItems="center"
+        >
+          <Text
+            color={colors.gray[200]}
+            fontFamily={"Montserrat_400Regular"}
+            fontSize={15}
+          >
+            Confirmar
+          </Text>
+        </Button>
+      </VStack>
     </VStack>
   );
 }

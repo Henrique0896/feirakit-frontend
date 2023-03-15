@@ -11,26 +11,24 @@ import {
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { Alert, ScrollView, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { useState, useRef } from "react";
-import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import ViaCep from "../services/ViaCep";
-import apiFeiraKit from "../services/ApiFeiraKit";
 import { useNavigation } from "@react-navigation/native";
-import { Login as loginAction } from "../store/actions";
 import { TextInputMask } from "react-native-masked-text";
 import { LogoFeira } from "../components/LogoFeira";
+import {User} from '../services/user'
 
 export function Register() {
+  const user = new User
   const [inputType, setInputType] = useState("password");
-  const [IsLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const cellRef = useRef(null);
   const { colors } = useTheme();
-  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const handleVisibilityPassword = () => {
@@ -66,32 +64,39 @@ export function Register() {
     control,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
+    setError
   } = useForm({
     resolver: yupResolver(userSchema),
     
   });
 
-  const handleCreateUser = (data) => {
+  const handleCreateUser = async(data) => {
     setIsLoading(true);
-    let adress = `${data.rua}, ${data.numero}, ${data.bairro}, ${data.cidade} - ${data.estado},${data.cep}`
     let objUser = {
-      email:data.email,
-      senha:data.senha,
-      nome:data.nome,
-      endereco: adress,
-      telefone: cellRef?.current.getRawValue(),
+      email: data.email,
+      nome: data.nome,
+      senha: data.senha,
+      endereco: {
+        rua: data.rua,
+        numero: data.numero,
+        bairro: data.bairro,
+        cep: data.cep,
+        complemento: data.complemento,
+        cidade: data.cidade,
+        estado: data.estado,
+      },
+      telefone: cellRef?.current.getRawValue()
     };
+  
+    await user.createUser(objUser).then(({data})=>{
+      if(!data.resultado){
+        setError('email',{type:'custom',message:'Este email já está sendo usado'})
+        return Alert.alert("Erro", "Este endereço de email já está sendo usado");
+      }
+      user.getUserByEmail(objUser.email)
+    })
     setIsLoading(false);
-    apiFeiraKit
-    .post("/users", JSON.stringify(objUser))
-    .then((response) => {
-         login(objUser.nome, objUser.senha);
-       })
-    .catch((err) => {
-         console.log(err);
-         setIsLoading(false);
-    });
   };
 
   const getAddressData = async (cep) => {
@@ -104,18 +109,6 @@ export function Register() {
         setValue('complemento',data.complemento);
       })
       .catch((err) => console.log(err));
-  };
-
-  const login = (username) => {
-    apiFeiraKit
-      .get(`/users/byname/${username}`)
-      .then(({ data }) => {
-        dispatch(loginAction(data[0]));
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-      });
   };
 
   return (
@@ -615,7 +608,7 @@ export function Register() {
           alignSelf="center"
           alignContent="center"
           onPress={handleSubmit(handleCreateUser)}
-          isLoading={IsLoading}
+          isLoading={isLoading}
         >
           Cadastrar
         </Button>

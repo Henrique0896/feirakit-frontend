@@ -21,10 +21,14 @@ import ImageButton from "../components/ImageButton";
 import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
-import apiFeiraKit from "../services/ApiFeiraKit";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { LogoFeira } from "../components/LogoFeira";
+import { Product } from "../services/product";
+import { User } from "../services/user";
 
 export function Description() {
+  const productInstance = new Product();
+  const userInstance = new User();
   const navigation = useNavigation();
   const { colors } = useTheme();
   const route = useRoute();
@@ -36,6 +40,7 @@ export function Description() {
   const [WhatsAppNumber, setWhatsAppNumber] = useState("");
   const [endereco, setEndereco] = useState();
   const [produtor, setProdutor] = useState();
+  const [isLoadingImage, setIsloadingImage] = useState(true);
 
   let btnDisabled = amount === 1 ? true : false;
 
@@ -61,13 +66,13 @@ export function Description() {
         text: texts.optionYes,
         onPress: () => {
           let objDelete = { id: id };
-          apiFeiraKit
-            .delete("/products", { data: objDelete })
+           productInstance
+            .deleteProduct(JSON.stringify(objDelete))
             .then(() => {
               navigation.goBack();
             })
             .catch((error) => {
-              console.log("====>um erro ocorreu: " + error.response.data);
+              console.log("====>um erro ocorreu: " + error);
             });
         },
       },
@@ -75,12 +80,11 @@ export function Description() {
   };
 
   useEffect(() => {
-    apiFeiraKit
-      .get(`/users/${product.produtor_id}`)
+    userInstance
+      .getUserById(product.produtor_id)
       .then(({ data }) => {
-        let endereco = data.endereco.split(",");
-        let cidade = endereco[3];
-        setEndereco(cidade);
+        console.log(data)
+        setEndereco(data.endereco.cidade + "-" + data.endereco.estado);
         setProdutor(data.nome);
         setWhatsAppNumber(data.telefone);
       })
@@ -89,10 +93,26 @@ export function Description() {
   return (
     <VStack style={styles.container}>
       <ButtonBack />
+      <LogoFeira />
       <Box style={styles.imagebox}>
+        {isLoadingImage && (
+          <Image
+            source={require("../assets/loading.gif")}
+            style={[
+              styles.image,
+              {
+                position: "absolute",
+                zIndex: 1000,
+                resizeMode: "cover",
+              },
+            ]}
+            alt={product.descricao}
+          />
+        )}
         <Image
           source={{ uri: urlImage }}
           style={styles.image}
+          onLoad={() => setIsloadingImage(false)}
           alt="imagem dos produtos"
         />
       </Box>
@@ -108,7 +128,10 @@ export function Description() {
           renderItem={({ index }) => (
             <ImageButton
               urlImage={product.imagem_url[index]}
-              onPress={() => setUrlImage(product.imagem_url[index])}
+              onPress={() => {
+                setIsloadingImage(true);
+                setUrlImage(product.imagem_url[index]);
+              }}
             />
           )}
         />
@@ -213,9 +236,7 @@ export function Description() {
           <Heading size="sm" mt={-5} mb={1}>
             Categoria: {product.categoria}
           </Heading>
-          <Heading size="sm" mt={-1} mb={1}>
-            Unidade: {product.unidade}
-          </Heading>
+
           {product.bestbefore && (
             <Text
               style={{
@@ -257,7 +278,7 @@ export function Description() {
               Quantidade
             </Text>
             <HStack
-              marginTop={5}
+              marginTop={3}
               alignSelf="center"
               h="16"
               w="1/3"
@@ -283,9 +304,13 @@ export function Description() {
                 <MaterialIcons size={30} name="add" />
               </TouchableOpacity>
             </HStack>
+            <Heading alignSelf={"center"} color={colors.blue[700]} size="md">
+              {product.unidade}
+            </Heading>
             <WhatsappButton
               WhatsAppNumber={WhatsAppNumber}
               Quantity={amount}
+              unity={product.unidade}
               ProductName={`${product.nome}`}
               Name={`${produtor}`}
             />

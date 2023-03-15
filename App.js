@@ -10,7 +10,6 @@ import {
 } from "@expo-google-fonts/montserrat";
 import { THEME } from "./src/styles/theme";
 import FlashMessage from "react-native-flash-message";
-
 import { Loading } from "./src/components/Loading";
 import { Routes } from "./src/routes";
 import { Provider } from "react-redux";

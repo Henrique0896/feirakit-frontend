@@ -15,7 +15,7 @@ export const Init = () => {
 
 export const Login = (user) => {
   return async (dispatch) => {
-    let token = user.id;
+    let token = user.email;//mudar assim que a ap for alterada para mostrar o id
      
     await AsyncStorage.setItem("token", token);
     await AsyncStorage.setItem("user",JSON.stringify(user));
@@ -34,3 +34,5 @@ export const Logout = () => {
     });
   };
 };
+
+

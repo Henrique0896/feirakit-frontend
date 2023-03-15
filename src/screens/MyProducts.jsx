@@ -15,9 +15,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
-import apiFeiraKit from "../services/ApiFeiraKit";
+import { Product } from "../services/product";
 
 export function MyProducts() {
+  const productInstance=new Product();
   const { colors } = useTheme();
   const [products, setProducts] = useState([]);
   const[ isLoading,setIsLoading ]= useState(true);
@@ -33,8 +34,7 @@ export function MyProducts() {
 
   const getProductsByIdUsuario = () => {
     setIsLoading(true)
-    apiFeiraKit
-      .get(`/products/by-id-usuario/${user.id}`)
+    productInstance.getProductsByIdUsuario(user.id)
       .then(({ data }) => {
         setProducts(data);
         setIsLoading(false)
@@ -47,7 +47,7 @@ export function MyProducts() {
   };
 
   
-  useFocusEffect(useCallback(getProductsByIdUsuario, []));
+  useFocusEffect(useCallback(getProductsByIdUsuario, [] ));
 
   return (
     <VStack flex={1} w="full" px="2%">
