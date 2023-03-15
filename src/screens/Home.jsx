@@ -20,6 +20,7 @@ import { Product } from "../services/product";
 
 export function Home() {
   const product=new Product
+  const limit = 12;
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [iconName, setIconName] = useState("storefront");
@@ -27,7 +28,6 @@ export function Home() {
   const [headerText, setHeaderText] = useState("Todos os produtos");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-  const [limit,setLimit] = useState(12);
   const [page,setPage] = useState(1);
   const [sort,setSort]=useState(-1)
   const [refreshing, setRefreshing] = useState(false);

@@ -87,9 +87,9 @@ export function Description() {
       .then(({ data }) => {
         //tem um erro neste retorno data
         console.log(data)
-        setEndereco(data.endereco.cidade + "-" + data.endereco.estado);
-        setProdutor(data.nome);
-        setWhatsAppNumber(data.telefone);
+        setEndereco(data.resultado.endereco.cidade + "-" + data.resultado.endereco.estado);
+        setProdutor(data.resultado.nome);
+        setWhatsAppNumber(data.resultado.telefone);
       })
       .catch((error) => console.log(error));
   }, []);
