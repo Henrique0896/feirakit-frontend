@@ -7,7 +7,6 @@ import { useNavigation } from "@react-navigation/native";
 export function ButtonBack() {
   const { colors } = useTheme();
   const navigation = useNavigation();
-
   function handleGoBack() {
     navigation.goBack();
   }

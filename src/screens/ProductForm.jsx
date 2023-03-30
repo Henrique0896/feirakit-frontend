@@ -55,7 +55,9 @@ export function ProductForm() {
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
   let monthDate =
-    ObjDate.getMonth() < 10 ? "0" +  (ObjDate.getMonth()+1) : ObjDate.getMonth()+1;
+    ObjDate.getMonth() < 10
+      ? "0" + (ObjDate.getMonth() + 1)
+      : ObjDate.getMonth() + 1;
   const id = product ? product.id : null;
   const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = useState(ObjDate);
@@ -63,7 +65,7 @@ export function ProductForm() {
   const [dateText, setDateText] = useState(
     product
       ? product.validade.split("-", 3).reverse().join("/")
-      : dayDate + "/" + monthDate  + "/" + ObjDate.getFullYear()
+      : dayDate + "/" + monthDate + "/" + ObjDate.getFullYear()
   );
 
   const onDateChange = (event, selectedDate) => {
@@ -162,15 +164,14 @@ export function ProductForm() {
   const pickImages = async () => {
     setIsLoadingImages(true);
     closeActionsSheet();
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert(
-        "Permissões",
-        "O app precisa dessas permissões para adicionar imagens ao seu produto!"
-      );
-      return;
-    }
+     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+     if (!permissionResult.granted) {
+       Alert.alert(
+         "Permissões",
+         "O app precisa dessas permissões para adicionar imagens ao seu produto!"
+       );
+       return;
+     }
     let selectedImages;
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -218,14 +219,13 @@ export function ProductForm() {
     closeActionsSheet();
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert(
-        "Permissão",
-        "Você se recusou a permitir que este aplicativo acesse sua câmera!"
-      );
+       Alert.alert(
+         "Permissão",
+         "Você se recusou a permitir que este aplicativo acesse sua câmera.Por favor,conceda esta permição para continuar o cadastro do produto"
+       );
       return;
     }
-
-    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true });
+    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true,quality:0.6 });
 
     let capturedImage;
     if (!result.cancelled) {
@@ -336,6 +336,7 @@ export function ProductForm() {
       });
     setIsLoading(false);
   };
+
   const updateProduct = (objProduct) => {
     let jsonProduct = objProduct;
     productInstance
@@ -366,8 +367,9 @@ export function ProductForm() {
   }, [uploadedImages]);
 
   useEffect(() => {
-     productInstance.getUnites()
-     .then(({ data }) => {
+    productInstance
+      .getUnites()
+      .then(({ data }) => {
         setCategories(data.categorias);
         setUnities(data.unidades);
         setFormLoaded(true);

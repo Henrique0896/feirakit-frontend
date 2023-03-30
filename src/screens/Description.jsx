@@ -88,7 +88,7 @@ export function Description() {
         console.log(data)
         setEndereco(data.resultado[0].endereco.cidade + "-" + data.resultado[0].endereco.estado);
         setProdutor(data.resultado[0].nome);
-        setWhatsAppNumber(data.resultado.telefone);
+        setWhatsAppNumber(data.resultado[0].telefone);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -312,15 +312,16 @@ export function Description() {
             </HStack>
             <Heading alignSelf={"center"} color={colors.blue[700]} size="md">
               {amount ==1 ? product.unidade : product.unidade + 's' }
-              
             </Heading>
-            <WhatsappButton
-              WhatsAppNumber={WhatsAppNumber}
-              Quantity={amount}
-              unity={product.unidade}
-              ProductName={`${product.nome}`}
-              Name={`${produtor}`}
-            />
+            {WhatsAppNumber !=='' &&
+               <WhatsappButton
+               WhatsAppNumber={WhatsAppNumber}
+               Quantity={amount}
+               unity={product.unidade}
+               ProductName={`${product.nome}`}
+               Name={`${produtor}`}
+             />
+            }
           </>
         )}
       </ScrollView>
