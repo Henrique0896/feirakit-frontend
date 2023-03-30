@@ -33,15 +33,6 @@ function MyAccountRoutes() {
     </Navigator>
   );
 }
-function TesteRoutes(){
-  const { colors } = useTheme();
-  return(
-    <Navigator screenOptions={{ headerShown: false }}>
-      <Screen name="Teste" component={Teste} />
-    </Navigator>
-  )
-}
-
 function HomeDrawer() {
   const { colors } = useTheme();
   return (
