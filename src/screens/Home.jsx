@@ -31,21 +31,21 @@ export function Home() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [keepFetching, setKeepFetching] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
   function handleOpenDescription(productId, product, isInfo) {
     navigation.navigate("description", { productId, product, isInfo });
   }
   const getNewProducts = () => {
-    if(search === ''){
+    if(search === '' && keepFetching){
       setFetchingProducts(true)
       getAllProducts();
     }
-    
   };
 
   const getAllProducts = (refresh) => {
-    if(products.length == 0){
+    if(products.length == 0 ){
       setIsLoading(true);
     }
     setSearch("");
@@ -57,6 +57,7 @@ export function Home() {
         if(refresh){
           setProducts(data)
           setPage(2);
+          setKeepFetching(true)
         }else{
           setProducts([...products,...data]);
           setPage(page+1);
@@ -64,6 +65,9 @@ export function Home() {
         }
         setRefreshing(false);
         setIsLoading(false);
+        if(data.length== 0){
+          setKeepFetching(false)
+        }
       })
       .catch((error) => {
         setProducts([]);
@@ -168,7 +172,7 @@ export function Home() {
                     marginRight: 5,
                     marginTop: -7,
                   }}
-                  onPress={() => getAllProducts()}
+                  onPress={() => getAllProducts(true)}
                 >
                   <MaterialIcons name="clear" size={22} />
                 </TouchableOpacity>
@@ -200,7 +204,7 @@ export function Home() {
             )}
             ListEmptyComponent={() => (
               <Center flex={1} h={400}>
-                <TouchableOpacity onPress={() => getAllProducts()}>
+                <TouchableOpacity onPress={() => getAllProducts(true)}>
                   <MaterialIcons
                     name={iconName}
                     size={80}
@@ -219,7 +223,7 @@ export function Home() {
               </Center>
             )}
             onEndReached={getNewProducts}
-            onEndReachedThreshold={0.3}
+            onEndReachedThreshold={0.2}
             ListFooterComponent={<FooterListLoader fetchingProducts={fetchingProducts} />}
             refreshControl={
               <RefreshControl

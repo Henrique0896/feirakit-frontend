@@ -147,6 +147,7 @@ export function ProductForm() {
   const handleNewProduct = (data) => {
     let objProduct = {
       ...data,
+      nome: data.nome[0].toUpperCase() + data.nome.substring(1),
       imagem_url: uploadedImages,
       validade: dateText.split("/", 3).reverse().join("-"),
       preco: parseFloat(data.preco),
@@ -164,8 +165,8 @@ export function ProductForm() {
   const pickImages = async () => {
     setIsLoadingImages(true);
     closeActionsSheet();
-     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-     if (!permissionResult.granted) {
+    const permissionResult =await ImagePicker.requestMediaLibraryPermissionsAsync().then();
+    if (!permissionResult.granted) {
        Alert.alert(
          "Permissões",
          "O app precisa dessas permissões para adicionar imagens ao seu produto!"
@@ -219,13 +220,17 @@ export function ProductForm() {
     closeActionsSheet();
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-       Alert.alert(
-         "Permissão",
-         "Você se recusou a permitir que este aplicativo acesse sua câmera.Por favor,conceda esta permição para continuar o cadastro do produto"
-       );
+      Alert.alert(
+        "Permissão",
+        "Você se recusou a permitir que este aplicativo acesse sua câmera.Por favor,conceda esta permição para continuar o cadastro do produto"
+      );
       return;
     }
-    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true,quality:0.6 });
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 0.6,
+    });
 
     let capturedImage;
     if (!result.cancelled) {

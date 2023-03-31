@@ -60,7 +60,7 @@ export function Login() {
     })
     .catch((err)=>{
       setIsLoading(false)
-      return Alert.alert("Erro", "Usuário ou senha inválidos");
+      return Alert.alert("Erro", "Um erro inesperado aconteceu,tente novamente");
     })
     
   };

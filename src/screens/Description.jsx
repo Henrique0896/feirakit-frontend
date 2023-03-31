@@ -85,7 +85,6 @@ export function Description() {
     userInstance
       .getUserById(product.produtor_id)
       .then(({ data }) => {
-        console.log(data)
         setEndereco(data.resultado[0].endereco.cidade + "-" + data.resultado[0].endereco.estado);
         setProdutor(data.resultado[0].nome);
         setWhatsAppNumber(data.resultado[0].telefone);

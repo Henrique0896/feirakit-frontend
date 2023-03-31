@@ -23,7 +23,6 @@ export function WhatsappButton({Name,WhatsAppNumber, Quantity,unity, ProductName
         onPress={() =>
             Linking.canOpenURL(`whatsapp://send?text=${Message}`).then((supported) => {
             if (supported) {
-              console.log(`whatsapp://send?phone=${WhatsAppNumber}&text= ${Message}`)
               return Linking.openURL(
                 `whatsapp://send?phone=${WhatsAppNumber}&text= ${Message}`
               );

@@ -95,6 +95,9 @@ export function Register() {
         return Alert.alert("Erro", "Este endereço de email já está sendo usado");
       }
       user.getUserByEmail(objUser.email)
+    }).catch(({err})=>{
+      setIsLoading(false);
+      return Alert.alert("Erro", "Um erro inesperado aconteceu,por favor tente novamente");
     })
     setIsLoading(false);
   };
@@ -614,7 +617,7 @@ export function Register() {
         </Button>
         {Object.values(errors).length > 0 && (
           <Text alignSelf="center" color={colors.purple[500]} mt={4}>
-            Preencha todos os campos antes de continuar
+            Verifique todos os campos antes de continuar
           </Text>
         )}
       </ScrollView>
