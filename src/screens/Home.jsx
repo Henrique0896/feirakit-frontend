@@ -24,7 +24,7 @@ export function Home() {
   const sort = -1;
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
-  const [fetchingProducts,setFetchingProducts]= useState(false);
+  const [fetchingProducts, setFetchingProducts] = useState(false);
   const [iconName, setIconName] = useState("storefront");
   const [emptyText, setEmptyText] = useState("Não há Produtos para mostrar.");
   const [headerText, setHeaderText] = useState("Todos os produtos");
@@ -38,35 +38,37 @@ export function Home() {
     navigation.navigate("description", { productId, product, isInfo });
   }
   const getNewProducts = () => {
-    if(search === '' && keepFetching){
-      setFetchingProducts(true)
-      getAllProducts();
+    if (search === "" && keepFetching) {
+      setTimeout(() => {
+        setFetchingProducts(true);
+        getAllProducts();
+      },500);
     }
   };
 
   const getAllProducts = (refresh) => {
-    if(products.length == 0 ){
+    if (products.length == 0) {
       setIsLoading(true);
     }
     setSearch("");
     setHeaderText(`Produtos disponíveis`);
-    
+
     product
-      .getAllProducts(!refresh?page:1, limit, sort)
+      .getAllProducts(!refresh ? page : 1, limit, sort)
       .then(({ data }) => {
-        if(refresh){
-          setProducts(data)
+        if (refresh) {
+          setProducts(data);
           setPage(2);
-          setKeepFetching(true)
-        }else{
-          setProducts([...products,...data]);
-          setPage(page+1);
-          setFetchingProducts(false)
+          setKeepFetching(true);
+        } else {
+          setProducts([...products, ...data]);
+          setPage(page + 1);
+          setFetchingProducts(false);
         }
         setRefreshing(false);
         setIsLoading(false);
-        if(data.length== 0){
-          setKeepFetching(false)
+        if (data.length == 0) {
+          setKeepFetching(false);
         }
       })
       .catch((error) => {
@@ -93,12 +95,12 @@ export function Home() {
   };
 
   useFocusEffect(useCallback(getAllProducts, []));
-  
+
   const onRefresh = () => {
     setPage(1);
-    setIsLoading(true)
-    setRefreshing(true)
-    setProducts([])
+    setIsLoading(true);
+    setRefreshing(true);
+    setProducts([]);
     getAllProducts(true);
   };
 
@@ -160,7 +162,7 @@ export function Home() {
       </VStack>
 
       {isLoading ? (
-        <LoadingProducts/>
+        <LoadingProducts />
       ) : (
         <>
           <HStack w="full" alignItems="center">
@@ -223,8 +225,10 @@ export function Home() {
               </Center>
             )}
             onEndReached={getNewProducts}
-            onEndReachedThreshold={0.2}
-            ListFooterComponent={<FooterListLoader fetchingProducts={fetchingProducts} />}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={
+              <FooterListLoader fetchingProducts={fetchingProducts} />
+            }
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
