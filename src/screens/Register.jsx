@@ -606,6 +606,7 @@ export function Register() {
           bgColor={colors.blue[600]}
           height={54}
           width={334}
+          _pressed={{ bgColor: colors.blue[700] }}
           mt={4}
           borderRadius={15}
           alignSelf="center"

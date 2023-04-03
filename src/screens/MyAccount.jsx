@@ -656,7 +656,7 @@ export function MyAccount() {
           onPress={handleSubmit(handleEditUser)}
         >
           <Text style={styles.txt} color={colors.gray[200]}>
-            Confirmar
+            Confirmar alterações
           </Text>
         </Button>
         <Button

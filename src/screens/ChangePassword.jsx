@@ -149,6 +149,7 @@ export function ChangePassword() {
             bgColor={colors.gray[100]}
             w="90%"
             color={errors.senha ? colors.purple[500] : colors.blue[900]}
+            type="password"
             alignSelf="center"
             value={value}
             onChangeText={onChange}
@@ -201,6 +202,7 @@ export function ChangePassword() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={5}
+              type="password"
               width={334}
               height={54}
               bgColor={colors.gray[100]}
@@ -252,6 +254,7 @@ export function ChangePassword() {
               w="90%"
               color={errors.confirmacao ? colors.purple[500] : colors.blue[900]}
               alignSelf="center"
+              type="password"
               value={value}
               onChangeText={onChange}
               leftElement={
