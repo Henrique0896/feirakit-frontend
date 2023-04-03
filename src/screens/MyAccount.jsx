@@ -17,13 +17,13 @@ import {
   ScrollView,
 } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
-import { LogoFeira } from "../components/LogoFeira"
+import { LogoFeira } from "../components/LogoFeira";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form";
 import ViaCep from "../services/ViaCep";
-import { useSelector,useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Logout } from "../store/actions";
 import { showMessage } from "react-native-flash-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -32,15 +32,18 @@ import * as yup from "yup";
 import { User } from "../services/user";
 
 export function MyAccount() {
-  const userInstance= new User()
+  const userInstance = new User();
   const navigation = useNavigation();
   const user = useSelector((state) => state.AuthReducers.userData);
   const cellRef = useRef(null);
   const [IsLoading, setIsLoading] = useState(false);
+  const [isEdictionMode, setIsEdictionMode] = useState(false);
+  const [cepInputFoccus,setCepInputFoccus] = useState(false);
+  const [phoneInputFoccus,setPhoneInputFoccus] = useState(false);
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const { colors } = useTheme();
-  const dispatch=useDispatch()
-
+  const dispatch = useDispatch();
+  
   const userSchema = yup.object({
     nome: yup.string().required("informe o seu nome completo"),
     email: yup
@@ -56,12 +59,13 @@ export function MyAccount() {
     cidade: yup.string().required("informe o nome da cidade"),
     estado: yup.string().required("selecione o estado"),
   });
-
+ 
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
+    reset
   } = useForm({
     resolver: yupResolver(userSchema),
     defaultValues: {
@@ -87,6 +91,7 @@ export function MyAccount() {
 
   const handleEditUser = (data) => {
     setIsLoading(true);
+    setIsEdictionMode(false)
     Alert.alert(editTexts.title, editTexts.description, [
       {
         text: editTexts.optionNo,
@@ -115,8 +120,9 @@ export function MyAccount() {
             telefone: cellRef?.current.getRawValue(),
             id: user.id,
           };
-          setIsLoading(false);    
-          userInstance.editUser(JSON.stringify(objUser))
+          setIsLoading(false);
+          userInstance
+            .editUser(JSON.stringify(objUser))
             .then((response) => {
               showMessage({
                 message: "Dados alterados com sucesso",
@@ -140,7 +146,6 @@ export function MyAccount() {
         setValue("cidade", data.localidade);
         setValue("bairro", data.bairro);
         setValue("rua", data.logradouro);
-        // setValue("complemento", data.complemento);
       })
       .catch((err) => console.log(err));
   };
@@ -165,7 +170,8 @@ export function MyAccount() {
         text: deletTexts.optionYes,
         onPress: () => {
           let objUserId = { id: user.id };
-          userInstance.deleteUser(objUserId)
+          userInstance
+            .deleteUser(objUserId)
             .then((response) => {
               dispatch(Logout());
             })
@@ -177,10 +183,10 @@ export function MyAccount() {
       },
     ]);
   };
-
   const login = (email) => {
-    userInstance.getUserByEmail(email)
-      .then((                                                                                                                                                                                                                                                                                                                                                                                     ) => {
+    userInstance
+      .getUserByEmail(email)
+      .then(() => {
         navigation.goBack();
       })
       .catch((err) => {
@@ -188,8 +194,7 @@ export function MyAccount() {
         console.log(err);
       });
   };
-
-
+  
   return (
     <ScrollView>
       <VStack flex={1} w="full">
@@ -209,15 +214,32 @@ export function MyAccount() {
         >
           {user.nome}
         </Text>
-        <Text
-          style={styles.txt}
-          alignSelf="flex-start"
-          ml={4}
-          mt={5}
-          fontSize={20}
-        >
-          Alterar dados
-        </Text>
+
+        <HStack justifyContent="space-between" display={'flex'} w={"92%"} mt={6} mb={4}>
+          <Text
+            style={styles.txt}
+            alignSelf="flex-start"
+            ml={4}
+            mt={2}
+          >
+            {isEdictionMode?'Editar dados':'Meus dados'}
+          </Text>
+          <TouchableOpacity
+            style={[styles.btn,{borderColor:isEdictionMode?colors.red[500]: colors.blue[400],}]}
+            onPress={()=>{
+              if(isEdictionMode){
+                reset()
+              }
+              setIsEdictionMode(!isEdictionMode)}}
+          >
+            <Icon
+              color={isEdictionMode?colors.red[500]:colors.blue[900]}
+              as={<MaterialIcons name={isEdictionMode?"close":"edit"} />}
+              size={6}
+            />
+            <Text>{isEdictionMode?"cancelar":"editar"}</Text>
+          </TouchableOpacity>
+        </HStack>
 
         <Controller
           control={control}
@@ -227,6 +249,8 @@ export function MyAccount() {
               mt={4}
               width={334}
               height={54}
+              editable={isEdictionMode}
+              borderWidth={isEdictionMode ? 1 : 0 }
               bgColor={colors.gray[100]}
               w="90%"
               color={errors.nome ? colors.purple[500] : colors.blue[900]}
@@ -270,6 +294,8 @@ export function MyAccount() {
               mt={4}
               width={334}
               height={54}
+              editable={isEdictionMode}
+              borderWidth={isEdictionMode ? 1 : 0 }
               bgColor={colors.gray[100]}
               w="90%"
               keyboardType="email-address"
@@ -310,9 +336,9 @@ export function MyAccount() {
           alignItems="center"
           mt={4}
           height={54}
-          borderWidth={1}
+          borderWidth={isEdictionMode ? 1 : 0 }
           borderRadius={8}
-          borderColor={colors.gray[300]}
+          borderColor={phoneInputFoccus?colors.blue[600]:colors.gray[250]}
           mr={4}
           bgColor={colors.gray[100]}
           w="90%"
@@ -328,8 +354,10 @@ export function MyAccount() {
             control={control}
             name="telefone"
             render={({ field: { onChange, value } }) => (
-              <TextInputMask
+              <TextInputMask 
                 type={"cel-phone"}
+                onFocus={()=>setPhoneInputFoccus(true)}
+                onBlur={()=>setPhoneInputFoccus(false)}
                 options={{
                   maskType: "BRL",
                   withDDD: true,
@@ -340,7 +368,7 @@ export function MyAccount() {
                 style={{
                   fontFamily: "Montserrat_400Regular",
                   fontSize: 14,
-                  marginLeft: 11,
+                  marginLeft: 11
                 }}
                 width="70%"
                 placeholderTextColor={
@@ -349,6 +377,8 @@ export function MyAccount() {
                 value={value}
                 onChangeText={onChange}
                 ref={cellRef}
+                editable={isEdictionMode}
+                
               />
             )}
           />
@@ -360,15 +390,15 @@ export function MyAccount() {
           mt={5}
           fontSize={20}
         >
-          Alterar endereço
+          Endereço
         </Text>
         <HStack
           alignItems="center"
           mt={4}
           height={54}
-          borderWidth={1}
+          borderWidth={isEdictionMode ? 1 : 0 }
           borderRadius={8}
-          borderColor={colors.gray[300]}
+          borderColor={cepInputFoccus?colors.blue[600]:colors.gray[250]}
           mr={4}
           bgColor={colors.gray[100]}
           w="90%"
@@ -379,6 +409,8 @@ export function MyAccount() {
             name="cep"
             render={({ field: { onChange, value } }) => (
               <TextInputMask
+                onFocus={()=>setCepInputFoccus(true)}
+                onBlur={()=>setCepInputFoccus(false)}
                 type={"custom"}
                 options={{
                   mask: "99999-999",
@@ -400,6 +432,7 @@ export function MyAccount() {
                   getAddressData(value);
                 }}
                 keyboardType="numeric"
+                editable={isEdictionMode}
               />
             )}
           />
@@ -436,6 +469,7 @@ export function MyAccount() {
               value={value}
               alignSelf="center"
               onChangeText={onChange}
+              editable={isEdictionMode}
             />
           )}
         />
@@ -472,6 +506,8 @@ export function MyAccount() {
               value={value}
               alignSelf="center"
               onChangeText={onChange}
+              editable={isEdictionMode}
+              borderWidth={isEdictionMode?1:0}
             />
           )}
         />
@@ -508,6 +544,8 @@ export function MyAccount() {
               value={value}
               alignSelf="center"
               onChangeText={onChange}
+              editable={isEdictionMode}
+              borderWidth={isEdictionMode?1:0}
             />
           )}
         />
@@ -534,6 +572,8 @@ export function MyAccount() {
               value={value}
               alignSelf="center"
               onChangeText={onChange}
+              editable={isEdictionMode}
+              borderWidth={isEdictionMode?1:0}
             />
           )}
         />
@@ -569,6 +609,8 @@ export function MyAccount() {
               mr={4}
               alignSelf="center"
               onChangeText={onChange}
+              editable={isEdictionMode}
+              borderWidth={isEdictionMode?1:0}
             />
           )}
         />
@@ -587,6 +629,8 @@ export function MyAccount() {
           name="estado"
           render={({ field: { onChange, value } }) => (
             <Select
+              isDisabled={isEdictionMode? false : true}
+              borderWidth={isEdictionMode? 1 : 0}
               w="93%"
               ml="3%"
               mt={4}
@@ -641,6 +685,8 @@ export function MyAccount() {
             {errors.estado.message}
           </Text>
         )}
+
+        {isEdictionMode &&(
         <Button
           bgColor={colors.blue[600]}
           _pressed={{ bgColor: colors.blue[700] }}
@@ -658,7 +704,8 @@ export function MyAccount() {
           <Text style={styles.txt} color={colors.gray[200]}>
             Confirmar alterações
           </Text>
-        </Button>
+        </Button>)}
+
         <Button
           bgColor={colors.blue[700]}
           _pressed={{ bgColor: colors.blue[700] }}
@@ -707,6 +754,16 @@ const styles = StyleSheet.create({
   },
   txt: {
     fontFamily: "Montserrat_400Regular",
-    fontSize: 15,
+    fontSize: 20,
   },
+  btn:{
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth:1,
+    paddingVertical:2,
+    paddingHorizontal:8,
+    borderRadius:8,
+    marginTop:2,
+  }
 });
