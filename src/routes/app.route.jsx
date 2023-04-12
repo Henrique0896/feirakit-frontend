@@ -1,15 +1,13 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-//screens
 import { Home } from "../screens/Home";
 import { Description } from "../screens/Description";
 import { CustomDrawer } from "../components/CustomDrawer";
-import { ShopCart } from "../screens/ShopCart";
 import { MyProducts } from "../screens/MyProducts";
-import { Settings } from "../screens/Settings";
-//icons
+import { MyAccount } from "../screens/MyAccount";
+import { Sobre } from "../screens/Sobre";
+import { ChangePassword } from "../screens/ChangePassword";
 import { Ionicons } from "@expo/vector-icons";
-//hooks
 import { useTheme } from "native-base";
 import { ProductForm } from "../screens/ProductForm";
 
@@ -17,8 +15,7 @@ const { Navigator, Screen } = createNativeStackNavigator();
 
 const Drawer = createDrawerNavigator();
 
-
-function ProductRoutes(){
+function ProductRoutes() {
   const { colors } = useTheme();
   return (
     <Navigator screenOptions={{ headerShown: false }}>
@@ -26,11 +23,16 @@ function ProductRoutes(){
       <Screen name="ProductForm" component={ProductForm} />
     </Navigator>
   );
-
-
+};
+function MyAccountRoutes() {
+  const { colors } = useTheme();
+  return (
+    <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="MyAccount" component={MyAccount} />
+      <Screen name="ChangePassword" component={ChangePassword} />
+    </Navigator>
+  );
 }
-
-
 function HomeDrawer() {
   const { colors } = useTheme();
   return (
@@ -58,15 +60,6 @@ function HomeDrawer() {
         }}
       />
       <Drawer.Screen
-        name="Meu Carrinho"
-        component={ShopCart}
-        options={{
-          drawerIcon: ({ color }) => (
-            <Ionicons name="cart-outline" size={22} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
         name="Meus Produtos"
         component={ProductRoutes}
         options={{
@@ -75,12 +68,23 @@ function HomeDrawer() {
           ),
         }}
       />
+      
       <Drawer.Screen
-        name="Configurações"
-        component={Settings}
+        name="Minha Conta"
+        component={MyAccountRoutes}
         options={{
           drawerIcon: ({ color }) => (
-            <Ionicons name="settings-outline" size={22} color={color} />
+            <Ionicons name="person-circle-outline" size={25} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="Sobre"
+        component={Sobre}
+        options={{
+          drawerIcon: ({ color }) => (
+            <Ionicons name="help-circle-outline" size={25} color={color} />
           ),
         }}
       />
@@ -93,6 +97,7 @@ export function AppRoutes() {
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="homeStack" component={HomeDrawer} />
       <Screen name="description" component={Description} />
+      <Screen name="myaccount" component={MyAccount} />
     </Navigator>
   );
 }

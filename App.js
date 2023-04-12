@@ -9,7 +9,7 @@ import {
   Montserrat_100Thin,
 } from "@expo-google-fonts/montserrat";
 import { THEME } from "./src/styles/theme";
-
+import FlashMessage from "react-native-flash-message";
 import { Loading } from "./src/components/Loading";
 import { Routes } from "./src/routes";
 import { Provider } from "react-redux";
@@ -19,13 +19,14 @@ export default function App() {
     Montserrat_700Bold,
     Montserrat_500Medium,
     Montserrat_100Thin,
-  });
-
+  }); 
+   
   return (
     <Provider store={store}>
         <NativeBaseProvider theme={THEME}>
+        <FlashMessage position="top" />
           {fontsLoaded ? <Routes /> : <Loading />}
         </NativeBaseProvider>
     </Provider>
-  );
-}
+  );    
+}   

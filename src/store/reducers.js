@@ -16,6 +16,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         authToken: null,
+        userData: {},
       };
     default:
       return state;

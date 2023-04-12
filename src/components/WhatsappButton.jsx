@@ -6,15 +6,15 @@ import {
   TouchableOpacity,
   Linking,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-
-
-export function WhatsappButton({Name,WhatsAppNumber, Quantity, ProductName }) {
-
-  let Message = `Olá ${Name}, tudo bem? \n gostaria de comprar ${Quantity} unidade do produto "${ProductName}". Obrigado!`
-
-  
+export function WhatsappButton({Name,WhatsAppNumber, Quantity,unity, ProductName }) {
+  const user=useSelector((state) => state.AuthReducers.userData).nome
+  const adress=useSelector((state) => state.AuthReducers.userData).endereco
+  let isPluralQuantity= Quantity > 1 ? unity+'s':unity;
+  let Message = `_*Pedido Feira Kit 🛒*_\nOlá ${Name}, tudo bem?\ngostaria de comprar *${Quantity} ${isPluralQuantity}* do produto "${ProductName}". Obrigado!\n__________________________\n*Cliente*: ${user}\n*Endereço*: ${adress.rua}, ${adress.numero}, ${adress.bairro}, ${adress.cidade}-${adress.estado}
+  `
   return (
     <View style={styles.container}> 
   
@@ -32,8 +32,6 @@ export function WhatsappButton({Name,WhatsAppNumber, Quantity, ProductName }) {
               );
           })
         }
-        Whatsapp
-        Mensagem
       >
         <Text style={styles.title}>
           <FontAwesome5 size={20} name="whatsapp" /> COMPRAR

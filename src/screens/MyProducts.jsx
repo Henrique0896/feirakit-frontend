@@ -2,26 +2,26 @@ import React, { useState, useCallback } from "react";
 import {
   VStack,
   HStack,
-  Icon,
-  Input,
   useTheme,
   Heading,
   FlatList,
   Center,
   View,
 } from "native-base";
-import { TouchableOpacity } from "react-native";
+import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
+import { LogoFeira } from "../components/LogoFeira";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MyProductItem } from "../components/MyProductItem";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
-import apiFeiraKit from "../services/ApiFeiraKit";
+import { Product } from "../services/product";
 
 export function MyProducts() {
+  const productInstance=new Product();
   const { colors } = useTheme();
-  const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
+  const[ isLoading,setIsLoading ]= useState(true);
   const navigation = useNavigation();
   const user=useSelector((state) => state.AuthReducers.userData)
   function handleOpenAdd() {
@@ -32,24 +32,27 @@ export function MyProducts() {
     navigation.navigate("description", { productId, product, isInfo });
   }
 
-  const getProductsByNameUsuario = () => {
-    apiFeiraKit
-      .get(`/products/by-id-usuario/${user.id}`)
+  const getProductsByIdUsuario = () => {
+    setIsLoading(true)
+    productInstance.getProductsByIdUsuario(user.id)
       .then(({ data }) => {
-        console.log(data)
         setProducts(data);
+        setIsLoading(false)
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false)
       });
+      
   };
 
   
-  useFocusEffect(useCallback(getProductsByNameUsuario, []));
+  useFocusEffect(useCallback(getProductsByIdUsuario, [] ));
 
   return (
     <VStack flex={1} w="full" px="2%">
       <ButtonBack />
+      <LogoFeira />
        <TouchableOpacity style={{alignSelf:'flex-end',marginTop:-60,marginRight:10}} onPress={() => handleOpenAdd()}>
           <View>
             <MaterialIcons name="add" size={50} color={colors.blue[600]}/>
@@ -66,7 +69,8 @@ export function MyProducts() {
       >
         Meus produtos
       </Heading>
-
+      {isLoading ?
+      <ActivityIndicator size="large"/> :
       <FlatList
         paddingX="2%"
         data={products}
@@ -114,7 +118,7 @@ export function MyProducts() {
               </VStack>
 
               <Center>
-                <TouchableOpacity onPress={() => getProductsByNameUsuario()}>
+                <TouchableOpacity onPress={() => getProductsByIdUsuario()}>
                   <MaterialIcons
                     color={colors.gray[300]}
                     name="refresh"
@@ -125,7 +129,7 @@ export function MyProducts() {
             </HStack>
           </View>
         )}
-      />
+      />}
     </VStack>
   );
 }

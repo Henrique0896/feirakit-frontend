@@ -7,13 +7,12 @@ import { useNavigation } from "@react-navigation/native";
 export function ButtonBack() {
   const { colors } = useTheme();
   const navigation = useNavigation();
-
   function handleGoBack() {
     navigation.goBack();
   }
   return (
-    <VStack pb={-10} mt={2}>
-      <StatusBar></StatusBar>
+    <VStack pb={-10} mt={1} mb={3} >
+      <StatusBar/>
       <HStack alignItems='flex-start'>
         <TouchableOpacity onPress={handleGoBack}>
           <View
@@ -25,23 +24,16 @@ export function ButtonBack() {
             borderWidth={4}
             m="9%"
             mr={0}
-            w={60}
-            h={60}
+            w={45}
+            h={45}
           >
             <MaterialIcons
               name="arrow-back-ios"
-              size={34}
+              size={25}
               color={colors.blue[600]}
             />
           </View>
         </TouchableOpacity>
-        <Image alt='texto feira-kit' 
-        source={require("../assets/logo.png")}
-        style={{ width: 230, height: 70 }}
-        resizeMode="contain"
-        alignSelf='center'
-
-      />
       </HStack>
     </VStack>
   );
