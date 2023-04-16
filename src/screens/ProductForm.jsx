@@ -49,8 +49,8 @@ export function ProductForm() {
   const ButtonText = product ? "Confirmar" : "Adicionar";
   const producerId = product
     ? product.produtor_id
-    : useSelector((state) => state.AuthReducers.userData).id;
-
+    : useSelector((state) => state.AuthReducers.userData.userData).id;
+  
   const ObjDate = new Date();
   let dayDate =
     ObjDate.getDate() < 10 ? "0" + ObjDate.getDate() : ObjDate.getDate();
@@ -319,8 +319,9 @@ export function ProductForm() {
 
     Promise.all(promises)
       .then()
-      .catch((e) => {
-        console.log(e);
+      .catch((err) => {
+        
+        console.log(err);
       });
   };
 
@@ -533,7 +534,7 @@ export function ProductForm() {
                   _text={{ color: colors.blue[700] }}
                   onChange={onChange}
                 >
-                  O produto será colhido após a compra{" "}
+                  O produto será colhido ou preparado após a compra{" "}
                 </Checkbox>
               )}
             />

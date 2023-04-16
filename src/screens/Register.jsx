@@ -7,7 +7,7 @@ import {
   Select,
   Input,
   useTheme,
-  HStack
+  HStack,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -21,10 +21,10 @@ import ViaCep from "../services/ViaCep";
 import { useNavigation } from "@react-navigation/native";
 import { TextInputMask } from "react-native-masked-text";
 import { LogoFeira } from "../components/LogoFeira";
-import {User} from '../services/user'
+import { User } from "../services/user";
 
 export function Register() {
-  const user = new User
+  const user = new User();
   const [inputType, setInputType] = useState("password");
   const [isLoading, setIsLoading] = useState(false);
   const cellRef = useRef(null);
@@ -38,10 +38,9 @@ export function Register() {
       setInputType("password");
     }
   };
-  
+
   const userSchema = yup.object({
-    nome: yup.string()
-    .required("informe o seu nome completo"),
+    nome: yup.string().required("informe o seu nome completo"),
     email: yup
       .string()
       .required("Informe um email válido")
@@ -65,13 +64,12 @@ export function Register() {
     handleSubmit,
     formState: { errors },
     setValue,
-    setError
+    setError,
   } = useForm({
     resolver: yupResolver(userSchema),
-    
   });
 
-  const handleCreateUser = async(data) => {
+  const handleCreateUser = async (data) => {
     setIsLoading(true);
     let objUser = {
       email: data.email,
@@ -86,30 +84,58 @@ export function Register() {
         cidade: data.cidade,
         estado: data.estado,
       },
-      telefone: cellRef?.current.getRawValue()
+      telefone: cellRef?.current.getRawValue(),
     };
-  
-    await user.createUser(objUser).then(({data})=>{
-      if(!data.resultado){
-        setError('email',{type:'custom',message:'Este email já está sendo usado'})
-        return Alert.alert("Erro", "Este endereço de email já está sendo usado");
-      }
-      user.getUserByEmail(objUser.email)
-    }).catch(({err})=>{
-      setIsLoading(false);
-      return Alert.alert("Erro", "Um erro inesperado aconteceu,por favor tente novamente");
-    })
+
+    await user
+      .createUser(objUser)
+      .then(({ data }) => {
+        if (!data.resultado) {
+          setError("email", {
+            type: "custom",
+            message: "Este email já está sendo usado",
+          });
+          return Alert.alert(
+            "Erro",
+            "Este endereço de email já está sendo usado"
+          );
+        }
+        user
+          .checkPassword(objUser.email, objUser.senha)
+          .then(({ data }) => {
+            let jwtToken = data.token;
+            setIsLoading(false);
+            user.getUserByEmail(objUser.email, jwtToken);
+          })
+          .catch((error) => {
+            setIsLoading(false);
+            if (error.response.data.mensagem) {
+              return Alert.alert("Erro", "Usuário ou senha inválidos");
+            }
+            return Alert.alert(
+              "Erro",
+              "Um erro inesperado aconteceu,tente novamente"
+            );
+          });
+      })
+      .catch(({ err }) => {
+        setIsLoading(false);
+        return Alert.alert(
+          "Erro",
+          "Um erro inesperado aconteceu,por favor tente novamente"
+        );
+      });
     setIsLoading(false);
   };
 
   const getAddressData = async (cep) => {
     await ViaCep.get(`${cep}/json/`)
       .then(({ data }) => {
-        setValue('estado',data.uf)
-        setValue('cidade',data.localidade);
-        setValue('bairro',data.bairro);
-        setValue('rua',data.logradouro);
-        setValue('complemento',data.complemento);
+        setValue("estado", data.uf);
+        setValue("cidade", data.localidade);
+        setValue("bairro", data.bairro);
+        setValue("rua", data.logradouro);
+        setValue("complemento", data.complemento);
       })
       .catch((err) => console.log(err));
   };
@@ -302,7 +328,7 @@ export function Register() {
                   dddMask: "(99) ",
                 }}
                 color={errors.telefone ? colors.purple[500] : colors.blue[900]}
-                placeholder="(xx) XXXXX-XXXX"
+                placeholder="(00) 0000-0000"
                 style={{
                   fontFamily: "Montserrat_400Regular",
                   fontSize: 14,
@@ -319,6 +345,7 @@ export function Register() {
             )}
           />
         </HStack>
+         <Text>Este deve ser o numero do seu whatsApp</Text>
         {errors.telefone && (
           <Text
             alignSelf="flex-start"
@@ -431,7 +458,7 @@ export function Register() {
               placeholder="* Numero"
               fontFamily={"Montserrat_400Regular"}
               placeholderTextColor={
-                errors.numero? colors.purple[500] : colors.blue[800]
+                errors.numero ? colors.purple[500] : colors.blue[800]
               }
               fontSize={14}
               borderRadius={8}
@@ -463,7 +490,7 @@ export function Register() {
               bgColor={colors.gray[100]}
               w="90%"
               color={colors.blue[900]}
-              placeholder="Complemento (opcional)"
+              placeholder="*Complemento"
               fontFamily={"Montserrat_400Regular"}
               placeholderTextColor={colors.blue[800]}
               fontSize={14}

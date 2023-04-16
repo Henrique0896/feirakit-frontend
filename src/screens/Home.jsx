@@ -34,6 +34,7 @@ export function Home() {
   const [keepFetching, setKeepFetching] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
+  
   function handleOpenDescription(productId, product, isInfo) {
     navigation.navigate("description", { productId, product, isInfo });
   }
@@ -42,7 +43,7 @@ export function Home() {
       setTimeout(() => {
         setFetchingProducts(true);
         getAllProducts();
-      },500);
+      },200);
     }
   };
 
@@ -52,7 +53,7 @@ export function Home() {
     }
     setSearch("");
     setHeaderText(`Produtos disponíveis`);
-
+    
     product
       .getAllProducts(!refresh ? page : 1, limit, sort)
       .then(({ data }) => {
@@ -225,7 +226,7 @@ export function Home() {
               </Center>
             )}
             onEndReached={getNewProducts}
-            onEndReachedThreshold={0.1}
+            onEndReachedThreshold={0.2}
             ListFooterComponent={
               <FooterListLoader fetchingProducts={fetchingProducts} />
             }

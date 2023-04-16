@@ -1,8 +1,10 @@
 import apiFeiraKit from './ApiFeiraKit'
 import { useDispatch } from "react-redux";
 import { Login as loginAction } from "../store/actions";
+import { useSelector } from "react-redux";
 
- export class User {
+export class User {
+  jwt=useSelector((state) => state.AuthReducers.authToken)
   dispatch = useDispatch();
   async checkPassword(email,password) {
      let credentials={
@@ -10,15 +12,19 @@ import { Login as loginAction } from "../store/actions";
             senha: password
         }
     return (await apiFeiraKit
-    .post('/users/check-password',JSON.stringify(credentials))
+           .post('/users/check-password',JSON.stringify(credentials))
     )   
    }
 
-  async getUserByEmail(email){
+  async getUserByEmail(email,jwtToken){
     await apiFeiraKit
-     .get(`/users/byemail/${email}`)
-     .then(({data}) => {
-         this.login(data.resultado[0])
+     .get(`/users/byemail/?email=${email}`,{
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+     })
+     .then(({data}) => { 
+        this.login(data.resultado[0],jwtToken)
      }).catch((error)=>{
          console.log(" ===>"+ error)  
   })
@@ -26,7 +32,11 @@ import { Login as loginAction } from "../store/actions";
 
   async getUserById(id){
     return( await apiFeiraKit
-     .get(`/users/${id}`)
+     .get(`/users/byuserid/?id=${id}`,{
+      headers:{
+        Authorization:`Bearer ${this.jwt}`
+      }
+     })
     )
   }
 
@@ -40,25 +50,38 @@ import { Login as loginAction } from "../store/actions";
   async changePassword(newPasswordData){
     return(
       await apiFeiraKit
-      .post('/users/change-password',newPasswordData)
+      .post('/users/change-password',newPasswordData,{
+        headers:{
+          Authorization:`Bearer ${this.jwt}`
+        }
+      })
     )
   }
   async editUser(user){
     return(
       await apiFeiraKit
-      .put("/users", user)
+      .put("/users", user,{
+        headers:{
+          Authorization:`Bearer ${this.jwt}`
+        }
+      })
     )
   }
 
   async deleteUser(id){
     return(
       await apiFeiraKit
-      .delete("/users", { data:id})
+      .delete("/users", {
+        headers:{
+          Authorization:`Bearer ${this.jwt}`
+        },
+        data:id
+      })
     )
   }
 
-  async login(userData){
-    this.dispatch(loginAction(userData))
+  async login(userData,jwtToken){
+    this.dispatch(loginAction(userData,jwtToken))
   }
   
 }

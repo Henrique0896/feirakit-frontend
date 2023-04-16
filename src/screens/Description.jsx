@@ -18,6 +18,7 @@ import {
   Alert,
 } from "react-native";
 import ImageButton from "../components/ImageButton";
+import { showMessage } from "react-native-flash-message";
 import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
@@ -25,6 +26,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { LogoFeira } from "../components/LogoFeira";
 import { Product } from "../services/product";
 import { User } from "../services/user";
+import { storage } from "../../firebaseConfig";
 
 export function Description() {
   const productInstance = new Product();
@@ -71,9 +73,22 @@ export function Description() {
            productInstance
             .deleteProduct(JSON.stringify(objDelete))
             .then(() => {
+              product.imagem_url.map((url)=>{
+                  let delelteImage=url.substring(82, url.lastIndexOf("?"));
+                  storage.ref(`images/${delelteImage}`).delete()
+                 })
+
+              showMessage({
+                message: "Produto excluído com sucesso",
+                type: "warning",
+              });
               navigation.goBack();
             })
             .catch((error) => {
+              showMessage({
+                message: "Erro ao apagar produto",
+                type: "danger",
+              });
               console.log("====>um erro ocorreu: " + error);
             });
         },
@@ -89,7 +104,13 @@ export function Description() {
         setProdutor(data.resultado[0].nome);
         setWhatsAppNumber(data.resultado[0].telefone);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        showMessage({
+          message: "Existe um erro com o produto",
+          type: "danger",
+        });
+        navigation.goBack();
+        console.log(error)});
   }, []);
   return (
     <VStack style={styles.container}>
@@ -319,6 +340,7 @@ export function Description() {
                unity={product.unidade}
                ProductName={`${product.nome}`}
                Name={`${produtor}`}
+               ProductPrice={product.preco}
              />
             }
           </>

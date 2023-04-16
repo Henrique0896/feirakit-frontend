@@ -56,10 +56,15 @@ export function Login() {
         setIsLoading(false)
         return Alert.alert("Erro", "Usuário ou senha inválidos");
       }
-      user.getUserByEmail(email)
-    })
-    .catch((err)=>{
+      let jwtToken=data.token
       setIsLoading(false)
+      user.getUserByEmail(email,jwtToken)
+    })
+    .catch((error)=>{
+      setIsLoading(false)
+      if(error.response.data.mensagem){
+        return Alert.alert("Erro", "Usuário ou senha inválidos")
+      }
       return Alert.alert("Erro", "Um erro inesperado aconteceu,tente novamente");
     })
     

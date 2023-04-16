@@ -5,23 +5,31 @@ export const Init = () => {
     let token = await AsyncStorage.getItem("token");
     let user=JSON.parse(await AsyncStorage.getItem("user"));
     if (token !== null) {
+      let payload={
+        authToken:token,
+        userData: user
+      }
+
       dispatch({
         type: "LOGIN",
-        payload: user,
+        payload: payload,
       });
     }
   };
 };
 
-export const Login = (user) => {
-  return async (dispatch) => {
-    let token = user.email;//mudar assim que a ap for alterada para mostrar o id
-     
-    await AsyncStorage.setItem("token", token);
+export const Login = (user,jwtToken) => {
+  return async (dispatch) => { 
+    await AsyncStorage.setItem("token",jwtToken);
     await AsyncStorage.setItem("user",JSON.stringify(user));
+
+    let payload={
+      authToken:jwtToken,
+      userData: user
+    }
     dispatch({
       type: "LOGIN",
-      payload: user,
+      payload: payload,
     });
   };
 };

@@ -34,7 +34,7 @@ import { User } from "../services/user";
 export function MyAccount() {
   const userInstance = new User();
   const navigation = useNavigation();
-  const user = useSelector((state) => state.AuthReducers.userData);
+  const user = useSelector((state) => state.AuthReducers.userData.userData);
   const cellRef = useRef(null);
   const [IsLoading, setIsLoading] = useState(false);
   const [isEdictionMode, setIsEdictionMode] = useState(false);
@@ -118,7 +118,7 @@ export function MyAccount() {
               estado: data.estado,
             },
             telefone: cellRef?.current.getRawValue(),
-            id: user.id,
+            id: user.id
           };
           setIsLoading(false);
           userInstance
@@ -128,9 +128,14 @@ export function MyAccount() {
                 message: "Dados alterados com sucesso",
                 type: "success",
               });
-              login(objUser.email);
+              logout(objUser.nome);
             })
             .catch((err) => {
+              reset()
+              showMessage({
+                message: "Erro ao realizar alterações",
+                type: "danger",
+              });
               console.log(err);
               setIsLoading(false);
             });
@@ -172,27 +177,36 @@ export function MyAccount() {
           let objUserId = { id: user.id };
           userInstance
             .deleteUser(objUserId)
-            .then((response) => {
+            .then(() => {
               dispatch(Logout());
             })
-            .catch((err) => {
-              console.log(err);
+            .catch((error) => {
+              console.log(error.response.data)
+              showMessage({
+                message: "Erro ao excluir a conta",
+                type: "danger",
+              });
               setDeleteIsLoading(false);
             });
         },
       },
     ]);
   };
-  const login = (email) => {
-    userInstance
-      .getUserByEmail(email)
-      .then(() => {
-        navigation.goBack();
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-      });
+  const changedUserText = {
+    title: "Dados Alterados",
+    description: "os seus dados foram alterados com sucesso, por segurança será necessário realizar login novamente.",
+    optionYes: "ok",
+  };
+  
+  const logout = (nome) => {
+    Alert.alert(changedUserText.title,`Olá ${nome.split(" ")[0]}, ${changedUserText.description}`, [
+      {
+        text: changedUserText.optionYes,
+        onPress: () => {
+          dispatch(Logout());
+        },
+      }
+    ]);
   };
   
   return (

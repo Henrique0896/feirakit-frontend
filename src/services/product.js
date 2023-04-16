@@ -1,6 +1,8 @@
 import apiFeiraKit from './ApiFeiraKit';
-
+import { useSelector } from "react-redux";
+import { storage } from "../../firebaseConfig.js";
 export class Product {
+   jwt=useSelector((state) => state.AuthReducers.authToken)
    async getAllProducts (page,limit,sort){
         return(
            await apiFeiraKit
@@ -25,14 +27,22 @@ export class Product {
     async createProduct(product){
         return(
             await apiFeiraKit
-            .post("/products", product)
+            .post("/products", product,{
+                    headers:{
+                        Authorization:`Bearer ${this.jwt}`
+                    }
+            })
         )
     }
     
     async updateProduct(product){
         return(
             await apiFeiraKit
-            .put("/products", product)
+            .put("/products", product,{
+                    headers:{
+                        Authorization:`Bearer ${this.jwt}`
+                    }
+            })
         )
     }
 
@@ -43,7 +53,11 @@ export class Product {
 
     async deleteProduct(product){
         return(await apiFeiraKit
-        .delete("/products", {data:product}))
+        .delete("/products", {
+            headers:{
+                Authorization:`Bearer ${this.jwt}`
+            },
+            data:product}))
     }
 
 }
