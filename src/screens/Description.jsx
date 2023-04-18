@@ -17,6 +17,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 import ImageButton from "../components/ImageButton";
 import { showMessage } from "react-native-flash-message";
 import { WhatsappButton } from "../components/WhatsappButton";
@@ -181,8 +182,8 @@ export function Description() {
               ]}
               onPress={() => handleOpenEdit(product)}
             >
-              <MaterialIcons name="edit" size={25} color={colors.purple[600]} />
-              <Heading color={colors.purple[600]}>Editar</Heading>
+              <MaterialIcons name="edit" size={RFValue(24)} color={colors.purple[600]} />
+              <Heading color={colors.purple[600]} fontSize={RFValue(16)}>Editar</Heading>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -201,7 +202,7 @@ export function Description() {
                 size={25}
                 color={colors.red[600]}
               />
-              <Heading color={colors.red[600]}>Excluir</Heading>
+              <Heading color={colors.red[600]} fontSize={RFValue(16)}>Excluir</Heading>
             </TouchableOpacity>
           </HStack>
         )}
@@ -231,18 +232,22 @@ export function Description() {
             />
           )}
 
-          <VStack
-            alignSelf="center"
-            w={product.bestbefore ? "62%" : "70%"}
+          <HStack
+            w={product.bestbefore ? "60%" : "65%"}
+            justifyContent='space-between'
             ml={2}
           >
-            <Text style={styles.text} font-size="10vw">
+            <Heading style={styles.text}  fontSize={product.nome.length>12?RFValue(14):RFValue(22)}>
               {product.nome}
-            </Text>
-          </VStack>
-          <Text style={[styles.text, { alignSelf: "flex-end", paddingTop: 4 }]}>
-            R$ {product.preco.toFixed(2)}
-          </Text>
+            </Heading >
+          </HStack>
+          <HStack
+            ml={2}
+          >
+            <Heading  style={[styles.text, { paddingTop: 4 }]} fontSize={RFValue(20)}>
+              R$ {product.preco.toFixed(2)}
+            </Heading >
+          </HStack>
         </HStack>
 
         <HStack mt={-2} w="90%" alignSelf="center" mb={2}>
@@ -251,7 +256,7 @@ export function Description() {
             size={18}
             style={{ color: colors.gray[600], alignSelf: "center" }}
           />
-          <Text fontSize={16}>{endereco}</Text>
+          <Text fontSize={RFValue(16)}>{endereco}</Text> 
         </HStack>
 
         <View style={styles.descriptionBox}>
@@ -270,7 +275,7 @@ export function Description() {
                 color: colors.green[600],
               }}
             >
-              Este produto será colhido no dia da entrega
+              Colhido ou produzido após a compra
             </Text>
           )}
 
@@ -287,10 +292,10 @@ export function Description() {
           alignContent="center"
           mb={2}
         >
-          <Text display="flex" alignItems="center" fontSize={16}>
+          <Text display="flex" alignItems="center" fontSize={RFValue(16)}>
             Vendido por
           </Text>
-          <Text color={colors.blue[600]} fontSize={16}>{` ${produtor}`}</Text>
+          <Text color={colors.blue[600]} fontSize={RFValue(16)}>{` ${produtor}`}</Text>
         </HStack>
         {!isInfo && (
           <>
@@ -303,7 +308,7 @@ export function Description() {
               Quantidade
             </Text>
             <HStack
-              marginTop={3}
+              marginTop={2}
               alignSelf="center"
               h="16"
               w="1/3"
@@ -330,7 +335,7 @@ export function Description() {
                 <MaterialIcons size={30} name="add" />
               </TouchableOpacity>
             </HStack>
-            <Heading alignSelf={"center"} color={colors.blue[700]} size="md">
+            <Heading alignSelf={"center"} color={colors.blue[700]}  fontSize={RFValue(16)}>
               {amount ==1 ? product.unidade : product.unidade + 's' }
             </Heading>
             {WhatsAppNumber !=='' &&
@@ -386,10 +391,8 @@ const styles = StyleSheet.create({
     borderColor: "#0088a7",
   },
   text: {
-    fontSize: 30,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
-    lineHeight: 30,
   },
 
   btnActions: {

@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler' ;
+import { StatusBar} from 'react-native';
 import { store } from "./src/store"
 import { NativeBaseProvider } from "native-base";
 import {
@@ -23,6 +24,7 @@ export default function App() {
    
   return (
     <Provider store={store}>
+        <StatusBar backgroundColor='#000' barStyle='light-content'/>
         <NativeBaseProvider theme={THEME}>
         <FlashMessage position="top" />
           {fontsLoaded ? <Routes /> : <Loading />}

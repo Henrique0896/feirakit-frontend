@@ -210,7 +210,11 @@ export function MyAccount() {
   };
   
   return (
-    <ScrollView>
+    <ScrollView
+       showsVerticalScrollIndicator={false}
+       style={{width:'100%'}}
+       contentContainerStyle={{ width: "100%",justifyContent:'center', paddingBottom: 10}}
+    >
       <VStack flex={1} w="full">
         <ButtonBack />
         <LogoFeira />
@@ -229,7 +233,7 @@ export function MyAccount() {
           {user.nome}
         </Text>
 
-        <HStack justifyContent="space-between" display={'flex'} w={"92%"} mt={6} mb={4}>
+        <HStack justifyContent="space-between" display={'flex'} w={"96%"} mt={6} mb={4}>
           <Text
             style={styles.txt}
             alignSelf="flex-start"
@@ -261,12 +265,12 @@ export function MyAccount() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
               height={54}
+              alignSelf="center"
+              w='94%'
               editable={isEdictionMode}
               borderWidth={isEdictionMode ? 1 : 0 }
               bgColor={colors.gray[100]}
-              w="90%"
               color={errors.nome ? colors.purple[500] : colors.blue[900]}
               leftElement={
                 <Icon
@@ -283,10 +287,8 @@ export function MyAccount() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
               onChangeText={onChange}
-              alignSelf="center"
             />
           )}
         />
@@ -306,12 +308,12 @@ export function MyAccount() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               editable={isEdictionMode}
               borderWidth={isEdictionMode ? 1 : 0 }
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               keyboardType="email-address"
               color={errors.email ? colors.purple[500] : colors.blue[900]}
               leftElement={
@@ -329,8 +331,6 @@ export function MyAccount() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
-              alignSelf="center"
               value={value}
               onChangeText={onChange}
             />
@@ -349,14 +349,13 @@ export function MyAccount() {
         <HStack
           alignItems="center"
           mt={4}
-          height={54}
           borderWidth={isEdictionMode ? 1 : 0 }
           borderRadius={8}
           borderColor={phoneInputFoccus?colors.blue[600]:colors.gray[250]}
-          mr={4}
           bgColor={colors.gray[100]}
-          w="90%"
+          height={54}
           alignSelf="center"
+          w='94%'
         >
           <Icon
             color={errors.telefone ? colors.purple[500] : colors.blue[900]}
@@ -409,14 +408,13 @@ export function MyAccount() {
         <HStack
           alignItems="center"
           mt={4}
-          height={54}
           borderWidth={isEdictionMode ? 1 : 0 }
           borderRadius={8}
           borderColor={cepInputFoccus?colors.blue[600]:colors.gray[250]}
-          mr={4}
           bgColor={colors.gray[100]}
-          w="90%"
+          height={54}
           alignSelf="center"
+          w='94%'
         >
           <Controller
             control={control}
@@ -467,10 +465,7 @@ export function MyAccount() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
               color={colors.blue[900]}
               placeholder="* Rua"
               fontFamily={"Montserrat_400Regular"}
@@ -479,11 +474,12 @@ export function MyAccount() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
-              alignSelf="center"
               onChangeText={onChange}
               editable={isEdictionMode}
+              height={54}
+              alignSelf="center"
+              w='94%'
             />
           )}
         />
@@ -503,10 +499,7 @@ export function MyAccount() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
               color={colors.blue[900]}
               placeholder="* Numero"
               fontFamily={"Montserrat_400Regular"}
@@ -515,13 +508,14 @@ export function MyAccount() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               keyboardType="default"
               value={value}
-              alignSelf="center"
               onChangeText={onChange}
               editable={isEdictionMode}
               borderWidth={isEdictionMode?1:0}
+              height={54}
+              alignSelf="center"
+              w='94%'
             />
           )}
         />
@@ -541,10 +535,7 @@ export function MyAccount() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
               color={colors.blue[900]}
               placeholder="* Complemento"
               fontFamily={"Montserrat_400Regular"}
@@ -553,13 +544,14 @@ export function MyAccount() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               keyboardType="default"
               value={value}
-              alignSelf="center"
               onChangeText={onChange}
               editable={isEdictionMode}
               borderWidth={isEdictionMode?1:0}
+              height={54}
+              alignSelf="center"
+              w='94%'
             />
           )}
         />
@@ -570,10 +562,7 @@ export function MyAccount() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
               color={colors.blue[900]}
               placeholder="*Bairro"
               fontFamily={"Montserrat_400Regular"}
@@ -582,12 +571,13 @@ export function MyAccount() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
-              alignSelf="center"
               onChangeText={onChange}
               editable={isEdictionMode}
               borderWidth={isEdictionMode?1:0}
+              height={54}
+              alignSelf="center"
+              w='94%'
             />
           )}
         />
@@ -607,24 +597,22 @@ export function MyAccount() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
               color={colors.blue[900]}
               value={value}
-              placeholder="* Cidade"
+              placeholder="*Cidade"
               fontFamily={"Montserrat_400Regular"}
               placeholderTextColor={
                 errors.cidade ? colors.purple[500] : colors.blue[800]
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
-              alignSelf="center"
               onChangeText={onChange}
               editable={isEdictionMode}
               borderWidth={isEdictionMode?1:0}
+              height={54}
+              alignSelf="center"
+              w='94%'
             />
           )}
         />
@@ -645,10 +633,7 @@ export function MyAccount() {
             <Select
               isDisabled={isEdictionMode? false : true}
               borderWidth={isEdictionMode? 1 : 0}
-              w="93%"
-              ml="3%"
               mt={4}
-              h={54}
               borderRadius={8}
               placeholderTextColor={
                 errors.estado ? colors.purple[500] : colors.blue[800]
@@ -659,6 +644,9 @@ export function MyAccount() {
               fontSize="md"
               accessibilityLabel="Escolha a categoria do produto"
               onValueChange={onChange}
+              height={54}
+              alignSelf="center"
+              w='94%'
             >
               <Select.Item label="Acre" value="AC" />
               <Select.Item label="Alagoas" value="AL" />
@@ -723,15 +711,14 @@ export function MyAccount() {
         <Button
           bgColor={colors.blue[700]}
           _pressed={{ bgColor: colors.blue[700] }}
-          width={334}
-          height={54}
           mt={4}
-          w="90%"
           borderRadius={15}
-          alignSelf="center"
           alignContent="center"
           alignItems="center"
           onPress={() => navigation.navigate("ChangePassword")}
+          height={54}
+          alignSelf="center"
+          w='90%'
         >
           <Text style={styles.txt} color={colors.gray[200]}>
             Alterar Senha
@@ -745,12 +732,12 @@ export function MyAccount() {
           height={54}
           mt={4}
           margin={10}
-          w="90%"
           borderRadius={15}
-          alignSelf="center"
           alignContent="center"
           alignItems="center"
           onPress={deleteUser}
+          alignSelf="center"
+          w='90%'
         >
           <Text style={styles.txt} color={colors.gray[200]}>
             Excluir Conta

@@ -18,6 +18,7 @@ import {
   Checkbox,
 } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
+import { RFValue } from "react-native-responsive-fontsize";
 import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -407,6 +408,7 @@ export function ProductForm() {
           >
             <Heading
               color={colors.gray[500]}
+              fontSize={RFValue(22)}
               borderBottomColor={colors.gray[400]}
               borderBottomWidth={1}
             >
@@ -414,7 +416,7 @@ export function ProductForm() {
             </Heading>
             <Heading
               mt={"2"}
-              size="md"
+              fontSize={RFValue(18)}
               color={colors.blue[700]}
               fontFamily="body"
               fontWeight="semibold"
@@ -450,7 +452,7 @@ export function ProductForm() {
 
             <Heading
               mt={"2"}
-              size="md"
+              fontSize={RFValue(18)}
               color={colors.blue[700]}
               fontFamily="body"
               fontWeight="semibold"
@@ -489,7 +491,7 @@ export function ProductForm() {
 
             <Heading
               mt={"2"}
-              size="md"
+              fontSize={RFValue(18)}
               color={colors.blue[700]}
               fontFamily="body"
               fontWeight="semibold"
@@ -528,14 +530,28 @@ export function ProductForm() {
               control={control}
               name="bestbefore"
               render={({ field: { onChange, value } }) => (
+                <HStack
+                 flex={1}
+                 width='100%'
+                >
                 <Checkbox
                   isChecked={value}
                   mt={4}
                   _text={{ color: colors.blue[700] }}
                   onChange={onChange}
                 >
-                  O produto será colhido ou preparado após a compra{" "}
+                  <Heading
+                  fontSize={RFValue(14)}
+                  color={colors.blue[700]}
+                  fontFamily="body"
+                  fontWeight="semibold"
+                  w='90%'
+                  ml='1%'
+                  >
+                  O Produto será preparado após a compra
+                </Heading>
                 </Checkbox>
+                </HStack>
               )}
             />
 
@@ -543,7 +559,7 @@ export function ProductForm() {
               <View w="1/3">
                 <Heading
                   mt={"2"}
-                  size="md"
+                  fontSize={RFValue(18)}
                   color={colors.blue[700]}
                   fontFamily="body"
                   fontWeight="semibold"
@@ -581,7 +597,7 @@ export function ProductForm() {
               <View w="2/3" pl={4}>
                 <Heading
                   mt={"2"}
-                  size="md"
+                  fontSize={RFValue(18)}
                   color={colors.blue[700]}
                   fontFamily="body"
                   fontWeight="semibold"
@@ -603,7 +619,7 @@ export function ProductForm() {
                       }
                       selectedValue={value}
                       placeholder="tipo de unidade"
-                      fontSize="md"
+                      fontSize="sm"
                       accessibilityLabel="Escolha o tipo de unidade"
                       onValueChange={onChange}
                     >
@@ -620,7 +636,7 @@ export function ProductForm() {
               <View w="1/3">
                 <Heading
                   mt={"2"}
-                  size="md"
+                  fontSize={RFValue(18)}
                   color={colors.blue[700]}
                   fontFamily="body"
                   fontWeight="semibold"
@@ -659,7 +675,7 @@ export function ProductForm() {
                 <TouchableOpacity onPress={() => showDatePicker()}>
                   <Heading
                     mt={"2"}
-                    size="md"
+                    fontSize={RFValue(18)}
                     color={colors.blue[700]}
                     fontFamily="body"
                     fontWeight="semibold"
@@ -740,7 +756,7 @@ export function ProductForm() {
                                 ? colors.purple[500]
                                 : colors.gray[400]
                             }
-                            fontSize="md"
+                            fontSize={RFValue(12)}
                           >
                             {emptyImage
                               ? "Adicione uma imagem"
@@ -753,7 +769,7 @@ export function ProductForm() {
                   <TouchableOpacity onPress={() => openActionsSheet(0)} ml={4}>
                     <MaterialIcons
                       name="add-a-photo"
-                      size={50}
+                      size={RFValue(50)}
                       color={
                         errors.imagem_url
                           ? colors.purple[500]
@@ -767,7 +783,7 @@ export function ProductForm() {
 
             {images.length !== 0 && (
               <Heading
-                size="xs"
+                fontSize={RFValue(12)}
                 fontFamily="body"
                 fontWeight="light"
                 color="#4a4a4a"

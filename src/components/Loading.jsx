@@ -9,8 +9,9 @@ import {
   Heading,
   View,
   Image,
+  Spinner,
 } from "native-base";
-import { ActivityIndicator } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 export function Loading() {
   return (
     <Center w="100%" pt={10}>
@@ -173,8 +174,28 @@ export function LoadingImage() {
 export function LoadingForm() {
   const { colors } = useTheme();
   return (
-    <Center mt={"60%"}>
-      <ActivityIndicator size={180} color={colors.blue[700]} />
+    <Center w="100%" mt={10}>
+      <Skeleton h="8" w={"70%"} alignSelf="flex-start" fadeDuration={0.6} />
+      <VStack
+        zIndex={1}
+        w="100%"
+        maxW="400"
+        h="full"
+        mt={4}
+        space={8}
+        overflow="hidden"
+        rounded="md"
+        alignItems='center'
+      >
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.2} />
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.3} />
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.4} />
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.5} />
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.6} />
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.7} />
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.8} />
+        <Skeleton rounded="8" h="12" w={"90%"} alignSelf="flex-start" fadeDuration={0.9} />
+      </VStack>
     </Center>
   );
 }
@@ -188,7 +209,7 @@ export function LoadingUploadImages({ percent }) {
       position="absolute"
       justifyContent="space-evenly"
       zIndex={100}
-      bg={colors.gray[100]}
+      bg={colors.gray[120]}
       w="full"
       h="full"
     >
@@ -200,15 +221,15 @@ export function LoadingUploadImages({ percent }) {
         resizeMode="contain"
         alignSelf="center"
       />
-      <View w="70%">
-        <Heading fontSize="md" color={colors.blue[700]} alignSelf="center">
+      <View w="80%">
+        <Heading fontSize={RFValue(18)} color={colors.blue[700]} alignSelf="center">
           Fazendo Upload do Produto
         </Heading>
         <Progress value={percent} size="2xl" mb={4} mt="1.5" />
       </View>
 
-      <Heading fontSize="md" color={colors.blue[700]} alignSelf="center">
-        ...
+      <Heading fontSize={RFValue(20)}  color={colors.blue[700]} alignSelf="center">
+          {percent}%
       </Heading>
     </VStack>
   );
@@ -220,7 +241,7 @@ export function FooterListLoader({fetchingProducts}) {
   return (
     <>
       {fetchingProducts && (
-        <ActivityIndicator style={{marginTop:20}} size={30} color={colors.blue[600]} />
+        <Spinner style={{marginTop:20}} size={30} color={colors.blue[600]} />
       )}
     </>
   );
