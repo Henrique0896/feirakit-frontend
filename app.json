@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "feirakit-frontend",
-    "slug": "feirakit-frontend",
+    "name": "Feirakit",
+    "slug": "feirakit-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/50bd1cd3-a4f1-4709-becf-1851faaf3895"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -24,7 +25,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "permissions": [
+      ],
+      "package": "com.feirakitapp.feirakitapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +40,14 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "50bd1cd3-a4f1-4709-becf-1851faaf3895"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }

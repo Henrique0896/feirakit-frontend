@@ -1,5 +1,6 @@
 import apiFeiraKit from './ApiFeiraKit'
 import { useDispatch } from "react-redux";
+import{Alert} from "react-native"
 import { Login as loginAction } from "../store/actions";
 import { useSelector } from "react-redux";
 
@@ -26,7 +27,7 @@ export class User {
      .then(({data}) => { 
         this.login(data.resultado[0],jwtToken)
      }).catch((error)=>{
-         console.log(" ===>"+ error)  
+      return Alert.alert("Erro", "Um erro inesperado aconteceu,tente novamente")
   })
   }
 
