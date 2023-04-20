@@ -33,7 +33,7 @@ export function Login() {
               );
              } else {
              return Linking.openURL(
-               `https://api.whatsapp.com/send?phone=3387395971&&text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!`
+               `https://api.whatsapp.com/send?phone=553387395971&&text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!`
              );
            }
          }).catch(({err})=>console.log(err))
