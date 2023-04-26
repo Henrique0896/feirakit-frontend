@@ -24,7 +24,7 @@ export function WhatsappButton({
     (state) => state.AuthReducers.userData.userData
   ).endereco;
   let isPluralQuantity = Quantity > 1 ? unity + "s" : unity;
-  let Message = `_*Pedido Feira Kit 🛒*_\nOlá ${Name.split(' ')[0]} ${Name.split(' ')[1]}, tudo bem?\ngostaria de comprar *${Quantity} ${isPluralQuantity}* do produto "${ProductName}". Obrigado!\n__________________________\n_*Resumo :*_\n*Produto*: ${ProductName}\n*Quantidade*: ${Quantity} ${isPluralQuantity}\n*Preço*:R$ ${(
+  let Message = `_*Pedido Feira Kit 🛒*_\nOlá ${Name}, tudo bem?\ngostaria de comprar *${Quantity} ${isPluralQuantity}* do produto "${ProductName}". Obrigado!\n__________________________\n_*Resumo :*_\n*Produto*: ${ProductName}\n*Quantidade*: ${Quantity} ${isPluralQuantity}\n*Preço*:R$ ${(
     Quantity * parseFloat(ProductPrice)
   ).toFixed(2)}\n*Cliente*: ${user}\n*Endereço*: ${adress.rua}, ${
     adress.numero

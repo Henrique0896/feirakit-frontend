@@ -261,7 +261,7 @@ export function Description() {
 
         <View style={styles.descriptionBox}>
           <Heading size="sm">
-            Validade: {`${product.validade.split("-").reverse().join("/")} \n`}
+            {`${product.validade.split("-").reverse().join("/")} \n`}
           </Heading>
           <Heading size="sm" mt={-5} mb={1}>
             Categoria: {product.categoria}
@@ -275,7 +275,7 @@ export function Description() {
                 color: colors.green[600],
               }}
             >
-              Colhido ou produzido após a compra
+              Colhido após a compra
             </Text>
           )}
 
@@ -284,19 +284,23 @@ export function Description() {
           </Text>
         </View>
 
+
+       {produtor !== undefined && 
         <HStack
           mt={2}
-          w="90%"
+          w="90%" 
           alignSelf="center"
           justifyItems="center"
           alignContent="center"
           mb={2}
         >
-          <Text display="flex" alignItems="center" fontSize={RFValue(16)}>
+          <Text display="flex" alignItems="center" fontSize={RFValue(14)}>
             Vendido por
           </Text>
-          <Text color={colors.blue[600]} fontSize={RFValue(16)}>{` ${produtor}`}</Text>
-        </HStack>
+          <Text color={colors.blue[600]} fontSize={RFValue(14)}>{` ${produtor}`}</Text>
+        </HStack>}
+
+
         {!isInfo && (
           <>
             <Text

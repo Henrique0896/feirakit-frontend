@@ -174,8 +174,8 @@ export function LoadingImage() {
 export function LoadingForm() {
   const { colors } = useTheme();
   return (
-    <Center w="100%" mt={10}>
-      <Skeleton h="8" w={"70%"} alignSelf="flex-start" fadeDuration={0.6} />
+    <Center w="98%" alignSelf="center"  mt={10}>
+      <Skeleton h="8" w={"80%"} alignSelf="flex-start" fadeDuration={0.6} />
       <VStack
         zIndex={1}
         w="100%"
