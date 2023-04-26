@@ -7,7 +7,7 @@ import {
   Select,
   Input,
   useTheme,
-  HStack
+  HStack,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -21,10 +21,10 @@ import ViaCep from "../services/ViaCep";
 import { useNavigation } from "@react-navigation/native";
 import { TextInputMask } from "react-native-masked-text";
 import { LogoFeira } from "../components/LogoFeira";
-import {User} from '../services/user'
+import { User } from "../services/user";
 
 export function Register() {
-  const user = new User
+  const user = new User();
   const [inputType, setInputType] = useState("password");
   const [isLoading, setIsLoading] = useState(false);
   const cellRef = useRef(null);
@@ -38,10 +38,9 @@ export function Register() {
       setInputType("password");
     }
   };
-  
+
   const userSchema = yup.object({
-    nome: yup.string()
-    .required("informe o seu nome completo"),
+    nome: yup.string().required("informe o seu nome completo"),
     email: yup
       .string()
       .required("Informe um email válido")
@@ -65,13 +64,12 @@ export function Register() {
     handleSubmit,
     formState: { errors },
     setValue,
-    setError
+    setError,
   } = useForm({
     resolver: yupResolver(userSchema),
-    
   });
 
-  const handleCreateUser = async(data) => {
+  const handleCreateUser = async (data) => {
     setIsLoading(true);
     let objUser = {
       email: data.email,
@@ -86,39 +84,68 @@ export function Register() {
         cidade: data.cidade,
         estado: data.estado,
       },
-      telefone: cellRef?.current.getRawValue()
+      telefone: cellRef?.current.getRawValue(),
     };
-  
-    await user.createUser(objUser).then(({data})=>{
-      if(!data.resultado){
-        setError('email',{type:'custom',message:'Este email já está sendo usado'})
-        return Alert.alert("Erro", "Este endereço de email já está sendo usado");
-      }
-      user.getUserByEmail(objUser.email)
-    }).catch(({err})=>{
-      setIsLoading(false);
-      return Alert.alert("Erro", "Um erro inesperado aconteceu,por favor tente novamente");
-    })
+
+    await user
+      .createUser(objUser)
+      .then(({ data }) => {
+        if (!data.resultado) {
+          setError("email", {
+            type: "custom",
+            message: "Este email já está sendo usado",
+          });
+          return Alert.alert(
+            "Erro",
+            "Este endereço de email já está sendo usado"
+          );
+        }
+        user
+          .checkPassword(objUser.email, objUser.senha)
+          .then(({ data }) => {
+            let jwtToken = data.token;
+            setIsLoading(false);
+            user.getUserByEmail(objUser.email, jwtToken);
+          })
+          .catch((error) => {
+            setIsLoading(false);
+            if (error.response.data.mensagem) {
+              return Alert.alert("Erro", "Usuário ou senha inválidos");
+            }
+            return Alert.alert(
+              "Erro",
+              "Um erro inesperado aconteceu,tente novamente"
+            );
+          });
+      })
+      .catch(({ err }) => {
+        setIsLoading(false);
+        return Alert.alert(
+          "Erro",
+          "Um erro inesperado aconteceu,por favor tente novamente"
+        );
+      });
     setIsLoading(false);
   };
 
   const getAddressData = async (cep) => {
     await ViaCep.get(`${cep}/json/`)
       .then(({ data }) => {
-        setValue('estado',data.uf)
-        setValue('cidade',data.localidade);
-        setValue('bairro',data.bairro);
-        setValue('rua',data.logradouro);
-        setValue('complemento',data.complemento);
+        setValue("estado", data.uf);
+        setValue("cidade", data.localidade);
+        setValue("bairro", data.bairro);
+        setValue("rua", data.logradouro);
+        setValue("complemento", data.complemento);
       })
       .catch((err) => console.log(err));
   };
 
   return (
-    <VStack w="full" alignItems="center">
+    <VStack w="full" alignItems="center" justifyContent='center'>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ width: "100%", paddingBottom: 100 }}
+        style={{width:'100%'}}
+        contentContainerStyle={{ width: "100%",justifyContent:'center', paddingBottom: 100}}
       >
         <ButtonBack />
         <LogoFeira />
@@ -132,10 +159,10 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               keyboardType="email-address"
               color={errors.email ? colors.purple[500] : colors.blue[900]}
               leftElement={
@@ -153,7 +180,6 @@ export function Register() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
               onChangeText={onChange}
             />
@@ -175,10 +201,10 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
               height={54}
+              alignSelf="center"
+              w='94%'
               bgColor={colors.gray[100]}
-              w="90%"
               color={errors.senha ? colors.purple[500] : colors.blue[900]}
               leftElement={
                 <Icon
@@ -212,7 +238,6 @@ export function Register() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
               onChangeText={onChange}
             />
@@ -238,10 +263,10 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               color={errors.nome ? colors.purple[500] : colors.blue[900]}
               leftElement={
                 <Icon
@@ -258,7 +283,6 @@ export function Register() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
               onChangeText={onChange}
             />
@@ -278,10 +302,11 @@ export function Register() {
           alignItems="center"
           mt={4}
           height={54}
+          alignSelf="center"
+          w='94%'
           borderWidth={1}
           borderRadius={8}
           borderColor={colors.gray[300]}
-          mr={4}
           bgColor={colors.gray[100]}
         >
           <Icon
@@ -302,7 +327,7 @@ export function Register() {
                   dddMask: "(99) ",
                 }}
                 color={errors.telefone ? colors.purple[500] : colors.blue[900]}
-                placeholder="(xx) XXXXX-XXXX"
+                placeholder="(00) 0000-0000"
                 style={{
                   fontFamily: "Montserrat_400Regular",
                   fontSize: 14,
@@ -319,6 +344,7 @@ export function Register() {
             )}
           />
         </HStack>
+         <Text fontSize='sm' ml='4%'>Este deve ser o numero do seu whatsApp</Text>
         {errors.telefone && (
           <Text
             alignSelf="flex-start"
@@ -337,10 +363,11 @@ export function Register() {
           alignItems="center"
           mt={4}
           height={54}
+          alignSelf="center"
+          w='94%'
           borderWidth={1}
           borderRadius={8}
           borderColor={colors.gray[300]}
-          mr={4}
           bgColor={colors.gray[100]}
         >
           <Controller
@@ -359,7 +386,7 @@ export function Register() {
                   fontSize: 14,
                   marginLeft: 11,
                 }}
-                width="70%"
+                width="68%"
                 placeholderTextColor={
                   errors.cep ? colors.purple[500] : colors.blue[800]
                 }
@@ -389,10 +416,10 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               color={colors.blue[900]}
               placeholder="* Rua"
               fontFamily={"Montserrat_400Regular"}
@@ -401,7 +428,6 @@ export function Register() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
               onChangeText={onChange}
             />
@@ -423,19 +449,18 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               color={colors.blue[900]}
               placeholder="* Numero"
               fontFamily={"Montserrat_400Regular"}
               placeholderTextColor={
-                errors.numero? colors.purple[500] : colors.blue[800]
+                errors.numero ? colors.purple[500] : colors.blue[800]
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               keyboardType="default"
               value={value}
               onChangeText={onChange}
@@ -458,17 +483,16 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               color={colors.blue[900]}
-              placeholder="Complemento (opcional)"
+              placeholder="*Complemento"
               fontFamily={"Montserrat_400Regular"}
               placeholderTextColor={colors.blue[800]}
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
               onChangeText={onChange}
             />
@@ -481,10 +505,10 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               color={colors.blue[900]}
               placeholder="*Bairro"
               fontFamily={"Montserrat_400Regular"}
@@ -493,7 +517,6 @@ export function Register() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               value={value}
               onChangeText={onChange}
             />
@@ -515,10 +538,10 @@ export function Register() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={4}
-              width={334}
-              height={54}
               bgColor={colors.gray[100]}
-              w="90%"
+              height={54}
+              alignSelf="center"
+              w='94%'
               color={colors.blue[900]}
               value={value}
               placeholder="* Cidade"
@@ -528,7 +551,6 @@ export function Register() {
               }
               fontSize={14}
               borderRadius={8}
-              mr={4}
               onChangeText={onChange}
             />
           )}
@@ -548,9 +570,10 @@ export function Register() {
           name="estado"
           render={({ field: { onChange, value } }) => (
             <Select
-              w="96%"
-              mt={4}
               h={54}
+              alignSelf="center"
+              w='94%'
+              mt={4}
               borderRadius={8}
               placeholderTextColor={
                 errors.estado ? colors.purple[500] : colors.blue[800]
@@ -601,16 +624,14 @@ export function Register() {
             {errors.estado.message}
           </Text>
         )}
-
         <Button
           bgColor={colors.blue[600]}
           height={54}
-          width={334}
+          width='90%'
           _pressed={{ bgColor: colors.blue[700] }}
           mt={4}
           borderRadius={15}
-          alignSelf="center"
-          alignContent="center"
+          alignSelf='center'
           onPress={handleSubmit(handleCreateUser)}
           isLoading={isLoading}
         >

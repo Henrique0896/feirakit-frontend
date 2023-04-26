@@ -18,6 +18,7 @@ import {
   Checkbox,
 } from "native-base";
 import { ButtonBack } from "../components/ButtonBack";
+import { RFValue } from "react-native-responsive-fontsize";
 import { Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -37,10 +38,12 @@ import { showMessage } from "react-native-flash-message";
 import { storage } from "../../firebaseConfig.js";
 import * as yup from "yup";
 import { LogoFeira } from "../components/LogoFeira";
+import { TextInputMask } from "react-native-masked-text";
 import { Product } from "../services/product";
 
 export function ProductForm() {
   const productInstance = new Product();
+  const priceRef = useRef(null)
   const route = useRoute();
   const navigation = useNavigation();
   const { product } = route.params;
@@ -49,7 +52,7 @@ export function ProductForm() {
   const ButtonText = product ? "Confirmar" : "Adicionar";
   const producerId = product
     ? product.produtor_id
-    : useSelector((state) => state.AuthReducers.userData).id;
+    : useSelector((state) => state.AuthReducers.userData.userData).id;
 
   const ObjDate = new Date();
   let dayDate =
@@ -109,6 +112,7 @@ export function ProductForm() {
   const [categories, setCategories] = useState([]);
   const [unities, setUnities] = useState([]);
   const [formLoaded, setFormLoaded] = useState(false);
+  const [priceInputFocus, setPriceInputFocus] = useState(false);
 
   const productSchema = yup.object({
     nome: yup.string().required("informe o nome do produto"),
@@ -131,7 +135,7 @@ export function ProductForm() {
     defaultValues: {
       nome: product ? product.nome : "",
       descricao: product ? product.descricao : "",
-      preco: product ? product.preco.toString() : "",
+      preco: product ? product.preco.toFixed(2): 0.00,
       categoria: product ? product.categoria : "",
       estoque: product ? product.estoque.toString() : "",
       unidade: product ? product.unidade : "",
@@ -150,29 +154,33 @@ export function ProductForm() {
       nome: data.nome[0].toUpperCase() + data.nome.substring(1),
       imagem_url: uploadedImages,
       validade: dateText.split("/", 3).reverse().join("-"),
-      preco: parseFloat(data.preco),
+      preco:priceRef?.current.getRawValue().toFixed(2),
       estoque: parseInt(data.estoque),
     };
-
-    if (id === null) {
-      addProduct(JSON.stringify(objProduct));
-    } else {
-      objProduct.id = id;
-      updateProduct(JSON.stringify(objProduct));
+    if (objProduct.categoria ==='leite e derivados' || objProduct.categoria ==='produtos naturais' ||objProduct.categoria ==='artesanato' ) {
+     objProduct.bestbefore=false
     }
+    
+    if (id === null) {
+       addProduct(JSON.stringify(objProduct));
+     } else {
+       objProduct.id = id;
+      updateProduct(JSON.stringify(objProduct));
+     }
   };
 
   const pickImages = async () => {
     setIsLoadingImages(true);
     closeActionsSheet();
-    const permissionResult =await ImagePicker.requestMediaLibraryPermissionsAsync().then();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync().then();
     if (!permissionResult.granted) {
-       Alert.alert(
-         "Permissões",
-         "O app precisa dessas permissões para adicionar imagens ao seu produto!"
-       );
-       return;
-     }
+      Alert.alert(
+        "Permissões",
+        "O app precisa dessas permissões para adicionar imagens ao seu produto!"
+      );
+      return;
+    }
     let selectedImages;
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -319,8 +327,8 @@ export function ProductForm() {
 
     Promise.all(promises)
       .then()
-      .catch((e) => {
-        console.log(e);
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -359,7 +367,6 @@ export function ProductForm() {
       });
     setIsLoading(false);
   };
-
   useEffect(() => {
     let totalProgress = Math.ceil(
       (uploadedImages.length * 100) / images.length
@@ -396,7 +403,7 @@ export function ProductForm() {
       ) : (
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={8}
+          keyboardVerticalOffset={18}
           px={4}
         >
           <ScrollView
@@ -406,6 +413,7 @@ export function ProductForm() {
           >
             <Heading
               color={colors.gray[500]}
+              fontSize={RFValue(22)}
               borderBottomColor={colors.gray[400]}
               borderBottomWidth={1}
             >
@@ -413,7 +421,7 @@ export function ProductForm() {
             </Heading>
             <Heading
               mt={"2"}
-              size="md"
+              fontSize={RFValue(18)}
               color={colors.blue[700]}
               fontFamily="body"
               fontWeight="semibold"
@@ -449,7 +457,7 @@ export function ProductForm() {
 
             <Heading
               mt={"2"}
-              size="md"
+              fontSize={RFValue(18)}
               color={colors.blue[700]}
               fontFamily="body"
               fontWeight="semibold"
@@ -488,7 +496,7 @@ export function ProductForm() {
 
             <Heading
               mt={"2"}
-              size="md"
+              fontSize={RFValue(18)}
               color={colors.blue[700]}
               fontFamily="body"
               fontWeight="semibold"
@@ -527,14 +535,25 @@ export function ProductForm() {
               control={control}
               name="bestbefore"
               render={({ field: { onChange, value } }) => (
-                <Checkbox
-                  isChecked={value}
-                  mt={4}
-                  _text={{ color: colors.blue[700] }}
-                  onChange={onChange}
-                >
-                  O produto será colhido após a compra{" "}
-                </Checkbox>
+                <HStack flex={1} width="100%">
+                  <Checkbox
+                    isChecked={value}
+                    mt={4}
+                    _text={{ color: colors.blue[700] }}
+                    onChange={onChange}
+                  >
+                    <Heading
+                      fontSize={RFValue(14)}
+                      color={colors.blue[700]}
+                      fontFamily="body"
+                      fontWeight="semibold"
+                      w="90%"
+                      ml="1%"
+                    >
+                      O será colhido após a compra
+                    </Heading>
+                  </Checkbox>
+                </HStack>
               )}
             />
 
@@ -542,7 +561,7 @@ export function ProductForm() {
               <View w="1/3">
                 <Heading
                   mt={"2"}
-                  size="md"
+                  fontSize={RFValue(18)}
                   color={colors.blue[700]}
                   fontFamily="body"
                   fontWeight="semibold"
@@ -554,23 +573,33 @@ export function ProductForm() {
                   control={control}
                   name="preco"
                   render={({ field: { onChange, value } }) => (
-                    <Input
-                      borderColor={
-                        errors.preco ? colors.purple[500] : colors.blue[600]
-                      }
-                      placeholder="0,00"
+                    <TextInputMask
+                      style={{
+                        borderColor:errors.preco ? colors.purple[500] : colors.blue[600],
+                        borderWidth:priceInputFocus? 2 : .9,
+                        fontFamily: "Montserrat_400Regular",
+                        fontSize: RFValue(16),
+                        height:45,
+                        borderRadius:4,
+                        paddingLeft:10,
+                      }}
+                      ref={priceRef}
+                      placeholder="R$ 0,00"
                       placeholderTextColor={
                         errors.preco ? colors.purple[500] : colors.blue[500]
                       }
-                      type="text"
-                      fontSize="md"
+                      type={'money'}
                       value={value}
+                      onFocus={()=>setPriceInputFocus(true)}
+                      onBlur={()=>setPriceInputFocus(false)}
                       onChangeText={onChange}
                       color={colors.blue[700]}
-                      keyboardType="decimal-pad"
-                      _focus={{
-                        backgroundColor: colors.gray[200],
-                        borderWidth: 2,
+                      options={{
+                        precision: 2,
+                        separator: ',',
+                        delimiter: '.',
+                        unit: 'R$',
+                        suffixUnit: ''
                       }}
                     />
                   )}
@@ -580,7 +609,7 @@ export function ProductForm() {
               <View w="2/3" pl={4}>
                 <Heading
                   mt={"2"}
-                  size="md"
+                  fontSize={RFValue(18)}
                   color={colors.blue[700]}
                   fontFamily="body"
                   fontWeight="semibold"
@@ -602,7 +631,7 @@ export function ProductForm() {
                       }
                       selectedValue={value}
                       placeholder="tipo de unidade"
-                      fontSize="md"
+                      fontSize="sm"
                       accessibilityLabel="Escolha o tipo de unidade"
                       onValueChange={onChange}
                     >
@@ -616,15 +645,15 @@ export function ProductForm() {
             </HStack>
 
             <HStack justifyContent="space-between" mt={2}>
-              <View w="1/3">
+              <View w="40%">
                 <Heading
                   mt={"2"}
-                  size="md"
+                  fontSize={RFValue(18)}
                   color={colors.blue[700]}
                   fontFamily="body"
                   fontWeight="semibold"
                 >
-                  Estoque
+                  Quantidade
                 </Heading>
 
                 <Controller
@@ -641,6 +670,7 @@ export function ProductForm() {
                       }
                       type="text"
                       fontSize="md"
+                      mr='15%'
                       color={colors.blue[700]}
                       keyboardType="numeric"
                       onChangeText={onChange}
@@ -654,11 +684,11 @@ export function ProductForm() {
                 />
               </View>
 
-              <View w="2/3" pl={4} justifyContent="center">
+              <View  w="2/3" pl={4} justifyContent="center" display={'none'}>
                 <TouchableOpacity onPress={() => showDatePicker()}>
                   <Heading
                     mt={"2"}
-                    size="md"
+                    fontSize={RFValue(18)}
                     color={colors.blue[700]}
                     fontFamily="body"
                     fontWeight="semibold"
@@ -739,7 +769,7 @@ export function ProductForm() {
                                 ? colors.purple[500]
                                 : colors.gray[400]
                             }
-                            fontSize="md"
+                            fontSize={RFValue(12)}
                           >
                             {emptyImage
                               ? "Adicione uma imagem"
@@ -752,7 +782,7 @@ export function ProductForm() {
                   <TouchableOpacity onPress={() => openActionsSheet(0)} ml={4}>
                     <MaterialIcons
                       name="add-a-photo"
-                      size={50}
+                      size={RFValue(50)}
                       color={
                         errors.imagem_url
                           ? colors.purple[500]
@@ -766,7 +796,7 @@ export function ProductForm() {
 
             {images.length !== 0 && (
               <Heading
-                size="xs"
+                fontSize={RFValue(12)}
                 fontFamily="body"
                 fontWeight="light"
                 color="#4a4a4a"

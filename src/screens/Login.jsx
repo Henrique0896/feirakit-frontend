@@ -14,9 +14,9 @@ export function Login() {
   const[isLoading,setIsLoading]=useState(false)
  
   const alert = {
-    title: "Esqueceu sua senha?",
+    title: "Esqueci minha senha",
     text: "Entre em contato via WhatsApp.",
-    link: "whatsapp://send?text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!",
+    link: "whatsapp://send?phone=3387395971&text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!",
     textButton: "WhatsApp",
     textButtonCancel: "Cancelar",
   };
@@ -26,13 +26,17 @@ export function Login() {
       {
         text: alert.textButton,
         onPress: () =>
-          Linking.canOpenURL(alert.link)
-            .then((supported) => {
+             Linking.canOpenURL(alert.link).then((supported) => {
               if (supported) {
-                return Linking.openURL(alert.link);
-              }
-            })
-            .catch(() => {}),
+                 return Linking.openURL(
+                     alert.link
+              );
+             } else {
+             return Linking.openURL(
+               `https://api.whatsapp.com/send?phone=553387395971&&text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!`
+             );
+           }
+         }).catch(({err})=>console.log(err))
       },
       {
         text: alert.textButtonCancel,
@@ -56,10 +60,15 @@ export function Login() {
         setIsLoading(false)
         return Alert.alert("Erro", "Usuário ou senha inválidos");
       }
-      user.getUserByEmail(email)
-    })
-    .catch((err)=>{
+      let jwtToken=data.token
       setIsLoading(false)
+      user.getUserByEmail(email,jwtToken)
+    })
+    .catch((error)=>{
+      setIsLoading(false)
+      if(!error.response.data.resultado){
+        return Alert.alert("Erro", "Usuário ou senha inválidos")
+      }
       return Alert.alert("Erro", "Um erro inesperado aconteceu,tente novamente");
     })
     
@@ -91,10 +100,10 @@ export function Login() {
       <Input
         onChangeText={setEmail}
         mt={4}
-        width={334}
         height={54}
+        alignSelf="center"
+        w='94%'
         bgColor={colors.gray[100]}
-        w="90%"
         color={colors.blue[900]}
         leftElement={
           <Icon
@@ -110,16 +119,16 @@ export function Login() {
         placeholderTextColor={colors.blue[700]}
         fontSize={14}
         borderRadius={8}
-        mr={4}
+        autoCapitalize="none"
       />
       <Input
         type={inputType}
         onChangeText={setPassword}
         mt={4}
-        width={334}
         height={54}
+        alignSelf="center"
+        w='94%'
         bgColor={colors.gray[100]}
-        w="90%"
         color={colors.blue[900]}
         leftElement={
           <Icon
@@ -148,13 +157,12 @@ export function Login() {
         placeholderTextColor={colors.blue[700]}
         fontSize={14}
         borderRadius={8}
-        mr={4}
+        autoCapitalize="none"
       />
       <Button
         bgColor={colors.blue[600]}
         _pressed={{ bgColor: colors.blue[700] }}
         onPress={submit}
-        width={334}
         height={54}
         mt={4}
         w="90%"
@@ -165,7 +173,6 @@ export function Login() {
       </Button>
       <Button
         onPress={showConfirm}
-        width={334}
         height={54}
         mt={4}
         w="90%"
@@ -175,8 +182,7 @@ export function Login() {
       </Button>
       <Button
         bgColor={colors.gray[200]}
-        _text={{ color: colors.blue[600] }}
-        width={334}
+        _text={{ color: colors.blue[600],fontSize:'md' }}
         height={54}
         mt={4}
         w="90%"

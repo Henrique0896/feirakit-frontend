@@ -8,7 +8,6 @@ import {
   FlatList,
   Center,
   Text,
-  StatusBar,
 } from "native-base";
 import { ProductCard } from "../components/ProductCard";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -34,6 +33,7 @@ export function Home() {
   const [keepFetching, setKeepFetching] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
+  
   function handleOpenDescription(productId, product, isInfo) {
     navigation.navigate("description", { productId, product, isInfo });
   }
@@ -42,7 +42,7 @@ export function Home() {
       setTimeout(() => {
         setFetchingProducts(true);
         getAllProducts();
-      },500);
+      },100);
     }
   };
 
@@ -52,7 +52,7 @@ export function Home() {
     }
     setSearch("");
     setHeaderText(`Produtos disponíveis`);
-
+    
     product
       .getAllProducts(!refresh ? page : 1, limit, sort)
       .then(({ data }) => {
@@ -73,10 +73,10 @@ export function Home() {
       })
       .catch((error) => {
         setProducts([]);
+        setIsLoading(false);
+        setRefreshing(false);
         setIconName("sync-problem");
         setEmptyText(":'(\n Ocorreu um erro,tente novamente");
-        console.log(error);
-        setIsLoading(false);
       });
   };
 
@@ -107,7 +107,7 @@ export function Home() {
   return (
     <VStack
       flex={1}
-      w="full"
+      w='full'
       bg={colors.gray[200]}
       p={8}
       pt={0}
@@ -115,7 +115,6 @@ export function Home() {
       px={4}
       pb={0}
     >
-      <StatusBar />
       <VStack w="full" alignItems="center">
         <Image
           source={require("../assets/logo.png")}
@@ -146,6 +145,7 @@ export function Home() {
             onSubmitEditing={() => {
               getProductsByName(search);
             }}
+            autoCapitalize="words"
             style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
           />
 
@@ -194,7 +194,7 @@ export function Home() {
           <FlatList
             data={products}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 70 }}
+            contentContainerStyle={{ paddingBottom: 70}}
             numColumns="2"
             w="100%"
             keyExtractor={(product) => product.id}
@@ -225,7 +225,7 @@ export function Home() {
               </Center>
             )}
             onEndReached={getNewProducts}
-            onEndReachedThreshold={0.1}
+            onEndReachedThreshold={0.2}
             ListFooterComponent={
               <FooterListLoader fetchingProducts={fetchingProducts} />
             }
