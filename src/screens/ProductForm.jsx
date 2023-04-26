@@ -135,7 +135,7 @@ export function ProductForm() {
     defaultValues: {
       nome: product ? product.nome : "",
       descricao: product ? product.descricao : "",
-      preco: product ? product.preco.toString() : "",
+      preco: product ? product.preco.toFixed(2): 0.00,
       categoria: product ? product.categoria : "",
       estoque: product ? product.estoque.toString() : "",
       unidade: product ? product.unidade : "",
@@ -154,7 +154,7 @@ export function ProductForm() {
       nome: data.nome[0].toUpperCase() + data.nome.substring(1),
       imagem_url: uploadedImages,
       validade: dateText.split("/", 3).reverse().join("-"),
-      preco:priceRef?.current.getRawValue(),
+      preco:priceRef?.current.getRawValue().toFixed(2),
       estoque: parseInt(data.estoque),
     };
     if (objProduct.categoria ==='leite e derivados' || objProduct.categoria ==='produtos naturais' ||objProduct.categoria ==='artesanato' ) {
