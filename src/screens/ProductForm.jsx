@@ -43,7 +43,7 @@ import { Product } from "../services/product";
 
 export function ProductForm() {
   const productInstance = new Product();
-  const priceRef = useRef(null)
+  const priceRef = useRef(null);
   const route = useRoute();
   const navigation = useNavigation();
   const { product } = route.params;
@@ -112,6 +112,7 @@ export function ProductForm() {
   const [categories, setCategories] = useState([]);
   const [unities, setUnities] = useState([]);
   const [formLoaded, setFormLoaded] = useState(false);
+  const [bestBeforeAvailable, setBestBeforeAvailable] = useState(true);
   const [priceInputFocus, setPriceInputFocus] = useState(false);
 
   const productSchema = yup.object({
@@ -135,7 +136,7 @@ export function ProductForm() {
     defaultValues: {
       nome: product ? product.nome : "",
       descricao: product ? product.descricao : "",
-      preco: product ? product.preco.toFixed(2): 0.00,
+      preco: product ? product.preco.toFixed(2) : 0.0,
       categoria: product ? product.categoria : "",
       estoque: product ? product.estoque.toString() : "",
       unidade: product ? product.unidade : "",
@@ -147,6 +148,15 @@ export function ProductForm() {
     },
     resolver: yupResolver(productSchema),
   });
+  const handleShowBestbefore = (selectedCategory) => { 
+    if(selectedCategory==='leite e derivados' || selectedCategory ==='produtos naturais' ||selectedCategory ==='artesanato'){
+      setBestBeforeAvailable(false)
+    }else{
+      setBestBeforeAvailable(true)
+    }
+    
+  };
+
 
   const handleNewProduct = (data) => {
     let objProduct = {
@@ -154,19 +164,23 @@ export function ProductForm() {
       nome: data.nome[0].toUpperCase() + data.nome.substring(1),
       imagem_url: uploadedImages,
       validade: dateText.split("/", 3).reverse().join("-"),
-      preco:priceRef?.current.getRawValue().toFixed(2),
+      preco: priceRef?.current.getRawValue().toFixed(2),
       estoque: parseInt(data.estoque),
     };
-    if (objProduct.categoria ==='leite e derivados' || objProduct.categoria ==='produtos naturais' ||objProduct.categoria ==='artesanato' ) {
-     objProduct.bestbefore=false
+    if (
+      objProduct.categoria === "leite e derivados" ||
+      objProduct.categoria === "produtos naturais" ||
+      objProduct.categoria === "artesanato"
+    ) {
+      objProduct.bestbefore = false;
     }
-    
+
     if (id === null) {
-       addProduct(JSON.stringify(objProduct));
-     } else {
-       objProduct.id = id;
+      addProduct(JSON.stringify(objProduct));
+    } else {
+      objProduct.id = id;
       updateProduct(JSON.stringify(objProduct));
-     }
+    }
   };
 
   const pickImages = async () => {
@@ -482,6 +496,7 @@ export function ProductForm() {
                   fontSize="md"
                   accessibilityLabel="Escolha a categoria do produto"
                   onValueChange={onChange}
+                  onChange={handleShowBestbefore(value)}
                 >
                   {categories.map((categories) => (
                     <Select.Item
@@ -531,31 +546,34 @@ export function ProductForm() {
               )}
             />
 
-            <Controller
-              control={control}
-              name="bestbefore"
-              render={({ field: { onChange, value } }) => (
-                <HStack flex={1} width="100%">
-                  <Checkbox
-                    isChecked={value}
-                    mt={4}
-                    _text={{ color: colors.blue[700] }}
-                    onChange={onChange}
-                  >
-                    <Heading
-                      fontSize={RFValue(14)}
-                      color={colors.blue[700]}
-                      fontFamily="body"
-                      fontWeight="semibold"
-                      w="90%"
-                      ml="1%"
-                    >
-                      O será colhido após a compra
-                    </Heading>
-                  </Checkbox>
-                </HStack>
-              )}
-            />
+            
+              <Controller
+                control={control}
+                name="bestbefore"
+                
+                render={({ field: { onChange, value } }) => (
+                      <HStack flex={1} width="100%" display={bestBeforeAvailable?'flex':'none'}>
+                      <Checkbox
+                      isChecked={value}
+                      mt={4}
+                      _text={{ color: colors.blue[700] }}
+                      onChange={onChange}
+                      >
+                      <Heading
+                        fontSize={RFValue(14)}
+                        color={colors.blue[700]}
+                        fontFamily="body"
+                        fontWeight="semibold"
+                        w="90%"
+                        ml="1%"
+                      >
+                        O produto será colhido após a compra
+                      </Heading>
+                    </Checkbox>
+                  </HStack>
+                )}
+              />
+            
 
             <HStack justifyContent="space-between" mt={2}>
               <View w="1/3">
@@ -575,31 +593,33 @@ export function ProductForm() {
                   render={({ field: { onChange, value } }) => (
                     <TextInputMask
                       style={{
-                        borderColor:errors.preco ? colors.purple[500] : colors.blue[600],
-                        borderWidth:priceInputFocus? 2 : .9,
+                        borderColor: errors.preco
+                          ? colors.purple[500]
+                          : colors.blue[600],
+                        borderWidth: priceInputFocus ? 2 : 0.9,
                         fontFamily: "Montserrat_400Regular",
                         fontSize: RFValue(16),
-                        height:45,
-                        borderRadius:4,
-                        paddingLeft:10,
+                        height: 45,
+                        borderRadius: 4,
+                        paddingLeft: 10,
                       }}
                       ref={priceRef}
                       placeholder="R$ 0,00"
                       placeholderTextColor={
                         errors.preco ? colors.purple[500] : colors.blue[500]
                       }
-                      type={'money'}
+                      type={"money"}
                       value={value}
-                      onFocus={()=>setPriceInputFocus(true)}
-                      onBlur={()=>setPriceInputFocus(false)}
+                      onFocus={() => setPriceInputFocus(true)}
+                      onBlur={() => setPriceInputFocus(false)}
                       onChangeText={onChange}
                       color={colors.blue[700]}
                       options={{
                         precision: 2,
-                        separator: ',',
-                        delimiter: '.',
-                        unit: 'R$',
-                        suffixUnit: ''
+                        separator: ",",
+                        delimiter: ".",
+                        unit: "R$",
+                        suffixUnit: "",
                       }}
                     />
                   )}
@@ -670,7 +690,7 @@ export function ProductForm() {
                       }
                       type="text"
                       fontSize="md"
-                      mr='15%'
+                      mr="15%"
                       color={colors.blue[700]}
                       keyboardType="numeric"
                       onChangeText={onChange}
@@ -684,7 +704,7 @@ export function ProductForm() {
                 />
               </View>
 
-              <View  w="2/3" pl={4} justifyContent="center" display={'none'}>
+              <View w="2/3" pl={4} justifyContent="center" display={"none"}>
                 <TouchableOpacity onPress={() => showDatePicker()}>
                   <Heading
                     mt={"2"}
