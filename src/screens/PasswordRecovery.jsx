@@ -10,8 +10,7 @@ import {
   HStack,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { Alert, ScrollView, TouchableOpacity } from "react-native";
+import { Alert, ScrollView} from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -23,38 +22,21 @@ import { TextInputMask } from "react-native-masked-text";
 import { LogoFeira } from "../components/LogoFeira";
 import { User } from "../services/user";
 
-export function Register() {
+export function PasswordRecovery() {
   const user = new User();
   const [inputType, setInputType] = useState("password");
   const [isLoading, setIsLoading] = useState(false);
-  const cellRef = useRef(null);
   const { colors } = useTheme();
   const navigation = useNavigation();
 
-  const handleVisibilityPassword = () => {
-    if (inputType == "password") {
-      setInputType("text");
-    } else {
-      setInputType("password");
-    }
-  };
-
   const userSchema = yup.object({
-    nome: yup.string().required("informe o seu nome completo"),
     email: yup
       .string()
       .required("Informe um email válido")
       .email("Informe um email válido"),
-    telefone: yup.string().min(10).required("Informe um numero de whatsapp"),
-    senha: yup
-      .string()
-      .min(6, "a senha deve ter pelo menos 6 dígitos")
-      .required("informe uma senha"),
     cep: yup.string().min(7, "CEP Inválido").required("Informe um CEP"),
     rua: yup.string().required("informe o nome da rua"),
     numero: yup.string().required("informe o numero da sua residência"),
-    complemento: yup.string(),
-    bairro: yup.string().required("informe o bairro"),
     cidade: yup.string().required("informe o nome da cidade"),
     estado: yup.string().required("selecione o estado"),
   });
@@ -73,58 +55,16 @@ export function Register() {
     setIsLoading(true);
     let objUser = {
       email: data.email,
-      nome: data.nome,
-      senha: data.senha,
       endereco: {
         rua: data.rua,
         numero: data.numero,
-        bairro: data.bairro,
         cep: data.cep,
-        complemento: data.complemento,
         cidade: data.cidade,
         estado: data.estado,
-      },
-      telefone: cellRef?.current.getRawValue(),
+      }
     };
-
-    await user
-      .createUser(objUser)
-      .then(({ data }) => {
-        if (!data.resultado) {
-          setError("email", {
-            type: "custom",
-            message: "Este email já está sendo usado",
-          });
-          return Alert.alert(
-            "Erro",
-            "Este endereço de email já está sendo usado"
-          );
-        }
-        user
-          .checkPassword(objUser.email, objUser.senha)
-          .then(({ data }) => {
-            let jwtToken = data.token;
-            setIsLoading(false);
-            user.getUserByEmail(objUser.email, jwtToken);
-          })
-          .catch((error) => {
-            setIsLoading(false);
-            if (error.response.data.mensagem) {
-              return Alert.alert("Erro", "Usuário ou senha inválidos");
-            }
-            return Alert.alert(
-              "Erro",
-              "Um erro inesperado aconteceu,tente novamente"
-            );
-          });
-      })
-      .catch(({ err }) => {
-        setIsLoading(false);
-        return Alert.alert(
-          "Erro",
-          "Um erro inesperado aconteceu,por favor tente novamente"
-        );
-      });
+    //alert de acordo com a resposta da api,com sucesso redireciona pro login
+    Alert.alert("recuperação de senha",`Um email com a sua nova senha será enviado para ${objUser.email}`)
     setIsLoading(false);
   };
 
@@ -133,9 +73,7 @@ export function Register() {
       .then(({ data }) => {
         setValue("estado", data.uf);
         setValue("cidade", data.localidade);
-        setValue("bairro", data.bairro);
         setValue("rua", data.logradouro);
-        setValue("complemento", data.complemento);
       })
       .catch((err) => console.log(err));
   };
@@ -150,9 +88,8 @@ export function Register() {
         <ButtonBack />
         <LogoFeira />
         <Text alignSelf="flex-start" mt={8} ml={4} fontSize="xl">
-          Informações da Conta
+          Recuperação de Senha
         </Text>
-
         <Controller
           control={control}
           name="email"
@@ -185,7 +122,6 @@ export function Register() {
             />
           )}
         />
-        <Text fontSize='sm' ml='4%'>Informe um E-mail ativo</Text>
         {errors.email && (
           <Text
             alignSelf="flex-start"
@@ -195,169 +131,10 @@ export function Register() {
             {errors.email.message}
           </Text>
         )}
-
-        <Controller
-          control={control}
-          name="senha"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              mt={4}
-              height={54}
-              alignSelf="center"
-              w='94%'
-              bgColor={colors.gray[100]}
-              color={errors.senha ? colors.purple[500] : colors.blue[900]}
-              leftElement={
-                <Icon
-                  color={errors.senha ? colors.purple[500] : colors.blue[900]}
-                  as={<MaterialIcons name="lock" />}
-                  size={6}
-                  ml={2}
-                />
-              }
-              rightElement={
-                <TouchableOpacity onPress={handleVisibilityPassword}>
-                  <Icon
-                    color={errors.senha ? colors.purple[500] : colors.blue[900]}
-                    as={
-                      <MaterialIcons
-                        name={
-                          inputType == "text" ? "visibility-off" : "visibility"
-                        }
-                      />
-                    }
-                    size={6}
-                    marginRight={2}
-                  />
-                </TouchableOpacity>
-              }
-              type={inputType}
-              placeholder="Senha"
-              fontFamily={"Montserrat_400Regular"}
-              placeholderTextColor={
-                errors.senha ? colors.purple[500] : colors.blue[900]
-              }
-              fontSize={14}
-              borderRadius={8}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-        {errors.senha && (
-          <Text
-            alignSelf="flex-start"
-            marginLeft={8}
-            color={colors.purple[500]}
-          >
-            {errors.senha.message}
-          </Text>
-        )}
+        <Text fontSize='sm' ml='4%'>Informe o E-mail cadastrado na plataforma</Text>
 
         <Text alignSelf="flex-start" ml={4} mt={4} fontSize="xl">
-          Dados pessoais
-        </Text>
-
-        <Controller
-          control={control}
-          name="nome"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              mt={4}
-              bgColor={colors.gray[100]}
-              height={54}
-              alignSelf="center"
-              w='94%'
-              color={errors.nome ? colors.purple[500] : colors.blue[900]}
-              leftElement={
-                <Icon
-                  color={errors.nome ? colors.purple[500] : colors.blue[900]}
-                  as={<MaterialIcons name="person" />}
-                  size={6}
-                  ml={2}
-                />
-              }
-              placeholder="Nome"
-              fontFamily={"Montserrat_400Regular"}
-              placeholderTextColor={
-                errors.nome ? colors.purple[500] : colors.blue[900]
-              }
-              fontSize={14}
-              borderRadius={8}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-        {errors.nome && (
-          <Text
-            alignSelf="flex-start"
-            marginLeft={8}
-            color={colors.purple[500]}
-          >
-            {errors.nome.message}
-          </Text>
-        )}
-
-        <HStack
-          alignItems="center"
-          mt={4}
-          height={54}
-          alignSelf="center"
-          w='94%'
-          borderWidth={1}
-          borderRadius={8}
-          borderColor={colors.gray[300]}
-          bgColor={colors.gray[100]}
-        >
-          <Icon
-            color={errors.telefone ? colors.purple[500] : colors.blue[900]}
-            as={<FontAwesome5 name="whatsapp" />}
-            size={5}
-            ml={3}
-          />
-          <Controller
-            control={control}
-            name="telefone"
-            render={({ field: { onChange, value } }) => (
-              <TextInputMask
-                type={"cel-phone"}
-                options={{
-                  maskType: "BRL",
-                  withDDD: true,
-                  dddMask: "(99) ",
-                }}
-                color={errors.telefone ? colors.purple[500] : colors.blue[900]}
-                placeholder="(00) 0000-0000"
-                style={{
-                  fontFamily: "Montserrat_400Regular",
-                  fontSize: 14,
-                  marginLeft: 11,
-                }}
-                width="70%"
-                placeholderTextColor={
-                  errors.telefone ? colors.purple[500] : colors.blue[900]
-                }
-                value={value}
-                onChangeText={onChange}
-                ref={cellRef}
-              />
-            )}
-          />
-        </HStack>
-         <Text fontSize='sm' ml='4%'>Este deve ser o numero do seu whatsApp</Text>
-        {errors.telefone && (
-          <Text
-            alignSelf="flex-start"
-            marginLeft={8}
-            color={colors.purple[500]}
-          >
-            {errors.telefone.message}
-          </Text>
-        )}
-
-        <Text alignSelf="flex-start" ml={4} mt={4} fontSize="xl">
-          Endereço
+          Informe o seu endereço
         </Text>
 
         <HStack
@@ -480,61 +257,6 @@ export function Register() {
 
         <Controller
           control={control}
-          name="complemento"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              mt={4}
-              bgColor={colors.gray[100]}
-              height={54}
-              alignSelf="center"
-              w='94%'
-              color={colors.blue[900]}
-              placeholder="*Complemento"
-              fontFamily={"Montserrat_400Regular"}
-              placeholderTextColor={colors.blue[800]}
-              fontSize={14}
-              borderRadius={8}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="bairro"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              mt={4}
-              bgColor={colors.gray[100]}
-              height={54}
-              alignSelf="center"
-              w='94%'
-              color={colors.blue[900]}
-              placeholder="*Bairro"
-              fontFamily={"Montserrat_400Regular"}
-              placeholderTextColor={
-                errors.bairro ? colors.purple[500] : colors.blue[800]
-              }
-              fontSize={14}
-              borderRadius={8}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-        {errors.bairro && (
-          <Text
-            alignSelf="flex-start"
-            marginLeft={8}
-            color={colors.purple[500]}
-          >
-            {errors.bairro.message}
-          </Text>
-        )}
-
-        <Controller
-          control={control}
           name="cidade"
           render={({ field: { onChange, value } }) => (
             <Input
@@ -636,7 +358,7 @@ export function Register() {
           onPress={handleSubmit(handleCreateUser)}
           isLoading={isLoading}
         >
-          Cadastrar
+          Recuperar Senha
         </Button>
         {Object.values(errors).length > 0 && (
           <Text alignSelf="center" color={colors.purple[500]} mt={4}>
