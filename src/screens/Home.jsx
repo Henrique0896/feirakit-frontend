@@ -101,16 +101,10 @@ export function Home() {
     setPage(1);
     setIsLoading(true);
     setRefreshing(true);
-<<<<<<< HEAD
     setProducts([])
     getAllProducts();
   }
   <Select/>
-=======
-    setProducts([]);
-    getAllProducts(true);
-  };
->>>>>>> origin/master
 
   return (
     <VStack
