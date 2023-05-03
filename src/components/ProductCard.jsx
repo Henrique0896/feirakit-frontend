@@ -1,7 +1,7 @@
 import React,{ useState }from "react";
 import { Heading, Image, Pressable, useTheme } from "native-base";
+import { RFValue } from "react-native-responsive-fontsize";
 import { Text } from "react-native";
-
 
 export function ProductCard({ product, onPress }) {
   const { colors } = useTheme();
@@ -11,7 +11,7 @@ export function ProductCard({ product, onPress }) {
     <Pressable
       onPress={onPress}
       mr="4%"
-      mb={2}
+      mb={4}
       maxH={300}
       w="48%"
       bgColor="white"
@@ -52,23 +52,26 @@ export function ProductCard({ product, onPress }) {
         alt={product.descricao}
       />
 
-      <Heading fontWeight="medium" size="sm" mb={1} fontFamily="heading">
+      <Heading fontWeight="medium" fontSize= {product.nome.length>8?RFValue(12):RFValue(16)} mb={1} mt={1} fontFamily="heading">
         {product.nome}
       </Heading>
+      
       <Text
         style={{
           backgroundColor: colors.gray[200],
           color: colors.gray[400],
-          fontSize: 14,
+          fontSize: RFValue(10),
           height: 40,
           paddingHorizontal: 2,
+          marginBottom:28
         }}
       >
         {description}
       </Text>
-      <Heading fontWeight="medium" size="sm" mt={2} mb={1} fontFamily="heading">
+      <Heading fontWeight="medium" fontSize={RFValue(16)}  fontFamily="heading" position='absolute' bottom={4} left={4} >
         R$ {product.preco.toFixed(2)}
       </Heading>
+      
     </Pressable>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { Heading, HStack, VStack, useTheme } from "native-base";
+import { RFValue } from "react-native-responsive-fontsize";
 import { MaterialIcons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 export function CustomBottomSheet({ actionGallery, actionCamera }) {
@@ -11,8 +12,8 @@ export function CustomBottomSheet({ actionGallery, actionCamera }) {
         onPress={actionCamera}
       >
         <VStack alignItems="center" justifyContent="center">
-          <MaterialIcons name="camera-alt" size={70} color={colors.blue[700]} />
-          <Heading color={colors.blue[700]}>Câmera</Heading>
+          <MaterialIcons name="camera-alt" size={RFValue(70)} color={colors.blue[700]} />
+          <Heading color={colors.blue[700]} fontSize={RFValue(16)}>Câmera</Heading>
         </VStack>
       </TouchableOpacity>
 
@@ -21,8 +22,8 @@ export function CustomBottomSheet({ actionGallery, actionCamera }) {
         onPress={actionGallery}
       >
         <VStack alignItems="center" justifyContent="center">
-          <MaterialIcons name="photo-library" size={70} color={colors.blue[700]} />
-          <Heading color={colors.blue[700]}>Galeria</Heading>
+          <MaterialIcons name="photo-library" size={RFValue(70)} color={colors.blue[700]} />
+          <Heading color={colors.blue[700]} fontSize={RFValue(16)}>Galeria</Heading>
         </VStack>
       </TouchableOpacity>
     </HStack>

@@ -17,7 +17,9 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 import ImageButton from "../components/ImageButton";
+import { showMessage } from "react-native-flash-message";
 import { WhatsappButton } from "../components/WhatsappButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ButtonBack } from "../components/ButtonBack";
@@ -25,6 +27,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { LogoFeira } from "../components/LogoFeira";
 import { Product } from "../services/product";
 import { User } from "../services/user";
+import { storage } from "../../firebaseConfig";
 
 export function Description() {
   const productInstance = new Product();
@@ -42,7 +45,9 @@ export function Description() {
   const [produtor, setProdutor] = useState();
   const [isLoadingImage, setIsloadingImage] = useState(true);
 
-  let btnDisabled = amount === 1 ? true : false;
+  let btnLessDisabled = amount === 1 ? true : false;
+  let btnPlusDisabled = amount >= product.estoque ? true : false;
+
 
   function handleOpenEdit(product) {
     navigation.navigate("ProductForm", { product });
@@ -69,9 +74,22 @@ export function Description() {
            productInstance
             .deleteProduct(JSON.stringify(objDelete))
             .then(() => {
+              product.imagem_url.map((url)=>{
+                  let delelteImage=url.substring(82, url.lastIndexOf("?"));
+                  storage.ref(`images/${delelteImage}`).delete()
+                 })
+
+              showMessage({
+                message: "Produto excluído com sucesso",
+                type: "warning",
+              });
               navigation.goBack();
             })
             .catch((error) => {
+              showMessage({
+                message: "Erro ao apagar produto",
+                type: "danger",
+              });
               console.log("====>um erro ocorreu: " + error);
             });
         },
@@ -83,12 +101,17 @@ export function Description() {
     userInstance
       .getUserById(product.produtor_id)
       .then(({ data }) => {
-        console.log(data)
-        setEndereco(data.endereco.cidade + "-" + data.endereco.estado);
-        setProdutor(data.nome);
-        setWhatsAppNumber(data.telefone);
+        setEndereco(data.resultado[0].endereco.cidade + "-" + data.resultado[0].endereco.estado);
+        setProdutor(data.resultado[0].nome);
+        setWhatsAppNumber(data.resultado[0].telefone);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        showMessage({
+          message: "Existe um erro com o produto",
+          type: "danger",
+        });
+        navigation.goBack();
+        console.log(error)});
   }, []);
   return (
     <VStack style={styles.container}>
@@ -128,9 +151,12 @@ export function Description() {
           renderItem={({ index }) => (
             <ImageButton
               urlImage={product.imagem_url[index]}
+              active={urlImage == product.imagem_url[index] ? true : false}
               onPress={() => {
-                setIsloadingImage(true);
-                setUrlImage(product.imagem_url[index]);
+                if(urlImage !== product.imagem_url[index] ){
+                  setIsloadingImage(true);
+                  setUrlImage(product.imagem_url[index]);
+                }
               }}
             />
           )}
@@ -156,8 +182,8 @@ export function Description() {
               ]}
               onPress={() => handleOpenEdit(product)}
             >
-              <MaterialIcons name="edit" size={25} color={colors.purple[600]} />
-              <Heading color={colors.purple[600]}>Editar</Heading>
+              <MaterialIcons name="edit" size={RFValue(24)} color={colors.purple[600]} />
+              <Heading color={colors.purple[600]} fontSize={RFValue(16)}>Editar</Heading>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -176,7 +202,7 @@ export function Description() {
                 size={25}
                 color={colors.red[600]}
               />
-              <Heading color={colors.red[600]}>Excluir</Heading>
+              <Heading color={colors.red[600]} fontSize={RFValue(16)}>Excluir</Heading>
             </TouchableOpacity>
           </HStack>
         )}
@@ -206,18 +232,22 @@ export function Description() {
             />
           )}
 
-          <VStack
-            alignSelf="center"
-            w={product.bestbefore ? "62%" : "70%"}
+          <HStack
+            w={product.bestbefore ? "60%" : "65%"}
+            justifyContent='space-between'
             ml={2}
           >
-            <Text style={styles.text} font-size="10vw">
+            <Heading style={styles.text}  fontSize={product.nome.length>12?RFValue(14):RFValue(22)}>
               {product.nome}
-            </Text>
-          </VStack>
-          <Text style={[styles.text, { alignSelf: "flex-end", paddingTop: 4 }]}>
-            R$ {product.preco.toFixed(2)}
-          </Text>
+            </Heading >
+          </HStack>
+          <HStack
+            ml={2}
+          >
+            <Heading  style={[styles.text, { paddingTop: 4 }]} fontSize={RFValue(20)}>
+              R$ {product.preco.toFixed(2)}
+            </Heading >
+          </HStack>
         </HStack>
 
         <HStack mt={-2} w="90%" alignSelf="center" mb={2}>
@@ -226,12 +256,12 @@ export function Description() {
             size={18}
             style={{ color: colors.gray[600], alignSelf: "center" }}
           />
-          <Text fontSize={16}>{endereco}</Text>
+          <Text fontSize={RFValue(16)}>{endereco}</Text> 
         </HStack>
 
         <View style={styles.descriptionBox}>
           <Heading size="sm">
-            Validade: {`${product.validade.split("-").reverse().join("/")} \n`}
+            {`${product.validade.split("-").reverse().join("/")} \n`}
           </Heading>
           <Heading size="sm" mt={-5} mb={1}>
             Categoria: {product.categoria}
@@ -245,7 +275,7 @@ export function Description() {
                 color: colors.green[600],
               }}
             >
-              Este produto será colhido no dia da entrega
+              Colhido após a compra
             </Text>
           )}
 
@@ -254,19 +284,23 @@ export function Description() {
           </Text>
         </View>
 
+
+       {produtor !== undefined && 
         <HStack
           mt={2}
-          w="90%"
+          w="90%" 
           alignSelf="center"
           justifyItems="center"
           alignContent="center"
           mb={2}
         >
-          <Text display="flex" alignItems="center" fontSize={16}>
+          <Text display="flex" alignItems="center" fontSize={RFValue(14)}>
             Vendido por
           </Text>
-          <Text color={colors.blue[600]} fontSize={16}>{` ${produtor}`}</Text>
-        </HStack>
+          <Text color={colors.blue[600]} fontSize={RFValue(14)}>{` ${produtor}`}</Text>
+        </HStack>}
+
+
         {!isInfo && (
           <>
             <Text
@@ -278,7 +312,7 @@ export function Description() {
               Quantidade
             </Text>
             <HStack
-              marginTop={3}
+              marginTop={2}
               alignSelf="center"
               h="16"
               w="1/3"
@@ -288,7 +322,7 @@ export function Description() {
               borderColor={colors.blue[700]}
             >
               <TouchableOpacity
-                disabled={btnDisabled}
+                disabled={btnLessDisabled}
                 onPress={() => setAmount(amount - 1)}
                 style={styles.qtdButton}
               >
@@ -298,22 +332,26 @@ export function Description() {
                 <Text style={{ fontSize: 20 }}>{amount}</Text>
               </View>
               <TouchableOpacity
+                disabled={btnPlusDisabled}
                 onPress={() => setAmount(amount + 1)}
                 style={styles.qtdButton}
               >
                 <MaterialIcons size={30} name="add" />
               </TouchableOpacity>
             </HStack>
-            <Heading alignSelf={"center"} color={colors.blue[700]} size="md">
-              {product.unidade}
+            <Heading alignSelf={"center"} color={colors.blue[700]}  fontSize={RFValue(16)}>
+              {amount ==1 ? product.unidade : product.unidade + 's' }
             </Heading>
-            <WhatsappButton
-              WhatsAppNumber={WhatsAppNumber}
-              Quantity={amount}
-              unity={product.unidade}
-              ProductName={`${product.nome}`}
-              Name={`${produtor}`}
-            />
+            {WhatsAppNumber !=='' &&
+               <WhatsappButton
+               WhatsAppNumber={WhatsAppNumber}
+               Quantity={amount}
+               unity={product.unidade}
+               ProductName={`${product.nome}`}
+               Name={`${produtor}`}
+               ProductPrice={product.preco}
+             />
+            }
           </>
         )}
       </ScrollView>
@@ -357,10 +395,8 @@ const styles = StyleSheet.create({
     borderColor: "#0088a7",
   },
   text: {
-    fontSize: 30,
     fontFamily: "Montserrat_400Regular",
     marginVertical: 15,
-    lineHeight: 30,
   },
 
   btnActions: {

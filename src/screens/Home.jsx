@@ -8,79 +8,114 @@ import {
   FlatList,
   Center,
   Text,
-  StatusBar
 } from "native-base";
 import { ProductCard } from "../components/ProductCard";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
-import { LoadingProducts } from "../components/Loading";
-import { Image,TouchableOpacity, View,RefreshControl } from "react-native";
+import { FooterListLoader, LoadingProducts } from "../components/Loading";
+import { Image, TouchableOpacity, View, RefreshControl } from "react-native";
 import { Product } from "../services/product";
 import { Select } from "../components/Select";
 
 export function Home() {
-  const product=new Product
+  const product = new Product();
+  const limit = 10;
+  const sort = -1;
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchingProducts, setFetchingProducts] = useState(false);
   const [iconName, setIconName] = useState("storefront");
   const [emptyText, setEmptyText] = useState("Não há Produtos para mostrar.");
   const [headerText, setHeaderText] = useState("Todos os produtos");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [keepFetching, setKeepFetching] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
-
-  
   const navigation = useNavigation();
+  
   function handleOpenDescription(productId, product, isInfo) {
     navigation.navigate("description", { productId, product, isInfo });
   }
+  const getNewProducts = () => {
+    if (search === "" && keepFetching) {
+      setTimeout(() => {
+        setFetchingProducts(true);
+        getAllProducts();
+      },100);
+    }
+  };
 
-  const getAllProducts = () => {
-    setIsLoading(true);
+  const getAllProducts = (refresh) => {
+    if (products.length == 0) {
+      setIsLoading(true);
+    }
     setSearch("");
-    setHeaderText(`Todos os produtos`);
-    product.getAllProducts()
+    setHeaderText(`Produtos disponíveis`);
+    
+    product
+      .getAllProducts(!refresh ? page : 1, limit, sort)
       .then(({ data }) => {
-        setProducts(data.reverse());
+        if (refresh) {
+          setProducts(data);
+          setPage(2);
+          setKeepFetching(true);
+        } else {
+          setProducts([...products, ...data]);
+          setPage(page + 1);
+          setFetchingProducts(false);
+        }
         setRefreshing(false);
         setIsLoading(false);
+        if (data.length == 0) {
+          setKeepFetching(false);
+        }
       })
       .catch((error) => {
         setProducts([]);
+        setIsLoading(false);
+        setRefreshing(false);
         setIconName("sync-problem");
         setEmptyText(":'(\n Ocorreu um erro,tente novamente");
-        console.log(error);
-        setIsLoading(false);
       });
   };
 
   const getProductsByName = (name) => {
     setIsLoading(true);
     setHeaderText(`Resultado para: "${name}"`);
-    product.getProductsByName(name)
-    .then(({ data }) => {
+    product
+      .getProductsByName(name)
+      .then(({ data }) => {
         setProducts(data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     setIsLoading(false);
   };
 
   useFocusEffect(useCallback(getAllProducts, []));
+
   const onRefresh = () => {
+    setPage(1);
+    setIsLoading(true);
     setRefreshing(true);
+<<<<<<< HEAD
     setProducts([])
     getAllProducts();
   }
   <Select/>
+=======
+    setProducts([]);
+    getAllProducts(true);
+  };
+>>>>>>> origin/master
 
   return (
     <VStack
       flex={1}
-      w="full"
+      w='full'
       bg={colors.gray[200]}
       p={8}
       pt={0}
@@ -88,7 +123,6 @@ export function Home() {
       px={4}
       pb={0}
     >
-      <StatusBar/>
       <VStack w="full" alignItems="center">
         <Image
           source={require("../assets/logo.png")}
@@ -119,6 +153,7 @@ export function Home() {
             onSubmitEditing={() => {
               getProductsByName(search);
             }}
+            autoCapitalize="words"
             style={{ fontFamily: "Montserrat_500Medium", fontWeight: "500" }}
           />
 
@@ -139,18 +174,20 @@ export function Home() {
       ) : (
         <>
           <HStack w="full" alignItems="center">
-
-            {headerText !== 'Todos os produtos' &&
-            (
-            <>
-            <TouchableOpacity style={{justifyContent:'center',marginRight:5,marginTop:-7}}
-            onPress={()=>getAllProducts()}
-             >
-             <MaterialIcons name='clear' size={22}/>
-            </TouchableOpacity>
-            </>
-            )
-            }
+            {headerText !== "Produtos disponíveis" && (
+              <>
+                <TouchableOpacity
+                  style={{
+                    justifyContent: "center",
+                    marginRight: 5,
+                    marginTop: -7,
+                  }}
+                  onPress={() => getAllProducts(true)}
+                >
+                  <MaterialIcons name="clear" size={22} />
+                </TouchableOpacity>
+              </>
+            )}
             <Heading
               size="md"
               mt={2}
@@ -160,12 +197,12 @@ export function Home() {
               mb={4}
             >
               {headerText}
-            </Heading> 
+            </Heading>
           </HStack>
           <FlatList
             data={products}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={{ paddingBottom: 70}}
             numColumns="2"
             w="100%"
             keyExtractor={(product) => product.id}
@@ -177,7 +214,7 @@ export function Home() {
             )}
             ListEmptyComponent={() => (
               <Center flex={1} h={400}>
-                <TouchableOpacity onPress={() => getAllProducts()}>
+                <TouchableOpacity onPress={() => getAllProducts(true)}>
                   <MaterialIcons
                     name={iconName}
                     size={80}
@@ -195,12 +232,16 @@ export function Home() {
                 </Text>
               </Center>
             )}
-
+            onEndReached={getNewProducts}
+            onEndReachedThreshold={0.2}
+            ListFooterComponent={
+              <FooterListLoader fetchingProducts={fetchingProducts} />
+            }
             refreshControl={
               <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[colors.blue[600]]}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[colors.blue[600]]}
               />
             }
           />

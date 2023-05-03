@@ -21,6 +21,6 @@ yarn
 yarn start
 ```
 #### Run the project on your own device
-Install the app "Expo Go" in your devic and scan the QR code you see in the terminal.
+Install the app "Expo Go" in your device and scan the QR code you see in the terminal.
 
 </br>

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { VStack, Text, Input, useTheme, Icon, Button } from "native-base";
+import { Alert } from "react-native";
 import { ButtonBack } from "../components/ButtonBack";
 import { LogoFeira } from "../components/LogoFeira";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { Login as loginAction } from "../store/actions";
-import apiFeiraKit from "../services/ApiFeiraKit";
+import { Logout } from "../store/actions";
 import { showMessage } from "react-native-flash-message";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -17,7 +17,7 @@ export function ChangePassword() {
   const user = new User();
   const navigation = useNavigation();
   const { colors } = useTheme();
-  const curentUser = useSelector((state) => state.AuthReducers.userData);
+  const curentUser = useSelector((state) => state.AuthReducers.userData.userData);
   const dispatch = useDispatch();
   const [incompatiblePassword, setIncompatiblePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,21 +66,47 @@ export function ChangePassword() {
     await user.checkPassword(data.email, data.senha).then(({ data }) => {
       if (data.resultado) {
         user.changePassword(JSON.stringify(imputData)).then(
-          user.getUserByEmail(imputData.email).then(() => {
+            () => {
             showMessage({
               message: "Senha alterada com sucesso",
               type: "success",
             });
+            logout(curentUser.nome)
             navigation.goBack();
-          })
-        );
-      }else{
-        setError('senha',{type:'custom',message:'senha inválida'})
-        console.log(data)
-      }
-    });
+          }).catch((error)=>{
+            console.log(error.response.data)
+            if(error.response.data.mensagem){
+              return Alert.alert("Erro", error.response.data.mensagem)
+            }
 
+            return Alert.alert("Erro", "Um erro inesperado aconteceu,tente novamente");
+          })
+      }
+    }).catch((error)=>{
+      if(error.response.data.mensagem){
+        setError('senha',{type:'custom',message:'senha inválida'},{ shouldFocus: true })
+        return Alert.alert("Erro", error.response.data.mensagem)
+      }
+      return Alert.alert("Erro", "Um erro inesperado aconteceu,tente novamente");
+    });
     setIsLoading(false);
+  };
+
+  const changedPasswordText = {
+    title: "Senha alterada",
+    description: "a sua senha foi alterada com sucesso, por segurança será necessário realizar login novamente.",
+    optionYes: "ok",
+  };
+  
+  const logout = (nome) => {
+    Alert.alert(changedPasswordText.title,`Olá ${nome.split(" ")[0]}, ${changedPasswordText.description}`, [
+      {
+        text: changedPasswordText.optionYes,
+        onPress: () => {
+          dispatch(Logout());
+        },
+      }
+    ]);
   };
 
   return (
@@ -149,6 +175,7 @@ export function ChangePassword() {
             bgColor={colors.gray[100]}
             w="90%"
             color={errors.senha ? colors.purple[500] : colors.blue[900]}
+            type="password"
             alignSelf="center"
             value={value}
             onChangeText={onChange}
@@ -201,6 +228,7 @@ export function ChangePassword() {
           render={({ field: { onChange, value } }) => (
             <Input
               mt={5}
+              type="password"
               width={334}
               height={54}
               bgColor={colors.gray[100]}
@@ -252,6 +280,7 @@ export function ChangePassword() {
               w="90%"
               color={errors.confirmacao ? colors.purple[500] : colors.blue[900]}
               alignSelf="center"
+              type="password"
               value={value}
               onChangeText={onChange}
               leftElement={

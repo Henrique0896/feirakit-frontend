@@ -27,6 +27,7 @@ export const THEME = extendTheme({
       300:"#BDBDBD",
       250:"#dededeff",
       200: "#f2f2f2",
+      120:"rgba(230, 230, 230, 0.93)",
       100:"rgba(230, 230, 230, .9)"
     },
     white: "#FFFFFF",

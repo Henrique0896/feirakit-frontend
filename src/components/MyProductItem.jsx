@@ -8,6 +8,7 @@ import {
   useTheme,
   VStack,
 } from "native-base";
+import { RFValue } from "react-native-responsive-fontsize";
 import { StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -42,7 +43,7 @@ export function MyProductItem({ product, onPress }) {
         />
 
         <VStack alignSelf="center" w="70%" ml={2}>
-          <Heading size={product.nome.length > 10 ? "xs" : "md"} mb={1}>
+          <Heading fontSize={product.nome.length > 14 ?RFValue(12) : RFValue(16)} mb={1}>
             {product.nome}
           </Heading>
 
@@ -50,7 +51,7 @@ export function MyProductItem({ product, onPress }) {
             <Heading
               fontWeight="medium"
               fontFamily="heading"
-              size="xs"
+              fontSize={RFValue(12)}
               mb={1}
               color={colors.green[300]}
             >
@@ -60,7 +61,7 @@ export function MyProductItem({ product, onPress }) {
             <Heading
               fontWeight="medium"
               fontFamily="heading"
-              size="xs"
+              fontSize={RFValue(12)}
               mb={1}
               color={colors.gray[400]}
               ml={2}
@@ -70,7 +71,7 @@ export function MyProductItem({ product, onPress }) {
           </HStack>
         </VStack>
         <Center>
-          <MaterialIcons color={colors.gray[300]} name="chevron-right" size={50}/>
+          <MaterialIcons color={colors.gray[300]} name="chevron-right" size={RFValue(46)}/>
         </Center>
       </HStack>
     </Pressable>

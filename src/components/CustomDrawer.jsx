@@ -18,7 +18,7 @@ const texts = {
 };
 
 export function CustomDrawer(props) {
-  const user = useSelector((state) => state.AuthReducers.userData)
+  const user = useSelector((state) => state.AuthReducers.userData.userData)
   const dispatch = useDispatch();
   const HandleLogOut = () => {
     Alert.alert(texts.title, texts.description, [

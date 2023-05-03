@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import { useTheme } from "native-base";
 
-export default function ImageButton({urlImage, onPress}) {
+export default function ImageButton({urlImage, onPress,active}) {
   const [isLoadingImage,setIsloadingImage]=useState(true)
   const {colors}=useTheme()
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={style.container}>
+      <View style={style.container}  borderColor={active ? colors.blue[500]: colors.gray[250]}>
         {isLoadingImage &&
         <ActivityIndicator size={40} color={colors.gray[400]} style={{alignSelf:'center',position:'absolute',zIndex:1000}}/>
         }
@@ -23,7 +23,7 @@ export default function ImageButton({urlImage, onPress}) {
           resizeMode="cover"
           style={style.image}
           onLoad={()=>setIsloadingImage(false)}
-        ></ImageBackground>
+        />
       </View>
     </TouchableOpacity>
   );
@@ -37,7 +37,6 @@ const style = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 15,
-    borderColor: "#D8D8DD",
     borderWidth: 3,
     marginHorizontal: 5,
     marginVertical: 35,

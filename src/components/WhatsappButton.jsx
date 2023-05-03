@@ -9,27 +9,45 @@ import {
 import { useSelector } from "react-redux";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-export function WhatsappButton({Name,WhatsAppNumber, Quantity,unity, ProductName }) {
-  const user=useSelector((state) => state.AuthReducers.userData).nome
-  const adress=useSelector((state) => state.AuthReducers.userData).endereco
-  let isPluralQuantity= Quantity > 1 ? unity+'s':unity;
-  let Message = `_*Pedido Feira Kit 🛒*_\nOlá ${Name}, tudo bem?\ngostaria de comprar *${Quantity} ${isPluralQuantity}* do produto "${ProductName}". Obrigado!\n__________________________\n*Cliente*: ${user}\n*Endereço*: ${adress.rua}, ${adress.numero}, ${adress.bairro}, ${adress.cidade}-${adress.estado}
-  `
+export function WhatsappButton({
+  Name,
+  WhatsAppNumber,
+  Quantity,
+  unity,
+  ProductName,
+  ProductPrice,
+}) {
+  const user = useSelector(
+    (state) => state.AuthReducers.userData.userData
+  ).nome;
+  const adress = useSelector(
+    (state) => state.AuthReducers.userData.userData
+  ).endereco;
+  let isPluralQuantity = Quantity > 1 ? unity + "s" : unity;
+  let Message = `_*Pedido Feira Kit 🛒*_\nOlá ${Name}, tudo bem?\ngostaria de comprar *${Quantity} ${isPluralQuantity}* do produto "${ProductName}". Obrigado!\n__________________________\n_*Resumo :*_\n*Produto*: ${ProductName}\n*Quantidade*: ${Quantity} ${isPluralQuantity}\n*Preço*:R$ ${(
+    Quantity * parseFloat(ProductPrice)
+  ).toFixed(2)}\n*Cliente*: ${user}\n*Endereço*: ${adress.rua}, ${
+    adress.numero
+  }, ${adress.bairro}, ${adress.cidade}-${adress.estado}
+  `;
   return (
-    <View style={styles.container}> 
-  
+    <View style={styles.container}>
       <TouchableOpacity
         style={styles.btnContainer}
         onPress={() =>
-            Linking.canOpenURL(`whatsapp://send?text=${Message}`).then((supported) => {
+          Linking.canOpenURL(
+            `whatsapp://send?phone=55${WhatsAppNumber}&text=${Message}`
+          ).then((supported) => {
             if (supported) {
               return Linking.openURL(
-                `whatsapp://send?phone=${WhatsAppNumber}&text= ${Message}`
+                `whatsapp://send?phone=55${WhatsAppNumber}&text= ${Message}`
               );
-            } else
+            } else {
+              console.log(WhatsAppNumber);
               return Linking.openURL(
-                `https://api.whatsapp.com/send?phone=${WhatsAppNumber}&text=${Message}`
+                `https://api.whatsapp.com/send?phone=55${WhatsAppNumber}&text=${Message}`
               );
+            }
           })
         }
       >
@@ -38,10 +56,6 @@ export function WhatsappButton({Name,WhatsAppNumber, Quantity,unity, ProductName
         </Text>
       </TouchableOpacity>
     </View>
-
-
-
-
   );
 }
 

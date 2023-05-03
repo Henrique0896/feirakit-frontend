@@ -23,7 +23,7 @@ export function MyProducts() {
   const [products, setProducts] = useState([]);
   const[ isLoading,setIsLoading ]= useState(true);
   const navigation = useNavigation();
-  const user=useSelector((state) => state.AuthReducers.userData)
+  const user=useSelector((state) => state.AuthReducers.userData.userData)
   function handleOpenAdd() {
     navigation.navigate("ProductForm", {});
   }
