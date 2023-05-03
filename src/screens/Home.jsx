@@ -17,6 +17,7 @@ import { useState, useCallback } from "react";
 import { LoadingProducts } from "../components/Loading";
 import { Image,TouchableOpacity, View,RefreshControl } from "react-native";
 import { Product } from "../services/product";
+import { Select } from "../components/Select";
 
 export function Home() {
   const product=new Product
@@ -74,6 +75,7 @@ export function Home() {
     setProducts([])
     getAllProducts();
   }
+  <Select/>
 
   return (
     <VStack
