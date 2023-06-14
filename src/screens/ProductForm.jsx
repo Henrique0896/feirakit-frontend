@@ -9,7 +9,6 @@ import {
   HStack,
   View,
   KeyboardAvoidingView,
-  Icon,
   Center,
   Button,
   Text,
@@ -28,7 +27,10 @@ import {
   LoadingImage,
   LoadingUploadImages,
 } from '../components/Loading'
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
+import BottomSheet, {
+  BottomSheetFlatList,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet'
 import { CustomBottomSheet } from '../components/CustomBottomSheet'
 import { useSelector } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
@@ -40,6 +42,7 @@ import { LogoFeira } from '../components/LogoFeira'
 import { TextInputMask } from 'react-native-masked-text'
 import { Product } from '../services/product'
 import { LabelForm } from '../components/LabelForm'
+import { SelectBottomSheet } from '../components/SelectBottomSheet'
 
 export function ProductForm() {
   const productInstance = new Product()
@@ -53,6 +56,9 @@ export function ProductForm() {
   const producerId = product
     ? product.produtor_id
     : useSelector((state) => state.AuthReducers.userData.userData).id
+  const userAdress = useSelector(
+    (state) => state.AuthReducers.userData.userData
+  )
 
   const ObjDate = new Date()
   let dayDate =
@@ -63,7 +69,6 @@ export function ProductForm() {
       : ObjDate.getMonth() + 1
   const id = product ? product.id : null
   const [isLoading, setIsLoading] = useState(false)
-  const [date, setDate] = useState(ObjDate)
   const [dateText, setDateText] = useState(
     product
       ? product.validade.split('-', 3).reverse().join('/')
@@ -72,8 +77,10 @@ export function ProductForm() {
 
   const bottomSheetRef = useRef(BottomSheet)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const snapPoints = ['30%']
-  const openActionsSheet = useCallback((index) => {
+  const [typeBottomSheet, setTypeBottomSheet] = useState(null)
+  const snapPoints = ['30%', '90%']
+  const openActionsSheet = useCallback(async (index, type) => {
+    await setTypeBottomSheet(type)
     bottomSheetRef.current?.snapToIndex(index)
     setIsSheetOpen(true)
   }, [])
@@ -89,6 +96,7 @@ export function ProductForm() {
   const [isLoadingImage, setIsLoadingImages] = useState(false)
   const [emptyImage, setEmptyImage] = useState(false)
   const [categories, setCategories] = useState([])
+  const [availableCities, setAvailableCities] = useState([])
   const [unities, setUnities] = useState([])
   const [formLoaded, setFormLoaded] = useState(false)
   const [bestBeforeAvailable, setBestBeforeAvailable] = useState(true)
@@ -145,6 +153,7 @@ export function ProductForm() {
       validade: dateText.split('/', 3).reverse().join('-'),
       preco: parseFloat(priceRef?.current.getRawValue().toFixed(2)),
       estoque: parseInt(data.estoque),
+      disponivel: [...availableCities],
     }
     if (
       objProduct.categoria === 'leite e derivados' ||
@@ -327,7 +336,6 @@ export function ProductForm() {
 
   const addProduct = (objProduct) => {
     let jsonProduct = objProduct
-    console.log(jsonProduct)
     productInstance
       .createProduct(jsonProduct)
       .then((response) => {
@@ -361,6 +369,12 @@ export function ProductForm() {
       })
     setIsLoading(false)
   }
+
+  const handleCities = (cities) => {
+    setAvailableCities(cities)
+    closeActionsSheet()
+  }
+
   useEffect(() => {
     let totalProgress = Math.ceil((uploadedImages.length * 100) / images.length)
     setUploadImagesTotalProgress(isNaN(totalProgress) ? 0 : totalProgress)
@@ -376,9 +390,14 @@ export function ProductForm() {
       .then(({ data }) => {
         setCategories(data.categorias)
         setUnities(data.unidades)
-        setFormLoaded(true)
       })
       .catch((error) => console.log(error))
+
+    productInstance.getCities().then(async ({ data }) => {
+      await setAvailableCities(data.resultado)
+    })
+
+    setFormLoaded(true)
   }, [])
 
   return (
@@ -470,35 +489,6 @@ export function ProductForm() {
                 </Select>
               )}
             />
-            <LabelForm text='descrição' />
-
-            <Controller
-              control={control}
-              name='descricao'
-              render={({ field: { onChange, value } }) => (
-                <TextArea
-                  borderColor={
-                    errors.descricao ? colors.purple[500] : colors.blue[600]
-                  }
-                  placeholderTextColor={
-                    errors.descricao ? colors.purple[500] : colors.blue[500]
-                  }
-                  placeholder='descrição do produto'
-                  flexWrap='wrap'
-                  fontSize='md'
-                  value={value}
-                  onChangeText={onChange}
-                  fontWeight='thin'
-                  fontFamily='body'
-                  color={colors.blue[700]}
-                  _focus={{
-                    backgroundColor: colors.gray[200],
-                    borderWidth: 2,
-                  }}
-                />
-              )}
-            />
-
             <Controller
               control={control}
               name='bestbefore'
@@ -526,6 +516,33 @@ export function ProductForm() {
                     </Heading>
                   </Checkbox>
                 </HStack>
+              )}
+            />
+            <LabelForm text='descrição' />
+            <Controller
+              control={control}
+              name='descricao'
+              render={({ field: { onChange, value } }) => (
+                <TextArea
+                  borderColor={
+                    errors.descricao ? colors.purple[500] : colors.blue[600]
+                  }
+                  placeholderTextColor={
+                    errors.descricao ? colors.purple[500] : colors.blue[500]
+                  }
+                  placeholder='descrição do produto'
+                  flexWrap='wrap'
+                  fontSize='md'
+                  value={value}
+                  onChangeText={onChange}
+                  fontWeight='thin'
+                  fontFamily='body'
+                  color={colors.blue[700]}
+                  _focus={{
+                    backgroundColor: colors.gray[200],
+                    borderWidth: 2,
+                  }}
+                />
               )}
             />
 
@@ -646,6 +663,41 @@ export function ProductForm() {
                   )}
                 />
               </View>
+
+              <View
+                w='70%'
+                flex={1}
+                borderBottomWidth={1}
+                borderBottomColor={colors.blue['700']}
+              >
+                <LabelForm text='Cidades' />
+                <TouchableOpacity
+                  onPress={() => openActionsSheet(1, 'cities')}
+                  style={{
+                    flexDirection: 'row',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <View flex={1}>
+                    <Heading
+                      fontFamily='body'
+                      fontWeight='light'
+                      fontSize={RFValue(12)}
+                      color={colors.blue['700']}
+                    >
+                      {userAdress.endereco.cidade.length > 20
+                        ? `${userAdress.endereco.cidade.slice(0, 20)}...`
+                        : userAdress.endereco.cidade}
+                    </Heading>
+                  </View>
+                  <MaterialIcons
+                    name='add-location-alt'
+                    color={colors.blue['700']}
+                    size={RFValue(30)}
+                  />
+                </TouchableOpacity>
+              </View>
             </HStack>
 
             <Controller
@@ -704,7 +756,7 @@ export function ProductForm() {
                     )}
                   </HStack>
                   <TouchableOpacity
-                    onPress={() => openActionsSheet(0)}
+                    onPress={() => openActionsSheet(0, 'image')}
                     ml={4}
                   >
                     <MaterialIcons
@@ -756,10 +808,10 @@ export function ProductForm() {
       )}
 
       <BottomSheet
-        backgroundStyle={{ backgroundColor: colors.blue[100] }}
-        handleIndicatorStyle={{ backgroundColor: colors.blue[800] }}
+        backgroundStyle={{ backgroundColor: colors.gray[50] }}
+        handleIndicatorStyle={{ backgroundColor: colors.gray[400] }}
         handleStyle={{
-          borderColor: colors.blue[800],
+          borderColor: colors.gray[400],
           borderWidth: 2,
           borderBottomWidth: 0,
           borderRadius: 10,
@@ -772,12 +824,22 @@ export function ProductForm() {
         enablePanDownToClose={true}
         onClose={() => setIsSheetOpen[false]}
       >
-        <BottomSheetView>
-          <CustomBottomSheet
-            actionGallery={pickImages}
-            actionCamera={pickImagesByCamera}
+        {typeBottomSheet === 'image' ? (
+          <BottomSheetView>
+            <CustomBottomSheet
+              actionGallery={pickImages}
+              actionCamera={pickImagesByCamera}
+            />
+          </BottomSheetView>
+        ) : (
+          <SelectBottomSheet
+            cities={availableCities}
+            selectedCities={
+              product ? product.disponivel : [userAdress.endereco.cidade]
+            }
+            handleCities={handleCities}
           />
-        </BottomSheetView>
+        )}
       </BottomSheet>
     </VStack>
   )
