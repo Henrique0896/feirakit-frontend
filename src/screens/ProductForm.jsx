@@ -96,6 +96,7 @@ export function ProductForm() {
   const [isLoadingImage, setIsLoadingImages] = useState(false)
   const [emptyImage, setEmptyImage] = useState(false)
   const [categories, setCategories] = useState([])
+  const [allCities, setAllCities] = useState([])
   const [availableCities, setAvailableCities] = useState([])
   const [unities, setUnities] = useState([])
   const [formLoaded, setFormLoaded] = useState(false)
@@ -394,7 +395,7 @@ export function ProductForm() {
       .catch((error) => console.log(error))
 
     productInstance.getCities().then(async ({ data }) => {
-      await setAvailableCities(data.resultado)
+      await setAllCities(data.resultado)
     })
 
     setFormLoaded(true)
@@ -833,7 +834,7 @@ export function ProductForm() {
           </BottomSheetView>
         ) : (
           <SelectBottomSheet
-            cities={availableCities}
+            cities={allCities}
             selectedCities={
               product ? product.disponivel : [userAdress.endereco.cidade]
             }

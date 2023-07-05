@@ -37,7 +37,7 @@ export function SelectBottomSheet({ selectedCities, cities, handleCities }) {
           </Heading>
         }
         data={cities}
-        keyExtractor={(city) => city.id}
+        keyExtractor={(city) => city.nome}
         renderItem={({ index }) => (
           <HStack
             flex={1}
@@ -47,22 +47,23 @@ export function SelectBottomSheet({ selectedCities, cities, handleCities }) {
             <TouchableOpacity
               style={{
                 width: '100%',
-                marginTop: 2,
-                marginBottom: 2,
+                marginVertical: 4,
                 flexDirection: 'row',
                 alignItems: 'center',
               }}
+              activeOpacity={0.7}
+              underlayColor={colors.gray[400]}
               onPress={() => toggle(cities[index].nome)}
             >
               {selected.findIndex((i) => i === cities[index].nome) !== -1 && (
                 <MaterialIcons
                   name='check'
-                  size={RFValue(14)}
+                  size={RFValue(16)}
                 />
               )}
 
               <Heading
-                fontSize={RFValue(14)}
+                fontSize={RFValue(16)}
                 color={colors.blue[700]}
                 fontFamily='body'
                 fontWeight='semibold'

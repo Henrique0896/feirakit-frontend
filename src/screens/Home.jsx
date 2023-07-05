@@ -3,12 +3,10 @@ import {
   HStack,
   Input,
   Icon,
-  Heading,
   useTheme,
   FlatList,
   Center,
   Text,
-  Select,
 } from 'native-base'
 import { ProductCard } from '../components/ProductCard'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
@@ -17,8 +15,10 @@ import { useState, useCallback } from 'react'
 import { FooterListLoader, LoadingProducts } from '../components/Loading'
 import { Image, TouchableOpacity, View, RefreshControl } from 'react-native'
 import { Product } from '../services/product'
-import { RFValue } from 'react-native-responsive-fontsize'
+
 import { useEffect } from 'react'
+import { SelectCity } from '../components/SelectCity'
+import { HeaderHome } from '../components/HeaderHome'
 
 export function Home() {
   const product = new Product()
@@ -38,6 +38,7 @@ export function Home() {
   const [showFilter, setShowFilter] = useState(true)
   const [keepFetching, setKeepFetching] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [findingByName, setFindingByName] = useState(false)
   const navigation = useNavigation()
 
   function handleOpenDescription(productId, product, isInfo) {
@@ -54,12 +55,10 @@ export function Home() {
 
   const getAllProducts = (refresh) => {
     setIsLoading(true)
+    setFindingByName(false)
     getCities()
     setShowFilter(true)
     setSearch('')
-
-    setHeaderText('Produtos em')
-
     product
       .getAllProducts(!refresh ? page : 1, limit, sort)
       .then(({ data }) => {
@@ -74,7 +73,7 @@ export function Home() {
         }
         setRefreshing(false)
         setIsLoading(false)
-        if (data.length == 0) {
+        if (data.length == 0 || data.length <= limit) {
           setKeepFetching(false)
         }
       })
@@ -92,11 +91,15 @@ export function Home() {
       await setCities(data.resultado)
     })
   }
+  const HandleRegion = (region) => {
+    setRegion(region)
+  }
 
   const getProductsByName = (name) => {
     setIsLoading(true)
+    setFindingByName(true)
     setShowFilter(false)
-    setHeaderText(`resultado para:"${name}"`)
+    setHeaderText(`resultado para: "${name}"`)
     product
       .getProductsByName(name)
       .then(({ data }) => {
@@ -113,13 +116,14 @@ export function Home() {
   const onRefresh = () => {
     setPage(1)
     setIsLoading(true)
+    setRegion('-1')
     setRefreshing(true)
     setProducts([])
     getAllProducts(true)
   }
 
   useEffect(() => {
-    // chamada para a ap passando o filtro de região
+    // chamada para a api passando o filtro de região
   }, [region])
 
   return (
@@ -186,84 +190,31 @@ export function Home() {
             </View>
           </TouchableOpacity>
         </HStack>
+        <HStack
+          w='full'
+          alignItems='center'
+          justifyContent={'flex-start'}
+        >
+          {findingByName && (
+            <HeaderHome
+              headerText={headerText}
+              CBclear={getAllProducts}
+            />
+          )}
+
+          {showFilter && (
+            <SelectCity
+              cities={cities}
+              CBsetRegion={HandleRegion}
+            />
+          )}
+        </HStack>
       </VStack>
 
       {isLoading ? (
         <LoadingProducts />
       ) : (
         <>
-          <HStack
-            w='full'
-            alignItems='center'
-            justifyContent={showFilter ? 'space-between' : 'flex-start'}
-          >
-            {headerText !== 'Produtos em' && (
-              <TouchableOpacity
-                style={{
-                  justifyContent: 'center',
-                  marginRight: 5,
-                  marginTop: -7,
-                }}
-                onPress={() => getAllProducts(true)}
-              >
-                <MaterialIcons
-                  name='clear'
-                  size={22}
-                />
-              </TouchableOpacity>
-            )}
-            <Heading
-              size='md'
-              mt={2}
-              color={colors.gray[500]}
-              justifyItems='left'
-              mb={4}
-            >
-              {headerText}
-            </Heading>
-            {/* Select */}
-            {showFilter && (
-              <Select
-                alignSelf={'flex-start'}
-                flex='1'
-                mt={-0.7}
-                minWidth={200}
-                color={colors.gray[500]}
-                fontSize={RFValue(16)}
-                fontWeight={'bold'}
-                accessibilityLabel='Região'
-                placeholder='Região'
-                defaultValue='-1'
-                variant='underlined'
-                dropdownIcon={
-                  <MaterialIcons
-                    name='location-pin'
-                    size={22}
-                    color={colors.gray[500]}
-                  />
-                }
-                onValueChange={(region) => setRegion(region)}
-              >
-                <Select.Item
-                  label=' Todos'
-                  value='-1'
-                  key={-1}
-                />
-
-                {cities.map((city) => {
-                  return (
-                    <Select.Item
-                      key={city.id}
-                      label={' ' + city.nome}
-                      value={city.nome}
-                    />
-                  )
-                })}
-              </Select>
-            )}
-
-            {/*end Select */}
-          </HStack>
           <FlatList
             data={products}
             showsVerticalScrollIndicator={false}
