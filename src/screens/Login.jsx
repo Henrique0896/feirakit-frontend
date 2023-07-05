@@ -13,39 +13,6 @@ export function Login() {
   const [inputType, setInputType] = useState("password");
   const[isLoading,setIsLoading]=useState(false)
  
-  const alert = {
-    title: "Esqueci minha senha",
-    text: "Entre em contato via WhatsApp.",
-    link: "whatsapp://send?phone=3387395971&text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!",
-    textButton: "WhatsApp",
-    textButtonCancel: "Cancelar",
-  };
-
-  const showConfirm = () => {
-    Alert.alert(alert.title, alert.text, [
-      {
-        text: alert.textButton,
-        onPress: () =>
-             Linking.canOpenURL(alert.link).then((supported) => {
-              if (supported) {
-                 return Linking.openURL(
-                     alert.link
-              );
-             } else {
-             return Linking.openURL(
-               `https://api.whatsapp.com/send?phone=553387395971&&text=Esqueci%20minha%20senha%20do%20App%20FeiraKit,%20preciso%20de%20ajuda!`
-             );
-           }
-         }).catch(({err})=>console.log(err))
-      },
-      {
-        text: alert.textButtonCancel,
-        onPress: () => {
-          return;
-        },
-      },
-    ]);
-  };
 
   const submit = async() => {
     setIsLoading(true)
@@ -172,13 +139,13 @@ export function Login() {
         Entrar
       </Button>
       <Button
-        onPress={showConfirm}
+        onPress={() => navigation.navigate("Register")}
         height={54}
         mt={4}
         w="90%"
         borderRadius={15}
       >
-        Esqueci minha senha
+        Cadastre-se
       </Button>
       <Button
         bgColor={colors.gray[200]}
@@ -187,9 +154,9 @@ export function Login() {
         mt={4}
         w="90%"
         borderRadius={15}
-        onPress={() => navigation.navigate("Register")}
+        onPress={() => navigation.navigate("PasswordRecovery")}
       >
-        Cadastre-se
+        Esqueci minha senha
       </Button>
     </VStack>
   );
