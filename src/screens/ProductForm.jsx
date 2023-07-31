@@ -27,10 +27,7 @@ import {
   LoadingImage,
   LoadingUploadImages,
 } from '../components/Loading'
-import BottomSheet, {
-  BottomSheetFlatList,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet'
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import { CustomBottomSheet } from '../components/CustomBottomSheet'
 import { useSelector } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
@@ -175,15 +172,7 @@ export function ProductForm() {
   const pickImages = async () => {
     setIsLoadingImages(true)
     closeActionsSheet()
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync().then()
-    if (!permissionResult.granted) {
-      Alert.alert(
-        'Permissões',
-        'O app precisa dessas permissões para adicionar imagens ao seu produto!'
-      )
-      return
-    }
+
     let selectedImages
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -193,13 +182,13 @@ export function ProductForm() {
       quality: 0.8,
     })
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       selectedImages = result.uri
         ? [{ uri: result.uri }]
         : result.selected.reverse().slice(0, 10)
     }
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       let newImages = []
       images.map((image) => {
         newImages.push(image)
@@ -229,12 +218,15 @@ export function ProductForm() {
   const pickImagesByCamera = async () => {
     setIsLoadingImages(true)
     closeActionsSheet()
+
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync()
+
     if (!permissionResult.granted) {
       Alert.alert(
         'Permissão',
         'Você se recusou a permitir que este aplicativo acesse sua câmera.Por favor,conceda esta permição para continuar o cadastro do produto'
       )
+
       return
     }
 
@@ -243,11 +235,13 @@ export function ProductForm() {
       quality: 0.6,
     })
 
+    console.log(result)
+
     let capturedImage
-    if (!result.cancelled) {
+    if (!result.canceled) {
       capturedImage = result.uri
     }
-    if (!result.cancelled) {
+    if (!result.canceled) {
       let newImages = []
       images.map((image) => {
         newImages.push(image)
@@ -259,6 +253,7 @@ export function ProductForm() {
       setImages(images)
       setValue('imagem_url', images)
     }
+
     setIsLoadingImages(false)
   }
 
@@ -291,6 +286,7 @@ export function ProductForm() {
       },
     ])
   }
+
   const uploadImages = (data) => {
     setIsLoading(true)
     setDataProduct(data)
@@ -431,6 +427,7 @@ export function ProductForm() {
             >
               {HeaderText}
             </Heading>
+
             <LabelForm text='Nome do Produto' />
 
             <Controller
@@ -490,35 +487,38 @@ export function ProductForm() {
                 </Select>
               )}
             />
-            <Controller
-              control={control}
-              name='bestbefore'
-              render={({ field: { onChange, value } }) => (
-                <HStack
-                  flex={1}
-                  width='100%'
-                  display={bestBeforeAvailable ? 'flex' : 'none'}
-                >
-                  <Checkbox
-                    isChecked={value}
-                    mt={4}
-                    _text={{ color: colors.blue[700] }}
-                    onChange={onChange}
+
+            {bestBeforeAvailable && (
+              <Controller
+                control={control}
+                name='bestbefore'
+                render={({ field: { onChange, value } }) => (
+                  <HStack
+                    flex={1}
+                    width='100%'
                   >
-                    <Heading
-                      fontSize={RFValue(14)}
-                      color={colors.blue[700]}
-                      fontFamily='body'
-                      fontWeight='semibold'
-                      w='90%'
-                      ml='1%'
+                    <Checkbox
+                      isChecked={value}
+                      mt={4}
+                      _text={{ color: colors.blue[700] }}
+                      onChange={onChange}
                     >
-                      O produto será colhido após a compra
-                    </Heading>
-                  </Checkbox>
-                </HStack>
-              )}
-            />
+                      <Heading
+                        fontSize={RFValue(14)}
+                        color={colors.blue[700]}
+                        fontFamily='body'
+                        fontWeight='semibold'
+                        w='90%'
+                        ml='1%'
+                      >
+                        O produto será colhido após a compra
+                      </Heading>
+                    </Checkbox>
+                  </HStack>
+                )}
+              />
+            )}
+
             <LabelForm text='descrição' />
             <Controller
               control={control}
