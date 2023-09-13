@@ -51,7 +51,7 @@ O aplicativo FEIRA-KIT é um projeto social incentivado pelo Fundo Social Vale d
 - [EXPO EAS](https://docs.expo.dev/eas-update/getting-started/)
 
 ## LIBS FRONT-END
-- EXPO "46.0.16"
+- EXPO "^47.0.0"
 - REACT "18.0.0"
 
 ## FERRAMENTAS PARA A CRIAÇÃO DAS INTERFACES
